@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/edit_button_ll"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingTop="@dimen/top_margin"
+    android:visibility="gone"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Button
+        android:id="@+id/minus_large"
+        style="@style/TimeGoalTheme.EditButton"
+        android:text="@string/minus_large_text" />
+
+    <Button
+        android:id="@+id/minus_medium"
+        style="@style/TimeGoalTheme.EditButton"
+        android:text="@string/minus_medium_text" />
+
+    <Button
+        android:id="@+id/minus_small"
+        style="@style/TimeGoalTheme.EditButton"
+        android:text="@string/minus_small_text" />
+
+    <Button
+        android:id="@+id/plus_small"
+        style="@style/TimeGoalTheme.EditButton"
+        android:text="@string/plus_small_text" />
+
+    <Button
+        android:id="@+id/plus_medium"
+        style="@style/TimeGoalTheme.EditButton"
+        android:text="@string/plus_medium_text" />
+
+    <Button
+        android:id="@+id/plus_large"
+        style="@style/TimeGoalTheme.EditButton"
+        android:text="@string/plus_large_text" />
+
+</LinearLayout>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="Audio Settings"
+        android:key="pref_key_audio_settings">
+
+        <CheckBoxPreference
+            android:key="pref_silent_mode"
+            android:disableDependentsState="true"
+            android:title="Silent Mode"
+            android:summary="Silent Mode"
+            android:defaultValue="false"/>
+        <ListPreference
+            android:dependency="pref_silent_mode"
+            android:key="pref_audio_mode"
+            android:title="Notification Preference"
+            android:summary="%s"
+            android:entries="@array/audio_array"
+            android:entryValues="@array/audio_array_values"
+            android:defaultValue="@string/default_audio_value"
+            ></ListPreference>
+    </PreferenceCategory>
+
+
+
+</PreferenceScreen>

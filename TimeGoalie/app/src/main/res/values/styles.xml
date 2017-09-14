@@ -1,0 +1,58 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="TimeGoalTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+
+    </style>
+
+    <style name="TimeGoalTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
+    </style>
+
+    <style name="TimeGoalTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:textColor">@color/primaryTextColor</item>
+    </style>
+
+    <style name="TimeGoalTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:textColor">@color/primaryTextColor</item>
+
+    </style>
+
+    <style name="TimeGoalTheme.WeeklyCheckBox" parent="TimeGoalTheme">
+        <item name="android:layout_height">30dp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">8sp</item>
+
+    </style>
+
+
+    <style name="TimeGoalTheme.title" parent="TimeGoalTheme">
+        <item name="android:textSize">18sp</item>
+
+    </style>
+
+    <style name="TimeGoalTheme.Toast" >
+
+
+    </style>
+
+    <style name="TimeGoalTheme.ButtonStyle">
+        <item name="android:background">@drawable/rounded_button</item>
+    </style>
+
+    <style name="TimeGoalTheme.EditButton" parent="TimeGoalTheme.ButtonStyle">
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_margin">2dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+</resources>

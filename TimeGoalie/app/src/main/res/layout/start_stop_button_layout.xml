@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToggleButton xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:id="@+id/start_stop"
+    style="@style/TimeGoalTheme.ButtonStyle"
+    android:layout_marginRight="@dimen/right_margin"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/start_stop_button_height"
+    android:textOff="@string/stop"
+    android:textOn="@string/start" />
