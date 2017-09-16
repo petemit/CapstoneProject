@@ -4,7 +4,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import java.util.List;
 
@@ -18,6 +20,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
     private final List<DummyContent.DummyItem> mValues;
     private View.OnClickListener onClickListener;
+
 
     public GoalRecyclerViewAdapter(List<DummyContent.DummyItem> items, View.OnClickListener onClickListener) {
         mValues = items;
@@ -33,8 +36,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
     @Override
     public void onBindViewHolder(final GoalViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
+          holder.mItem = mValues.get(position);
+     //   holder.mIdView.setText(mValues.get(position).id);
         holder.mContentView.setText(mValues.get(position).content);
 
         holder.mView.setOnClickListener(onClickListener);
@@ -47,15 +50,30 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
     public class GoalViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
+        private ToggleButton pencil;
+        private LinearLayout editButtons;
+       // public final TextView mIdView;
         public final TextView mContentView;
         public DummyContent.DummyItem mItem;
 
         public GoalViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.id);
-            mContentView = (TextView) view.findViewById(R.id.content);
+            //mIdView = (TextView) view.findViewById(R.id.id);
+            mContentView = (TextView) view.findViewById(R.id.tv_goal_title);
+            pencil=(ToggleButton) view.findViewById(R.id.pencil_button);
+            editButtons=(LinearLayout) view.findViewById(R.id.edit_button_ll);
+            pencil.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (editButtons.getVisibility()!=View.VISIBLE) {
+                        editButtons.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        editButtons.setVisibility(View.GONE);
+                    }
+                }
+            });
         }
 
         @Override

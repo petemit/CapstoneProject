@@ -3,4 +3,10 @@
     <string name="title_goal_detail">Goal Detail</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
+    <string name="minus_large_text">-15m</string>
+    <string name="minus_medium_text">-10m</string>
+    <string name="minus_small_text">-5m</string>
+    <string name="plus_small_text">+5m</string>
+    <string name="plus_medium_text">+10m</string>
+    <string name="plus_large_text">+15m</string>
 </resources>
