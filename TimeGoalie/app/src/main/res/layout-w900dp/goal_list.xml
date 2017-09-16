@@ -27,7 +27,7 @@
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
         tools:context="us.mindbuilders.petemit.timegoalie.GoalListActivity"
-        tools:listitem="@layout/goal_list_content" />
+        tools:listitem="@layout/goal_list_content_less" />
 
     <FrameLayout
         android:id="@+id/goal_detail_container"

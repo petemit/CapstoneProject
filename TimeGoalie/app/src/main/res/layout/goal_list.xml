@@ -6,8 +6,8 @@
     android:name="us.mindbuilders.petemit.timegoalie.GoalListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
+    android:layout_marginLeft="@dimen/left_margin"
+    android:layout_marginRight="@dimen/right_margin"
     app:layoutManager="LinearLayoutManager"
     tools:context="us.mindbuilders.petemit.timegoalie.GoalListActivity"
-    tools:listitem="@layout/goal_list_content" />
+    tools:listitem="@layout/goal_list_content_less" />

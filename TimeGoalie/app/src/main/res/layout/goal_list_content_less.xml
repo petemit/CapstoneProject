@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:textAppearance="?attr/textAppearanceListItem" />
+
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:textAppearance="?attr/textAppearanceListItem" />
+
+    <ToggleButton
+        android:id="@+id/start_stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:textOff="@string/stop"
+        android:textOn="@string/start"
+        app:layout_constraintBottom_toTopOf="@+id/progress_bar_frame"
+        app:layout_constraintRight_toRightOf="@+id/progress_bar_frame"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ToggleButton
+        android:id="@+id/edit_button"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        app:layout_constraintLeft_toRightOf="@+id/start_stop"
+        app:layout_constraintTop_toTopOf="@+id/start_stop"
+        android:background="@drawable/ic_edit"
+        android:textOn=""
+        android:textOff=""
+        app:layout_constraintRight_toRightOf="@+id/goal_image"
+        app:layout_constraintBottom_toBottomOf="@+id/start_stop"
+       />
+
+    <FrameLayout
+        android:id="@+id/progress_bar_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="@dimen/left_margin"
+        android:layout_marginRight="@dimen/right_margin"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/start_stop">
+
+        <ProgressBar
+            android:id="@+id/less_greenProgressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="300dp"
+            android:layout_height="37dp"
+            android:mirrorForRtl="true"
+
+            app:layout_constraintLeft_toLeftOf="parent"
+
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/less_ballProgressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="300dp"
+            android:layout_height="37dp"
+
+
+            android:background="@android:color/transparent"
+            android:mirrorForRtl="true"
+            android:progressDrawable="@drawable/anim_soccerball"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/goal_image"
+        android:layout_width="50dp"
+        android:layout_height="30dp"
+        android:layout_marginRight="@dimen/right_margin"
+        android:background="@drawable/soccergoal_right"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/progress_bar_frame"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/progress_bar_frame"
+ />
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/progress_bar_frame"
+        android:id="@+id/feedback_frame"
+        >
+    <TextView
+        android:id="@+id/compliment_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Goal saved!  Awesome work!"
+        />
+    </FrameLayout>
+
+</android.support.constraint.ConstraintLayout>

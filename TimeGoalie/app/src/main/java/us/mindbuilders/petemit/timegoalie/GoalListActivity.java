@@ -27,7 +27,7 @@ import java.util.List;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class GoalListActivity extends AppCompatActivity {
+public class GoalListActivity extends AppCompatActivity implements View.OnClickListener {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -48,14 +48,15 @@ public class GoalListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Replace with add goal activity", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
 
-        View recyclerView = findViewById(R.id.goal_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.goal_list);
+        if (recyclerView != null) {
+            recyclerView.setAdapter(new GoalRecyclerViewAdapter(DummyContent.ITEMS,this));
+        }
 
         if (findViewById(R.id.goal_detail_container) != null) {
             // The detail container view will be present only in the
@@ -66,76 +67,29 @@ public class GoalListActivity extends AppCompatActivity {
         }
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
-    }
+    /**
+     * The Goal List Activity will handle onClicks
+     * @param v
+     */
+    @Override
+    public void onClick(View v) {
 
-    public class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
-
-        private final List<DummyContent.DummyItem> mValues;
-
-        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
-            mValues = items;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.goal_list_content, parent, false);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
-
-            holder.mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mTwoPane) {
-                        Bundle arguments = new Bundle();
-                        arguments.putString(GoalReportFragment.ARG_ITEM_ID, holder.mItem.id);
-                        GoalReportFragment fragment = new GoalReportFragment();
-                        fragment.setArguments(arguments);
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.goal_detail_container, fragment)
-                                .commit();
-                    } else {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, GoalReportActivity.class);
-                        intent.putExtra(GoalReportFragment.ARG_ITEM_ID, holder.mItem.id);
-
-                        context.startActivity(intent);
-                    }
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return mValues.size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public final View mView;
-            public final TextView mIdView;
-            public final TextView mContentView;
-            public DummyContent.DummyItem mItem;
-
-            public ViewHolder(View view) {
-                super(view);
-                mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
-                mContentView = (TextView) view.findViewById(R.id.content);
-            }
-
-            @Override
-            public String toString() {
-                return super.toString() + " '" + mContentView.getText() + "'";
-            }
-        }
+        // TODO: 9/15/2017 implement logic to support editing pencil
+//        if (mTwoPane) {
+//            Bundle arguments = new Bundle();
+//       //     arguments.putString(GoalReportFragment.ARG_ITEM_ID, holder.mItem.id);
+//            GoalReportFragment fragment = new GoalReportFragment();
+//            fragment.setArguments(arguments);
+//            getSupportFragmentManager().beginTransaction()
+//                    .replace(R.id.goal_detail_container, fragment)
+//                    .commit();
+//        } else {
+//            Context context = v.getContext();
+//            Intent intent = new Intent(context, GoalReportActivity.class);
+//       //     intent.putExtra(GoalReportFragment.ARG_ITEM_ID, holder.mItem.id);
+//
+//            context.startActivity(intent);
+//        }
+        
     }
 }
