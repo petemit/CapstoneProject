@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.AppCompatSeekBar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/goalProgressBar"
+    style="?android:attr/progressBarStyleHorizontal"
+    android:layout_width="@dimen/progress_bar_width"
+    android:layout_height="40dp"
+    android:layout_marginStart="@dimen/left_margin"
+    android:mirrorForRtl="true"
+    android:progress="40"
+    android:thumb="@drawable/anim_soccerball_small"/>

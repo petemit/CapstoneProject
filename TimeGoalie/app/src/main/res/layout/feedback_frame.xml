@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:id="@+id/feedback_frame"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:visibility="gone"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/compliment_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="Goal saved!  Awesome work!" />
+
+    <TextView
+        android:id="@+id/encouraging_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="It slipped away this time!" />
+</FrameLayout>

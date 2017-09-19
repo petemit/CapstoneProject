@@ -1,6 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-</LinearLayout>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/left_margin"
+    android:layout_marginRight="@dimen/right_margin"
+    android:layout_marginTop="@dimen/top_margin">
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            layout="@layout/goal_title_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/goalProgressBar"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <include
+            layout="@layout/start_stop_button_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/start_stop_button_height"
+            android:layout_marginRight="@dimen/right_margin"
+            app:layout_constraintBottom_toTopOf="@+id/goalProgressBar"
+            app:layout_constraintRight_toLeftOf="@+id/pencil_button"
+            app:layout_constraintTop_toBottomOf="parent" />
+
+        <include
+            layout="@layout/pencil_button_layout"
+            android:layout_marginRight="@dimen/right_margin"
+            android:layout_width="@dimen/pencil_size"
+            android:layout_height="@dimen/pencil_size"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/start_stop" />
+
+        <include
+            layout="@layout/goal_progress_bar_layout"
+            android:layout_width="@dimen/progress_bar_width"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/feedback_frame"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/goal_image"
+            app:layout_constraintTop_toBottomOf="@+id/start_stop" />
+
+
+
+        <ImageView
+            android:id="@+id/goal_image"
+            android:layout_width="@dimen/goal_image_width"
+            android:layout_height="@dimen/goal_image_height"
+            android:background="@drawable/soccergoal_left"
+            android:paddingLeft="@dimen/left_margin"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/goalProgressBar"
+            app:layout_constraintRight_toLeftOf="@+id/goalProgressBar"
+            app:layout_constraintTop_toTopOf="@+id/goalProgressBar" />
+
+        <ImageView
+            android:id="@+id/midfield_image"
+            android:layout_width="@dimen/midfield_image_size"
+            android:layout_height="@dimen/midfield_image_size"
+            android:layout_marginTop="@dimen/midfield_top_margin"
+            android:layout_marginRight="@dimen/right_margin"
+            android:background="@drawable/midfield"
+            app:layout_constraintBottom_toBottomOf="@+id/goalProgressBar"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/goalProgressBar"
+            app:layout_constraintTop_toTopOf="@+id/goalProgressBar" />
+
+
+        <include
+            layout="@layout/edit_buttons_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/goalProgressBar"></include>
+
+        <include
+            layout="@layout/feedback_frame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="@+id/goalProgressBar"
+            app:layout_constraintRight_toRightOf="@+id/goalProgressBar"
+            app:layout_constraintTop_toBottomOf="@+id/goalProgressBar"></include>
+
+
+    </android.support.constraint.ConstraintLayout>
+</android.support.v7.widget.CardView>

@@ -28,6 +28,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="us.mindbuilders.petemit.timegoalie.GoalListActivity" />
         </activity>
+        <activity android:name=".PreferenceActivity"></activity>
     </application>
 
 </manifest>
