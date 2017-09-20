@@ -6,6 +6,7 @@
 
         <CheckBoxPreference
             android:key="pref_silent_mode"
+            android:disableDependentsState="true"
             android:title="Silent Mode"
             android:summary="Silent Mode"
             android:defaultValue="false"/>
@@ -13,10 +14,13 @@
             android:dependency="pref_silent_mode"
             android:key="pref_audio_mode"
             android:title="Notification Preference"
+            android:summary="%s"
             android:entries="@array/audio_array"
             android:entryValues="@array/audio_array_values"
             android:defaultValue="@string/default_audio_value"
             ></ListPreference>
     </PreferenceCategory>
+
+
 
 </PreferenceScreen>

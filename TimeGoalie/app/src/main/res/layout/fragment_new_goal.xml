@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add a New Goal"
+        android:layout_marginStart="@dimen/left_margin"
+        android:layout_marginTop="@dimen/top_margin"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+    <EditText
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:hint="Type a New Goal Name"
+        android:layout_marginTop="@dimen/top_margin"
+        android:layout_marginStart="@dimen/left_margin"/>
+    <Spinner
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/top_margin"
+        android:spinnerMode="dialog"
+        android:prompt="@string/settings"
+        android:id="@+id/new_goal_spinner"
+        android:layout_marginStart="@dimen/left_margin"></Spinner>
+
+</LinearLayout>

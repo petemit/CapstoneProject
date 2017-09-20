@@ -5,9 +5,15 @@
         <item>Sound Only</item>
         <item>Vibrate and Sound</item>
     </string-array>
-    <integer-array name="audio_array_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </integer-array>
+    <string-array name="audio_array_values">
+        <item>vibrate</item>
+        <item>sound</item>
+        <item>soundandvibrate</item>
+    </string-array>
+
+    <string-array name="goal_type_array">
+        <item>Time Goal you want to Encourage</item>
+        <item>Time Goal you want to Limit</item>
+        <item>Yes/No Goal</item>
+    </string-array>
 </resources>

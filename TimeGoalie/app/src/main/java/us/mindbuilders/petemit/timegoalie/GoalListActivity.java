@@ -9,7 +9,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.text.Layout;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -20,12 +23,7 @@ import us.mindbuilders.petemit.timegoalie.dummy.DummyContent;
 import java.util.List;
 
 /**
- * An activity representing a list of Goals. This activity
- * has different presentations for handset and tablet-size devices. On
- * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link GoalReportActivity} representing
- * item details. On tablets, the activity presents the list of items and
- * item details side-by-side using two vertical panes.
+ * List of Goals.  In multi-pane, shows reports as well {@link GoalReportActivity}
  */
 public class GoalListActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -48,8 +46,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with add goal activity", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                startActivity(new Intent(getBaseContext(),NewGoalActivity.class));
             }
         });
 
@@ -65,6 +62,23 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
+
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId()==R.id.settings_key){
+            startActivity(new Intent(this,PreferenceActivity.class));
+            return true;
+        }
+        return true;
     }
 
     /**
