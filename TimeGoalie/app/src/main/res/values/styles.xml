@@ -26,6 +26,15 @@
 
     </style>
 
+    <style name="TimeGoalTheme.WeeklyCheckBox" parent="TimeGoalTheme">
+        <item name="android:layout_height">30dp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">8sp</item>
+
+    </style>
+
+
     <style name="TimeGoalTheme.title" parent="TimeGoalTheme">
         <item name="android:textSize">18sp</item>
 

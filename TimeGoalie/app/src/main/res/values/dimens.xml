@@ -15,4 +15,6 @@
     <dimen name="midfield_top_margin">4dp</dimen>
     <dimen name="midfield_image_size">40dp</dimen>
     <dimen name="start_stop_button_height">30dp</dimen>
+    <dimen name="left_margin_edittext">11dp</dimen>
+    <dimen name="weekly_checkbox_label_margin">5dp</dimen>
 </resources>
