@@ -92,11 +92,58 @@ public class TimeGoalieContentProvider extends ContentProvider {
     public Cursor query(@NonNull Uri uri, @Nullable String[] strings, @Nullable String s, @Nullable String[] strings1, @Nullable String s1) {
         Cursor cursor = null;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-
+        String selection = "";
+        String[] selectionArgs = null;
         switch (uriMatcher.match(uri)) {
+            //goals
             case GOAL_BY_ID:
-                String selection = TimeGoalieContract.Goals._ID.concat(PARAMETER);
-                String[] selectionArgs = {String.valueOf(ContentUris.parseId(uri))};
+                selection = TimeGoalieContract.Goals._ID.concat(PARAMETER);
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                cursor = db.query(TimeGoalieContract.Goals.GOALS_TABLE_NAME,
+                        null,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        null);
+                break;
+            case GOALS_BY_TODAYS_DATE:
+                selection = TimeGoalieContract.Goals.GOALS_COLUMN_ISTODAYONLY.concat(PARAMETER);
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                cursor = db.query(TimeGoalieContract.Goals.GOALS_TABLE_NAME,
+                        null,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        null);
+                break;
+            //days
+            case DAYS:
+                cursor = db.query(TimeGoalieContract.Days.DAYS_TABLE_NAME,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null);
+                break;
+            case DAY_BY_ID:
+                selection = TimeGoalieContract.Days._ID.concat(PARAMETER);
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                cursor = db.query(TimeGoalieContract.Days.DAYS_TABLE_NAME,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null);
+                break;
+
+            //goaldays
+            case GOALS_BY_DAY_ID:
+                selection = TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_DAY_ID.concat(PARAMETER);
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 cursor = db.query(TimeGoalieContract.Goals.GOALS_TABLE_NAME,
                         null,
                         selection,
