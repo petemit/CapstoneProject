@@ -20,6 +20,7 @@ public class TimeGoalieContract {
         public static final String GOALS_COLUMN_NAME = "name";
         public static final String GOALS_COLUMN_TIMEGOALHOURS = "time_goal_hours";
         public static final String GOALS_COLUMN_TIMEGOALMINUTES = "time_goal_minutes";
+        public static final String GOALS_COLUMN_GOALTYPEID = "goaltype_id";
         public static final String GOALS_COLUMN_ISDAILY = "is_daily";
         public static final String GOALS_COLUMN_ISWEEKLY = "is_weekly";
         public static final String GOALS_COLUMN_ISTODAYONLY = "is_today_only";
@@ -43,14 +44,6 @@ public class TimeGoalieContract {
         public static final String DAYS_COLUMN_NAME = "name";
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(DAYS_TABLE_NAME).build();
-    }
-
-    public static class GoalsGoalTypes implements BaseColumns {
-        public static final String GOALS_GOALTYPES_TABLE_NAME = "goals_goaltypes";
-        public static final String GOALS_GOALTYPES_COLUMN_GOAL_ID = "goal_id";
-        public static final String GOALS_GOALTYPES_COLUMN_GOALTYPE_ID = "goaltype_id";
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
-                .appendPath(GOALS_GOALTYPES_TABLE_NAME).build();
     }
 
     public static class GoalsDays implements BaseColumns {
@@ -85,7 +78,7 @@ public class TimeGoalieContract {
     }
 
     // //get a day by id
-    public static Uri buildGetaDaybyIdUri(long dayid){
+    public static Uri buildGetDaybyIdUri(long dayid){
         return ContentUris.withAppendedId(Days.CONTENT_URI,dayid);
     }
 
@@ -94,6 +87,8 @@ public class TimeGoalieContract {
             //get all goals with a is_today_only with the date of today
             //get a count of dates accomplished for a goal for a week
             //get a count of dates accomplished for a goal for a month
+            //get a count of dates accomplished for a goal for a week for a specific goal
+            //get a count of dates accomplished for a goal for a month for a specific goal
             //Find a date accomplished associated with a specific goal for a specific day
 
 }
