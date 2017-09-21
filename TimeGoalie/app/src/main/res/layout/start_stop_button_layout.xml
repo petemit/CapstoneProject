@@ -6,5 +6,5 @@
     android:layout_marginRight="@dimen/right_margin"
     android:layout_width="wrap_content"
     android:layout_height="@dimen/start_stop_button_height"
-    android:textOff="@string/stop"
-    android:textOn="@string/start" />
+    android:textOff="@string/start"
+    android:textOn="@string/stop" />

@@ -50,7 +50,8 @@
     </style>
 
     <style name="TimeGoalTheme.EditButton" parent="TimeGoalTheme.ButtonStyle">
-        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:layout_margin">2dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">10sp</item>
