@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
@@ -19,6 +20,8 @@ import android.widget.SpinnerAdapter;
 public class NewGoalFragment extends Fragment {
     private Spinner newGoalSpinner;
     private EditText newGoalEditText;
+    private NumberPicker npHour;
+    private NumberPicker npMinute;
 
     public NewGoalFragment(){
 
@@ -43,6 +46,23 @@ public class NewGoalFragment extends Fragment {
                 R.array.goal_type_array, android.R.layout.simple_spinner_item);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         newGoalSpinner.setAdapter(spinnerAdapter);
+
+        //set up the numberpicker
+
+        npHour=view.findViewById(R.id.np_hour);
+        npMinute=view.findViewById(R.id.np_minute);
+
+//        npHour.setDisplayedValues(getResources().getStringArray(R.array.hour_array));
+//        npMinute.setDisplayedValues(getResources().getStringArray(R.array.minute_array));
+
+        npHour.setMinValue(0);
+        npHour.setMaxValue(24);
+        npMinute.setMinValue(0);
+        npMinute.setMaxValue(60);
+
+
+
+
         return view;
     }
 }

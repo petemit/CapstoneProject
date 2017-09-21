@@ -1,271 +1,348 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add a New Goal"
-        android:layout_marginStart="@dimen/left_margin"
-        android:layout_marginTop="@dimen/top_margin"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
-    <EditText
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:hint="Type a New Goal Name"
-        android:layout_marginTop="@dimen/top_margin"
-        android:layout_marginStart="@dimen/left_margin_edittext"/>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <LinearLayout
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/goal_type_label"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginTop="@dimen/top_margin"
-            android:layout_weight="1"
-
-            android:layout_marginStart="@dimen/left_margin"
-            android:text="Goal Type:" />
-
-        <Spinner
-            android:id="@+id/new_goal_spinner"
-            android:layout_width="0dp"
-            android:layout_weight="2"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/left_margin"
             android:layout_marginTop="@dimen/top_margin"
-            android:prompt="@string/settings"
-            android:spinnerMode="dialog"></Spinner>
+            android:text="@string/add_a_new_goal"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    </LinearLayout>
+        <EditText
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/left_margin_edittext"
+            android:layout_marginTop="@dimen/top_margin"
+            android:hint="@string/type_a_new_goal_name" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/primaryTextColor"></View>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/reoccurance_label"
-        android:layout_marginStart="@dimen/left_margin"
-        android:layout_marginTop="@dimen/top_margin"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Repeat Goal" />
+            <TextView
+                android:id="@+id/goal_type_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/left_margin"
+                android:layout_marginTop="@dimen/top_margin"
+                android:layout_weight="1"
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/left_margin"
-        android:layout_marginTop="@dimen/top_margin"
-        android:orientation="horizontal">
+                android:text="@string/goal_type"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <Spinner
+                android:id="@+id/new_goal_spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/left_margin"
+                android:layout_marginTop="@dimen/top_margin"
+                android:layout_weight="2"
+                android:prompt="@string/settings"
+                android:spinnerMode="dialog"></Spinner>
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/daily_checkbox_label"
-            android:layout_width="0dp"
+            android:id="@+id/reoccurance_label"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/daily" />
+            android:layout_marginStart="@dimen/left_margin"
+            android:layout_marginTop="@dimen/top_margin"
+            android:text="@string/repeat_goal"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <CheckBox
-            android:id="@+id/daily_checkbox"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-          />
-        <android.support.v4.widget.Space
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="5"/>
-    </LinearLayout>
+            android:layout_marginStart="@dimen/left_margin"
+            android:layout_marginTop="@dimen/top_margin"
+            android:orientation="horizontal">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/left_margin"
-        android:layout_marginTop="@dimen/top_margin"
-        android:orientation="horizontal">
+            <TextView
+                android:id="@+id/daily_checkbox_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/daily" />
+
+            <CheckBox
+                android:id="@+id/daily_checkbox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="5" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/left_margin"
+            android:layout_marginTop="@dimen/top_margin"
+            android:orientation="horizontal">
 
 
+            <TextView
+                android:id="@+id/weekly_checkbox_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/weekly" />
+
+            <CheckBox
+                android:id="@+id/weekly_checkbox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="5" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/weekly_checkbox_list_ll"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginEnd="@dimen/right_margin"
+            android:layout_marginStart="@dimen/left_margin"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/top_margin">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/weekly_checkbox_label_margin"
+
+                    android:text="@string/mon" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_mon"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/weekly_checkbox_label_margin"
+                    android:text="@string/tue" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_tue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/weekly_checkbox_label_margin"
+                    android:text="@string/wed" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_wed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/weekly_checkbox_label_margin"
+                    android:text="@string/thu" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_thu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/weekly_checkbox_label_margin"
+                    android:text="@string/fri" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_fri"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/weekly_checkbox_label_margin"
+                    android:text="@string/sat" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_sat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/weekly_checkbox_label_margin"
+                    android:text="@string/sun" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_sun"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/primaryTextColor"></View>
         <TextView
-            android:id="@+id/weekly_checkbox_label"
-            android:layout_width="0dp"
+            android:id="@+id/time_goal_label"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/weekly" />
+            android:layout_marginStart="@dimen/left_margin"
+            android:layout_marginTop="@dimen/top_margin"
 
-        <CheckBox
-            android:id="@+id/weekly_checkbox"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            />
-        <android.support.v4.widget.Space
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="5"/>
-    </LinearLayout>
-
-    <?xml version="1.0" encoding="utf-8"?>
-    <LinearLayout android:id="@+id/weekly_checkbox_list_ll"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_marginStart="@dimen/left_margin"
-        android:layout_marginEnd="@dimen/right_margin"
-        android:orientation="horizontal"
-        android:paddingTop="@dimen/top_margin"
-      >
+            android:text="Time Goal"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_marginEnd="@dimen/right_margin"
+            android:layout_marginStart="@dimen/left_margin"
+            android:layout_marginTop="@dimen/top_margin"
+            android:orientation="horizontal">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/weekly_checkbox_label_margin"
+                android:orientation="vertical">
 
-                android:text="Mon" />
-            <CheckBox
-                android:id="@+id/checkbox_mon"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/hours" />
 
-                android:layout_height="wrap_content"
+                <NumberPicker
+                    android:id="@+id/np_hour"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/number_picker_height"></NumberPicker>
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/minutes" />
 
+                <NumberPicker
+                    android:id="@+id/np_minute"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/number_picker_height" />
+            </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <Button
+            style="@style/TimeGoalTheme.ButtonStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/weekly_checkbox_label_margin"
-                android:text="Tue" />
-            <CheckBox
-                android:id="@+id/checkbox_tue"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-
-                />
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/weekly_checkbox_label_margin"
-                android:text="Wed" />
-            <CheckBox
-                android:id="@+id/checkbox_wed"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-
-                />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/weekly_checkbox_label_margin"
-                android:text="Thu" />
-            <CheckBox
-                android:id="@+id/checkbox_thu"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-
-                />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/weekly_checkbox_label_margin"
-                android:text="Fri" />
-            <CheckBox
-                android:id="@+id/checkbox_fri"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-
-                />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/weekly_checkbox_label_margin"
-                android:text="Sat" />
-            <CheckBox
-                android:id="@+id/checkbox_sat"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-
-                />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/weekly_checkbox_label_margin"
-                android:text="Sun" />
-            <CheckBox
-                android:id="@+id/checkbox_sun"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-
-                />
-
-        </LinearLayout>
-
-
-
+            android:layout_marginStart="@dimen/left_margin"
+            android:layout_marginEnd="@dimen/right_margin"
+            android:layout_marginTop="@dimen/top_margin"
+            android:layout_marginBottom="@dimen/top_margin"
+            android:text="@string/create" />
     </LinearLayout>
 
 
-    <TimePicker
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        ></TimePicker>
-
-
-</LinearLayout>
+</ScrollView>
