@@ -20,7 +20,7 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         //create goals table
-        final String createGoalsSQL = "CREATE TABLE " +
+        final String createGoalsSQL = "CREATE TABLE IF NOT EXISTS " +
                 TimeGoalieContract.Goals.GOALS_TABLE_NAME +
                 "(" + TimeGoalieContract.Goals._ID +
                 " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -33,6 +33,15 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 TimeGoalieContract.Goals.GOALS_COLUMN_ISTODAYONLY + " TIMESTAMP, " +
                 TimeGoalieContract.Goals.GOALS_COLUMN_ISDISABLED + " BOOLEAN);";
         db.execSQL(createGoalsSQL);
+
+        //create goalentries table
+        final String createGoalEntriesTable = "CREATE TABLE " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME +
+                "(" + TimeGoalieContract.GoalEntries._ID +
+                " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME + " TIMESTAMP NOT NULL, " +
+        TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED + " INTEGER);";
+        db.execSQL(createGoalEntriesTable);
 
         //create goaltypes table
         final String createGoalTypesSQL = "CREATE TABLE " +
@@ -47,7 +56,8 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 TimeGoalieContract.Days.DAYS_TABLE_NAME +
                 "(" + TimeGoalieContract.Days._ID +
                 " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                TimeGoalieContract.Days.DAYS_COLUMN_NAME + " TEXT NOT NULL);";
+                TimeGoalieContract.Days.DAYS_COLUMN_NAME + " TEXT NOT NULL, " +
+                TimeGoalieContract.Days.DAYS_COLUMN_SEQUENCE + " INTEGER NOT NULL);";
         db.execSQL(createDaysSQL);
 
 
@@ -71,7 +81,7 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                         .GOALS_DATES_ACCOMPLISHED_COLUMN_GOAL_ID + " INTEGER NOT NULL, " +
                 TimeGoalieContract.GoalsDatesAccomplished
                         .GOALS_DATES_ACCOMPLISHED_COLUMN_DATE + " TIMESTAMP NOT NULL);";
-        db.execSQL(createGoalsDaysSQL);
+        db.execSQL(createGoalsDatesAccomplishedSQL);
 
     }
 

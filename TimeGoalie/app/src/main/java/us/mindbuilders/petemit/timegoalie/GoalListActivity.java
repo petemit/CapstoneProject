@@ -2,8 +2,12 @@ package us.mindbuilders.petemit.timegoalie;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,18 +22,26 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.dummy.DummyContent;
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
 import java.util.List;
 
 /**
  * List of Goals.  In multi-pane, shows reports as well {@link GoalReportActivity}
  */
-public class GoalListActivity extends AppCompatActivity implements View.OnClickListener {
+public class GoalListActivity extends AppCompatActivity implements View.OnClickListener,
+        LoaderManager.LoaderCallbacks<Cursor>{
+    private static final int GOAL_LOADER_ID=4;
+    private GoalRecyclerViewAdapter rvAdapter;
 
     /**
+     *
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
+     *
+     * Initiates a Loader
      */
     private boolean mTwoPane;
 
@@ -37,9 +49,10 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_goal_list);
-
+        getSupportLoaderManager().initLoader(GOAL_LOADER_ID, null, this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        rvAdapter=new GoalRecyclerViewAdapter(this);
         toolbar.setTitle(getTitle());
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -105,5 +118,33 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 //            context.startActivity(intent);
 //        }
         
+    }
+
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        switch (id){
+            case GOAL_LOADER_ID:
+                    return new CursorLoader(this,
+                            TimeGoalieContract.buildGetAllGoalsForASpecificDayQueryUri(
+                                    TimeGoalieDateUtils.getDayIdFromToday()),
+                            null,
+                            null,
+                            null,
+                            null
+                            );
+            default:
+                throw new RuntimeException("Loader not Implemented: " + id);
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        rvAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        rvAdapter.swapCursor(null);
     }
 }

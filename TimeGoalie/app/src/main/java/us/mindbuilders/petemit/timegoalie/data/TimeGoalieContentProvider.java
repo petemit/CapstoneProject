@@ -5,6 +5,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -18,6 +19,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
     private TimeGoalieDbHelper dbHelper;
     private static final UriMatcher uriMatcher = makeUriMatcher();
 
+    private static final int GOAL = 100;
     private static final int GOAL_BY_ID = 101;
     private static final int GOALS_BY_TODAYS_DATE = 102;
 
@@ -26,7 +28,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
 
     private static final int DAYS = 300;
     private static final int DAY_BY_ID = 301;
-    private static final int DAY_BY_DATE = 302;
+    private static final int DAY_BY_DATE_SEQUENCE = 302;
 
     private static final int GOALS_ACCOMPLISHED_BY_WEEK = 401;
     private static final int GOALS_ACCOMPLISHED_BY_MONTH = 402;
@@ -42,6 +44,8 @@ public class TimeGoalieContentProvider extends ContentProvider {
         UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         //goals
         matcher.addURI(TimeGoalieContract.AUTHORITY,
+                TimeGoalieContract.Goals.GOALS_TABLE_NAME, GOAL);
+        matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.Goals.GOALS_TABLE_NAME + "/#", GOAL_BY_ID);
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.Goals.GOALS_TABLE_NAME + "/date/#", GOALS_BY_TODAYS_DATE);
@@ -56,23 +60,23 @@ public class TimeGoalieContentProvider extends ContentProvider {
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.Days.DAYS_TABLE_NAME + "/#", DAY_BY_ID);
         matcher.addURI(TimeGoalieContract.AUTHORITY,
-                TimeGoalieContract.Days.DAYS_TABLE_NAME + "/date/#", DAY_BY_DATE);
+                TimeGoalieContract.Days.DAYS_TABLE_NAME + "/date/#", DAY_BY_DATE_SEQUENCE);
         //goaldatesaccomplished
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.GoalsDatesAccomplished.GOALS_DATES_ACCOMPLISHED_TABLE_NAME +
-                        "/week/#", GOALS_ACCOMPLISHED_BY_WEEK);
+                        "/weeks", GOALS_ACCOMPLISHED_BY_WEEK);
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.GoalsDatesAccomplished.GOALS_DATES_ACCOMPLISHED_TABLE_NAME +
-                        "/month/#", GOALS_ACCOMPLISHED_BY_MONTH);
+                        "/months", GOALS_ACCOMPLISHED_BY_MONTH);
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.GoalsDatesAccomplished.GOALS_DATES_ACCOMPLISHED_TABLE_NAME +
-                        "/goal/#/week/#", GOALS_ACCOMPLISHED_BY_WEEK_BY_GOAL_ID);
+                        "/weeks/goal/#", GOALS_ACCOMPLISHED_BY_WEEK_BY_GOAL_ID);
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.GoalsDatesAccomplished.GOALS_DATES_ACCOMPLISHED_TABLE_NAME +
-                        "/goal/#/month/#", GOALS_ACCOMPLISHED_BY_MONTH_BY_GOAL_ID);
+                        "/months/goal/#", GOALS_ACCOMPLISHED_BY_MONTH_BY_GOAL_ID);
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.GoalsDatesAccomplished.GOALS_DATES_ACCOMPLISHED_TABLE_NAME +
-                        "/goal/#/date/#", GOALS_ACCOMPLISHED_BY_GOAL_ID_BY_DATE);
+                        "/goal/*", GOALS_ACCOMPLISHED_BY_GOAL_ID_BY_DATE);
         //goaldays
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME + "/#", GOALS_BY_DAY_ID);
@@ -95,6 +99,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
         String selection = "";
         String[] selectionArgs = null;
         switch (uriMatcher.match(uri)) {
+
             //goals
             case GOAL_BY_ID:
                 selection = TimeGoalieContract.Goals._ID.concat(PARAMETER);
@@ -118,6 +123,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         null,
                         null);
                 break;
+
             //days
             case DAYS:
                 cursor = db.query(TimeGoalieContract.Days.DAYS_TABLE_NAME,
@@ -133,18 +139,21 @@ public class TimeGoalieContentProvider extends ContentProvider {
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 cursor = db.query(TimeGoalieContract.Days.DAYS_TABLE_NAME,
                         null,
-                        null,
-                        null,
+                        selection,
+                        selectionArgs,
                         null,
                         null,
                         null);
                 break;
+            case DAY_BY_DATE_SEQUENCE:
+                selection = TimeGoalieContract.Days.DAYS_COLUMN_SEQUENCE.concat(PARAMETER);
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
             //goaldays
             case GOALS_BY_DAY_ID:
                 selection = TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_DAY_ID.concat(PARAMETER);
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                cursor = db.query(TimeGoalieContract.Goals.GOALS_TABLE_NAME,
+                cursor = db.query(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME,
                         null,
                         selection,
                         selectionArgs,
@@ -154,7 +163,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
                 break;
         }
 
-        return null;
+        return cursor;
     }
 
     @Nullable
@@ -166,12 +175,51 @@ public class TimeGoalieContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
-        return null;
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        switch (uriMatcher.match(uri)) {
+            case GOAL:
+                long _id = db.insert(TimeGoalieContract.Goals.GOALS_TABLE_NAME,
+                        null,
+                        contentValues);
+                if (_id > 0){
+                    return TimeGoalieContract.buildGetaGoalByIdUri(_id);
+                }
+                else {
+                    throw new SQLException("Insert failed!");
+                }
+                default:
+                    throw new UnsupportedOperationException("That insert query didn't work, dude");
+        }
     }
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        switch (uriMatcher.match(uri)) {
+            case GOAL_BY_ID:
+                String[] _id={String.valueOf(ContentUris.parseId(uri))};
+                if (_id.length==0){
+                    return 0;
+                }
+
+                String mSelection= TimeGoalieContract.Goals._ID+"=?";
+
+                int rowsdeleted = db.delete(TimeGoalieContract.Goals.GOALS_TABLE_NAME,
+                        mSelection,
+                        _id);
+                if (_id.length >0){
+
+                    return rowsdeleted;
+
+                }
+                else{
+                    throw new SQLException("Delete failed!");
+                }
+            default:
+                throw new UnsupportedOperationException("that delete query is not supported, man.");
+        }
+
     }
 
     @Override

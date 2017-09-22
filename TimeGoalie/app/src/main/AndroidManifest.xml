@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="us.mindbuilders.petemit.timegoalie">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -20,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".GoalDetailActivity"
+            android:name=".GoalReportActivity"
             android:label="@string/title_goal_detail"
             android:parentActivityName=".GoalListActivity"
             android:theme="@style/TimeGoalTheme.NoActionBar">
@@ -30,6 +33,12 @@
         </activity>
         <activity android:name=".PreferenceActivity" />
         <activity android:name=".NewGoalActivity"></activity>
+
+        <provider
+            android:authorities="us.mindbuilders.petemit.timegoalie"
+            android:name="us.mindbuilders.petemit.timegoalie.data.TimeGoalieContentProvider"
+            android:exported="false"/>
+
     </application>
 
 </manifest>

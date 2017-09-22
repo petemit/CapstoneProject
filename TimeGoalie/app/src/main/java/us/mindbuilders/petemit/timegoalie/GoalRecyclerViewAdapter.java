@@ -1,5 +1,6 @@
 package us.mindbuilders.petemit.timegoalie;
 
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,11 +20,16 @@ import us.mindbuilders.petemit.timegoalie.dummy.DummyContent;
 public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerViewAdapter.GoalViewHolder> {
 
     private final List<DummyContent.DummyItem> mValues;
+    private Cursor cursor;
     private View.OnClickListener onClickListener;
 
 
     public GoalRecyclerViewAdapter(List<DummyContent.DummyItem> items, View.OnClickListener onClickListener) {
         mValues = items;
+        this.onClickListener = onClickListener;
+    }
+    public GoalRecyclerViewAdapter(View.OnClickListener onClickListener) {
+        mValues=null;
         this.onClickListener = onClickListener;
     }
 
@@ -45,6 +51,11 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                 break;
         }
         return new GoalViewHolder(view);
+    }
+
+    public void swapCursor(Cursor cursor){
+        this.cursor=cursor;
+        notifyDataSetChanged();
     }
 
     @Override
