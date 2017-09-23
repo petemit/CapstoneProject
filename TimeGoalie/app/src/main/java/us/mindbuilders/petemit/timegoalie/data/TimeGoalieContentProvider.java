@@ -8,8 +8,11 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 
 /**
  * ContentProvider for TimeGoalieDb
@@ -149,7 +152,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
                 selection = TimeGoalieContract.Days.DAYS_COLUMN_SEQUENCE.concat(PARAMETER);
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
-            //goaldays
+                //goaldays
             case GOALS_BY_DAY_ID:
                 selection = TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_DAY_ID.concat(PARAMETER);
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
@@ -181,14 +184,13 @@ public class TimeGoalieContentProvider extends ContentProvider {
                 long _id = db.insert(TimeGoalieContract.Goals.GOALS_TABLE_NAME,
                         null,
                         contentValues);
-                if (_id > 0){
+                if (_id > 0) {
                     return TimeGoalieContract.buildGetaGoalByIdUri(_id);
-                }
-                else {
+                } else {
                     throw new SQLException("Insert failed!");
                 }
-                default:
-                    throw new UnsupportedOperationException("That insert query didn't work, dude");
+            default:
+                throw new UnsupportedOperationException("That insert query didn't work, dude");
         }
     }
 
@@ -198,22 +200,21 @@ public class TimeGoalieContentProvider extends ContentProvider {
 
         switch (uriMatcher.match(uri)) {
             case GOAL_BY_ID:
-                String[] _id={String.valueOf(ContentUris.parseId(uri))};
-                if (_id.length==0){
+                String[] _id = {String.valueOf(ContentUris.parseId(uri))};
+                if (_id.length == 0) {
                     return 0;
                 }
 
-                String mSelection= TimeGoalieContract.Goals._ID+"=?";
+                String mSelection = TimeGoalieContract.Goals._ID + "=?";
 
                 int rowsdeleted = db.delete(TimeGoalieContract.Goals.GOALS_TABLE_NAME,
                         mSelection,
                         _id);
-                if (_id.length >0){
+                if (_id.length > 0) {
 
                     return rowsdeleted;
 
-                }
-                else{
+                } else {
                     throw new SQLException("Delete failed!");
                 }
             default:
@@ -225,5 +226,27 @@ public class TimeGoalieContentProvider extends ContentProvider {
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
         return 0;
+    }
+
+    public class insertNewGoal extends AsyncTask<Goal, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Goal... goals) {
+            if (goals.length == 1) {
+                Goal goal = goals[0];
+                ContentValues cv = new ContentValues();
+                cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_NAME, goal.getName());
+                cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID, goal.getGoalTypeId());
+                cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_ISDAILY,goal.getIsDaily());
+                cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_ISTODAYONLY,goal.getIsTodayOnly().toString());
+                cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_ISWEEKLY,goal.getIsWeekly());
+                cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS,goal.getHours());
+                cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES,goal.getMinutes());
+
+
+                getContext().getContentResolver().insert(TimeGoalieContract.Goals.CONTENT_URI, cv);
+            }
+            return null;
+        }
     }
 }

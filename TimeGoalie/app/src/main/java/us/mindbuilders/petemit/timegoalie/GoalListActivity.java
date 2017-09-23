@@ -22,6 +22,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import com.facebook.stetho.Stetho;
+
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.dummy.DummyContent;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;

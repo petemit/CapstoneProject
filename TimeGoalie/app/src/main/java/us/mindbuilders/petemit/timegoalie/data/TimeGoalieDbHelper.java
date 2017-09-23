@@ -4,6 +4,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.sql.Time;
+
+import us.mindbuilders.petemit.timegoalie.R;
+
 /**
  * Created by Peter on 9/21/2017.
  */
@@ -11,9 +15,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class TimeGoalieDbHelper extends SQLiteOpenHelper {
     public static final int DB_VERSION = 1;
     public static String DB_NAME = "timeGoalie.db";
+    private Context context;
 
     public TimeGoalieDbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
+        this.context=context;
     }
 
     @Override
@@ -39,6 +45,7 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME +
                 "(" + TimeGoalieContract.GoalEntries._ID +
                 " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID + " INTEGER NOT NULL, " +
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME + " TIMESTAMP NOT NULL, " +
         TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED + " INTEGER);";
         db.execSQL(createGoalEntriesTable);
@@ -51,6 +58,30 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 TimeGoalieContract.GoalTypes.GOALTYPES_COLUMN_NAME + " TEXT NOT NULL);";
         db.execSQL(createGoalTypesSQL);
 
+
+        String[] goalTypes = context.getResources()
+                .getStringArray(R.array.goal_type_array);
+        String[] goalTypeValues = context.getResources()
+                .getStringArray(R.array.goal_type_array_values);
+        //populate goalTypes data
+        String populateGoalTypesSql = "insert into " +
+                TimeGoalieContract.GoalTypes.GOALTYPES_TABLE_NAME +
+                "(" + TimeGoalieContract.GoalTypes.GOALTYPES_COLUMN_NAME +
+                ", " + TimeGoalieContract.GoalTypes._ID +
+                ") " + "VALUES ";
+        for (int i = 0; i < goalTypes.length; i++) {
+            populateGoalTypesSql= populateGoalTypesSql.concat(" (");
+            populateGoalTypesSql =  populateGoalTypesSql.concat(buildInsertSqlfromStringArray
+                    (new String[]{'"'+goalTypes[i]+'"', goalTypeValues[i]}));
+            if (i!=goalTypes.length-1) {
+                populateGoalTypesSql = populateGoalTypesSql.concat("), ");
+            }
+            else{
+                populateGoalTypesSql = populateGoalTypesSql.concat(")");
+            }
+        }
+        db.execSQL(populateGoalTypesSql);
+
         //create Days table
         final String createDaysSQL = "CREATE TABLE " +
                 TimeGoalieContract.Days.DAYS_TABLE_NAME +
@@ -60,6 +91,30 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 TimeGoalieContract.Days.DAYS_COLUMN_SEQUENCE + " INTEGER NOT NULL);";
         db.execSQL(createDaysSQL);
 
+
+        String[] dayNames = context.getResources()
+                .getStringArray(R.array.days_of_the_week);
+        String[] daySeqValues = context.getResources()
+                .getStringArray(R.array.days_of_the_week_values);
+
+        //populate Day data
+        String populateDaysSql = "insert into " +
+                TimeGoalieContract.Days.DAYS_TABLE_NAME +
+                "(" + TimeGoalieContract.Days.DAYS_COLUMN_NAME +
+                ", " + TimeGoalieContract.Days.DAYS_COLUMN_SEQUENCE +
+                ") " + "VALUES ";
+        for (int i = 0; i < dayNames.length; i++) {
+           populateDaysSql = populateDaysSql.concat(" (");
+          populateDaysSql =  populateDaysSql.concat(buildInsertSqlfromStringArray
+                    (new String[]{'"'+dayNames[i]+'"', daySeqValues[i]}));
+            if (i!=dayNames.length-1) {
+                populateDaysSql = populateDaysSql.concat("), ");
+            }
+            else{
+                populateDaysSql = populateDaysSql.concat(")");
+            }
+        }
+        db.execSQL(populateDaysSql);
 
         //create GoalsDays table
         final String createGoalsDaysSQL = "CREATE TABLE " +
@@ -96,5 +151,19 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TimeGoalieContract.GoalsDatesAccomplished.GOALS_DATES_ACCOMPLISHED_TABLE_NAME);
         onCreate(db);
 
+    }
+
+    public String buildInsertSqlfromStringArray(String[] array){
+        String returnString="";
+        for (int i = 0; i < array.length; i++) {
+            if (i!=array.length-1){
+              returnString = returnString.concat(array[i])
+                        .concat(",");
+            }
+            else{
+                returnString = returnString.concat(array[i]);
+            }
+        }
+        return returnString;
     }
 }

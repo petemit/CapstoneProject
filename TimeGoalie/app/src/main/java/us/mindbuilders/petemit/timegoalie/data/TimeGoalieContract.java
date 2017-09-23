@@ -44,6 +44,7 @@ public class TimeGoalieContract {
     public static class GoalEntries implements BaseColumns {
 
         public static final String GOALENTRIES_TABLE_NAME = "goalentries";
+        public static final String GOALENTRIES_COLUMN_GOAL_ID = "goal_id";
         public static final String GOALENTRIES_COLUMN_SECONDSELAPSED = "seconds_elapsed";
         public static final String GOALENTRIES_COLUMN_DATETIME = "timestamp";
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
