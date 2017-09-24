@@ -228,25 +228,4 @@ public class TimeGoalieContentProvider extends ContentProvider {
         return 0;
     }
 
-    public class insertNewGoal extends AsyncTask<Goal, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Goal... goals) {
-            if (goals.length == 1) {
-                Goal goal = goals[0];
-                ContentValues cv = new ContentValues();
-                cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_NAME, goal.getName());
-                cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID, goal.getGoalTypeId());
-                cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_ISDAILY,goal.getIsDaily());
-                cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_ISTODAYONLY,goal.getIsTodayOnly().toString());
-                cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_ISWEEKLY,goal.getIsWeekly());
-                cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS,goal.getHours());
-                cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES,goal.getMinutes());
-
-
-                getContext().getContentResolver().insert(TimeGoalieContract.Goals.CONTENT_URI, cv);
-            }
-            return null;
-        }
-    }
 }

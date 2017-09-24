@@ -335,6 +335,7 @@
 
         <Button
             style="@style/TimeGoalTheme.ButtonStyle"
+            android:id="@+id/button_create_new_goal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/left_margin"
