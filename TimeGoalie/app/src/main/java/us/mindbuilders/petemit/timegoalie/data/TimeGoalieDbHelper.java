@@ -33,7 +33,7 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 TimeGoalieContract.Goals.GOALS_COLUMN_NAME + " TEXT NOT NULL, " +
                 TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS + " INTEGER, " +
                 TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES + " INTEGER, " +
-                TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID + " INTEGER, " +
+                TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID + " INTEGER NOT NULL, " +
                 TimeGoalieContract.Goals.GOALS_COLUMN_ISDAILY + " BOOLEAN, " +
                 TimeGoalieContract.Goals.GOALS_COLUMN_ISWEEKLY + " BOOLEAN, " +
                 TimeGoalieContract.Goals.GOALS_COLUMN_ISTODAYONLY + " TIMESTAMP, " +

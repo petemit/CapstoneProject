@@ -151,6 +151,14 @@ public class TimeGoalieContentProvider extends ContentProvider {
             case DAY_BY_DATE_SEQUENCE:
                 selection = TimeGoalieContract.Days.DAYS_COLUMN_SEQUENCE.concat(PARAMETER);
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                cursor = db.query(TimeGoalieContract.Days.DAYS_TABLE_NAME,
+                        null,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        null);
+                break;
 
                 //goaldays
             case GOALS_BY_DAY_ID:

@@ -1,5 +1,7 @@
 package us.mindbuilders.petemit.timegoalie;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.DataSetObserver;
@@ -12,10 +14,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.Toast;
+
+import java.sql.Date;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContentProvider;
@@ -31,6 +39,9 @@ public class NewGoalFragment extends Fragment {
     private NumberPicker npHour;
     private NumberPicker npMinute;
     private Button createButton;
+    private CheckBox dailyCb;
+    private CheckBox weeklyCb;
+    private LinearLayout weeklyCheckboxLinearLayout;
 
     public NewGoalFragment(){
 
@@ -62,6 +73,38 @@ public class NewGoalFragment extends Fragment {
         npMinute=view.findViewById(R.id.np_minute);
 
         createButton=view.findViewById(R.id.button_create_new_goal);
+        newGoalEditText=view.findViewById(R.id.et_new_goal);
+        dailyCb=view.findViewById(R.id.daily_checkbox);
+        weeklyCb=view.findViewById(R.id.weekly_checkbox);
+        weeklyCheckboxLinearLayout=view.findViewById(R.id.weekly_checkbox_list_ll);
+
+
+        //set up checkbox logic
+        dailyCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(compoundButton.isChecked()){
+                    weeklyCb.setEnabled(false);
+                }
+                else {
+                    weeklyCb.setEnabled(true);
+                }
+            }
+        });
+
+        weeklyCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(compoundButton.isChecked()){
+                    dailyCb.setEnabled(false);
+                    showWeeklyCheckboxes();
+                }
+                else{
+                    dailyCb.setEnabled(true);
+                    hideWeeklyCheckboxes();
+                }
+            }
+        });
 
 //        npHour.setDisplayedValues(getResources().getStringArray(R.array.hour_array));
 //        npMinute.setDisplayedValues(getResources().getStringArray(R.array.minute_array));
@@ -76,14 +119,31 @@ public class NewGoalFragment extends Fragment {
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String goalname=newGoalEditText.getText().toString();
+                if (goalname.equalsIgnoreCase("")){
+                    Toast.makeText(getContext(),
+                            R.string.no_goal_name_err_msg, Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                new insertNewGoal().execute(Goal);
+
+                Goal goal = new Goal();
+                goal.setName((newGoalEditText).getText().toString());
+                new insertNewGoal().execute(goal);
                 getContext().startActivity(new Intent(getContext(),GoalListActivity.class));
             }
         });
 
 
         return view;
+    }
+
+    private void hideWeeklyCheckboxes(){
+        weeklyCheckboxLinearLayout.setVisibility(View.GONE);
+    }
+
+    private void showWeeklyCheckboxes(){
+        weeklyCheckboxLinearLayout.setVisibility(View.VISIBLE);
     }
 
     public class insertNewGoal extends AsyncTask<Goal, Void, Void> {
@@ -93,10 +153,14 @@ public class NewGoalFragment extends Fragment {
             if (goals.length == 1) {
                 Goal goal = goals[0];
                 ContentValues cv = new ContentValues();
+                Date date = goal.getIsTodayOnly();
+
                 cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_NAME, goal.getName());
                 cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID, goal.getGoalTypeId());
                 cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_ISDAILY,goal.getIsDaily());
-                cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_ISTODAYONLY,goal.getIsTodayOnly().toString());
+                if (date != null) {
+                    cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_ISTODAYONLY,date.toString());
+                }
                 cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_ISWEEKLY,goal.getIsWeekly());
                 cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS,goal.getHours());
                 cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES,goal.getMinutes());

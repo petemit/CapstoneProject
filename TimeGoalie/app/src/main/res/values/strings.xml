@@ -30,4 +30,5 @@
     <string name="goal_type">Goal Type:</string>
     <string name="type_a_new_goal_name">Type a New Goal Name</string>
     <string name="add_a_new_goal">Add a New Goal</string>
+    <string name="no_goal_name_err_msg">Please enter a goal name</string>
 </resources>
