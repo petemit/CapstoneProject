@@ -45,7 +45,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <Spinner
-                android:id="@+id/new_goal_spinner"
+                android:id="@+id/goal_type_spinner"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/left_margin"
@@ -294,6 +294,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <LinearLayout
+            android:id="@+id/ll_time_goal_pickers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/right_margin"

@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -21,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.sql.Date;
@@ -34,7 +36,7 @@ import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
  */
 
 public class NewGoalFragment extends Fragment {
-    private Spinner newGoalSpinner;
+    private Spinner goalTypeSpinner;
     private EditText newGoalEditText;
     private NumberPicker npHour;
     private NumberPicker npMinute;
@@ -42,6 +44,7 @@ public class NewGoalFragment extends Fragment {
     private CheckBox dailyCb;
     private CheckBox weeklyCb;
     private LinearLayout weeklyCheckboxLinearLayout;
+    private LinearLayout timeGoalPickersLinearLayout;
 
     public NewGoalFragment(){
 
@@ -61,11 +64,11 @@ public class NewGoalFragment extends Fragment {
        View view = inflater.inflate(R.layout.fragment_new_goal,container,false);
 
         //Set up the Spinner
-        newGoalSpinner=(Spinner)view.findViewById(R.id.new_goal_spinner);
+        goalTypeSpinner=(Spinner)view.findViewById(R.id.goal_type_spinner);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.goal_type_array, android.R.layout.simple_spinner_item);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        newGoalSpinner.setAdapter(spinnerAdapter);
+        goalTypeSpinner.setAdapter(spinnerAdapter);
 
         //set up the numberpicker
 
@@ -77,6 +80,25 @@ public class NewGoalFragment extends Fragment {
         dailyCb=view.findViewById(R.id.daily_checkbox);
         weeklyCb=view.findViewById(R.id.weekly_checkbox);
         weeklyCheckboxLinearLayout=view.findViewById(R.id.weekly_checkbox_list_ll);
+        timeGoalPickersLinearLayout=view.findViewById(R.id.ll_time_goal_pickers);
+
+        goalTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                // TODO: 9/25/2017 do this better somehow
+                if (((TextView)(view)).getText().toString().toLowerCase().contains("yes")){
+                    hideTimeGoalPickers();
+                }
+                else{
+                    showTimeGoalPickers();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
 
         //set up checkbox logic
@@ -120,6 +142,7 @@ public class NewGoalFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 String goalname=newGoalEditText.getText().toString();
+                //Do not create goal if Goalname is empty
                 if (goalname.equalsIgnoreCase("")){
                     Toast.makeText(getContext(),
                             R.string.no_goal_name_err_msg, Toast.LENGTH_SHORT).show();
@@ -129,6 +152,7 @@ public class NewGoalFragment extends Fragment {
 
                 Goal goal = new Goal();
                 goal.setName((newGoalEditText).getText().toString());
+                goal.setGoalTypeId(goalTypeSpinner.getSelectedItemId());
                 new insertNewGoal().execute(goal);
                 getContext().startActivity(new Intent(getContext(),GoalListActivity.class));
             }
@@ -136,6 +160,14 @@ public class NewGoalFragment extends Fragment {
 
 
         return view;
+    }
+
+    private void hideTimeGoalPickers(){
+        timeGoalPickersLinearLayout.setVisibility(View.GONE);
+    }
+
+    private void showTimeGoalPickers(){
+        timeGoalPickersLinearLayout.setVisibility(View.VISIBLE);
     }
 
     private void hideWeeklyCheckboxes(){
