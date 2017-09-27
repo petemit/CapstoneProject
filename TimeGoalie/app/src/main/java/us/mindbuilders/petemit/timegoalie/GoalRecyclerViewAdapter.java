@@ -11,6 +11,7 @@ import android.widget.ToggleButton;
 
 import java.util.List;
 
+import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.dummy.DummyContent;
 
 /**
@@ -19,17 +20,17 @@ import us.mindbuilders.petemit.timegoalie.dummy.DummyContent;
 
 public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerViewAdapter.GoalViewHolder> {
 
-    private final List<DummyContent.DummyItem> mValues;
+   // private final List<DummyContent.DummyItem> mValues;
     private Cursor cursor;
     private View.OnClickListener onClickListener;
 
 
-    public GoalRecyclerViewAdapter(List<DummyContent.DummyItem> items, View.OnClickListener onClickListener) {
-        mValues = items;
-        this.onClickListener = onClickListener;
-    }
+//    public GoalRecyclerViewAdapter(List<DummyContent.DummyItem> items, View.OnClickListener onClickListener) {
+//        mValues = items;
+//        this.onClickListener = onClickListener;
+//    }
     public GoalRecyclerViewAdapter(View.OnClickListener onClickListener) {
-        mValues=null;
+   //     mValues=null;
         this.onClickListener = onClickListener;
     }
 
@@ -39,11 +40,11 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
         switch (viewType) {
             case 0:
                 view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.goal_list_content_less, parent, false);
+                        .inflate(R.layout.goal_list_content_more, parent, false);
                 break;
             case 1:
                 view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.goal_list_content_more, parent, false);
+                        .inflate(R.layout.goal_list_content_less, parent, false);
                 break;
             case 2:
                 view = LayoutInflater.from(parent.getContext())
@@ -60,22 +61,31 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
     @Override
     public void onBindViewHolder(final GoalViewHolder holder, int position) {
-          holder.mItem = mValues.get(position);
-     //   holder.mIdView.setText(mValues.get(position).id);
-        holder.tv_goaltitle.setText(mValues.get(position).content);
+        if (getItemCount()>0) {
+            cursor.moveToPosition(position);
+            String name = cursor.getString(cursor.
+                    getColumnIndex(TimeGoalieContract.Goals.GOALS_COLUMN_NAME));
 
-        holder.mView.setOnClickListener(onClickListener);
+            //   holder.mItem = mValues.get(position);
+            //   holder.mIdView.setText(mValues.get(position).id);
+            holder.tv_goaltitle.setText(name);
+
+            holder.mView.setOnClickListener(onClickListener);
+        }
     }
 
     @Override
     public int getItemViewType(int position) {
-        return position%3;
-
+        cursor.moveToPosition(position);
+        return cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID));
     }
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        if (cursor != null) {
+            return cursor.getCount();
+        }
+        else{return 0;}
     }
 
     public class GoalViewHolder extends RecyclerView.ViewHolder {

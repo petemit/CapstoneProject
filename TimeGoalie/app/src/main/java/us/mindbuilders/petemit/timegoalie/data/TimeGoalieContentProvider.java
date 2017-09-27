@@ -8,11 +8,9 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
+import android.widget.TextView;
 
 /**
  * ContentProvider for TimeGoalieDb
@@ -39,7 +37,8 @@ public class TimeGoalieContentProvider extends ContentProvider {
     private static final int GOALS_ACCOMPLISHED_BY_MONTH_BY_GOAL_ID = 404;
     private static final int GOALS_ACCOMPLISHED_BY_GOAL_ID_BY_DATE = 405;
 
-    private static final int GOALS_BY_DAY_ID = 500;
+    private static final int GOALS_DAYS = 500;
+    private static final int GOALS_BY_DAY_ID = 501;
 
     private static final String PARAMETER = "=? ";
 
@@ -83,6 +82,8 @@ public class TimeGoalieContentProvider extends ContentProvider {
         //goaldays
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME + "/#", GOALS_BY_DAY_ID);
+        matcher.addURI(TimeGoalieContract.AUTHORITY,
+                TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME, GOALS_DAYS);
 
         return matcher;
 
@@ -116,7 +117,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         null);
                 break;
             case GOALS_BY_TODAYS_DATE:
-                selection = TimeGoalieContract.Goals.GOALS_COLUMN_ISTODAYONLY.concat(PARAMETER);
+                selection = TimeGoalieContract.Goals.GOALS_COLUMN_CREATIONDATE.concat(PARAMETER);
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 cursor = db.query(TimeGoalieContract.Goals.GOALS_TABLE_NAME,
                         null,
@@ -160,11 +161,21 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         null);
                 break;
 
-                //goaldays
+            //goaldays
             case GOALS_BY_DAY_ID:
-                selection = TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_DAY_ID.concat(PARAMETER);
+                selection = TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_DAY_ID.concat(PARAMETER)
+                        .concat(" AND ").concat(TimeGoalieContract.Goals.GOALS_TABLE_NAME
+                                .concat(".")
+                                .concat(TimeGoalieContract.Goals._ID))
+                        .concat("=").concat(
+                                TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME
+                                        .concat(".")
+                                        .concat(
+                                                TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_GOAL_ID));
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                cursor = db.query(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME,
+
+                cursor = db.query(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME + ", " +
+                                TimeGoalieContract.Goals.GOALS_TABLE_NAME,
                         null,
                         selection,
                         selectionArgs,
@@ -172,6 +183,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         null,
                         null);
                 break;
+
         }
 
         return cursor;
@@ -189,17 +201,34 @@ public class TimeGoalieContentProvider extends ContentProvider {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         switch (uriMatcher.match(uri)) {
             case GOAL:
-                long _id = db.insert(TimeGoalieContract.Goals.GOALS_TABLE_NAME,
+                long goal_id = db.insert(TimeGoalieContract.Goals.GOALS_TABLE_NAME,
                         null,
                         contentValues);
-                if (_id > 0) {
-                    return TimeGoalieContract.buildGetaGoalByIdUri(_id);
+
+                if (goal_id > -1) {
+                    Uri returnUri = TimeGoalieContract.buildGetaGoalByIdUri(goal_id);
+                    getContext().getContentResolver().notifyChange(returnUri, null);
+                    return returnUri;
                 } else {
+
+                    throw new SQLException("Insert failed!");
+                }
+            case GOALS_DAYS:
+                long goal_day_id = db.insert(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME,
+                        null,
+                        contentValues);
+                if (goal_day_id > -1) {
+                    Uri returnUri = TimeGoalieContract.buildGetaGoalByIdUri(goal_day_id);
+                    getContext().getContentResolver().notifyChange(returnUri, null);
+                    return returnUri;
+                } else {
+
                     throw new SQLException("Insert failed!");
                 }
             default:
                 throw new UnsupportedOperationException("That insert query didn't work, dude");
         }
+
     }
 
     @Override

@@ -67,7 +67,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.goal_list);
         if (recyclerView != null) {
-            recyclerView.setAdapter(new GoalRecyclerViewAdapter(DummyContent.ITEMS,this));
+            recyclerView.setAdapter(rvAdapter);
         }
 
         if (findViewById(R.id.goal_detail_container) != null) {
@@ -127,7 +127,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id){
             case GOAL_LOADER_ID:
-                    return new CursorLoader(this,
+                CursorLoader cl= new CursorLoader(this,
                             TimeGoalieContract.buildGetAllGoalsForASpecificDayQueryUri(
                                     TimeGoalieDateUtils.getDayIdFromToday()),
                             null,
@@ -135,6 +135,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
                             null,
                             null
                             );
+                return cl;
             default:
                 throw new RuntimeException("Loader not Implemented: " + id);
         }
@@ -143,6 +144,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         rvAdapter.swapCursor(data);
+        rvAdapter.notifyDataSetChanged();
     }
 
     @Override

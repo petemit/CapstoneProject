@@ -24,7 +24,7 @@ public class TimeGoalieContract {
         public static final String GOALS_COLUMN_GOALTYPEID = "goaltype_id";
         public static final String GOALS_COLUMN_ISDAILY = "is_daily";
         public static final String GOALS_COLUMN_ISWEEKLY = "is_weekly";
-        public static final String GOALS_COLUMN_ISTODAYONLY = "is_today_only";
+        public static final String GOALS_COLUMN_CREATIONDATE = "creation_date";
         public static final String GOALS_COLUMN_ISDISABLED = "is_disabled";
 
 

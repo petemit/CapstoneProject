@@ -3,13 +3,13 @@
     package="us.mindbuilders.petemit.timegoalie">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".BaseApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:name=".BaseApplication"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/TimeGoalTheme">
@@ -33,12 +33,12 @@
                 android:value="us.mindbuilders.petemit.timegoalie.GoalListActivity" />
         </activity>
         <activity android:name=".PreferenceActivity" />
-        <activity android:name=".NewGoalActivity"></activity>
+        <activity android:name=".NewGoalActivity" />
 
         <provider
+            android:name=".data.TimeGoalieContentProvider"
             android:authorities="us.mindbuilders.petemit.timegoalie"
-            android:name="us.mindbuilders.petemit.timegoalie.data.TimeGoalieContentProvider"
-            android:exported="false"/>
+            android:exported="false" />
 
     </application>
 

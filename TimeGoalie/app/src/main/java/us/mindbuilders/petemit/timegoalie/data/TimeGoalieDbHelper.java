@@ -4,8 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.sql.Time;
-
 import us.mindbuilders.petemit.timegoalie.R;
 
 /**
@@ -36,7 +34,7 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID + " INTEGER NOT NULL, " +
                 TimeGoalieContract.Goals.GOALS_COLUMN_ISDAILY + " BOOLEAN, " +
                 TimeGoalieContract.Goals.GOALS_COLUMN_ISWEEKLY + " BOOLEAN, " +
-                TimeGoalieContract.Goals.GOALS_COLUMN_ISTODAYONLY + " TIMESTAMP, " +
+                TimeGoalieContract.Goals.GOALS_COLUMN_CREATIONDATE + " TIMESTAMP, " +
                 TimeGoalieContract.Goals.GOALS_COLUMN_ISDISABLED + " BOOLEAN);";
         db.execSQL(createGoalsSQL);
 
