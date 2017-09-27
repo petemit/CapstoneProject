@@ -34,7 +34,7 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID + " INTEGER NOT NULL, " +
                 TimeGoalieContract.Goals.GOALS_COLUMN_ISDAILY + " BOOLEAN, " +
                 TimeGoalieContract.Goals.GOALS_COLUMN_ISWEEKLY + " BOOLEAN, " +
-                TimeGoalieContract.Goals.GOALS_COLUMN_CREATIONDATE + " TIMESTAMP, " +
+                TimeGoalieContract.Goals.GOALS_COLUMN_CREATIONDATE + " TEXT NOT NULL, " +
                 TimeGoalieContract.Goals.GOALS_COLUMN_ISDISABLED + " BOOLEAN);";
         db.execSQL(createGoalsSQL);
 
@@ -44,7 +44,7 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 "(" + TimeGoalieContract.GoalEntries._ID +
                 " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID + " INTEGER NOT NULL, " +
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME + " TIMESTAMP NOT NULL, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME + " TEXT NOT NULL, " +
         TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED + " INTEGER);";
         db.execSQL(createGoalEntriesTable);
 
@@ -133,7 +133,7 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 TimeGoalieContract.GoalsDatesAccomplished
                         .GOALS_DATES_ACCOMPLISHED_COLUMN_GOAL_ID + " INTEGER NOT NULL, " +
                 TimeGoalieContract.GoalsDatesAccomplished
-                        .GOALS_DATES_ACCOMPLISHED_COLUMN_DATE + " TIMESTAMP NOT NULL);";
+                        .GOALS_DATES_ACCOMPLISHED_COLUMN_DATE + " TEXT NOT NULL);";
         db.execSQL(createGoalsDatesAccomplishedSQL);
 
     }

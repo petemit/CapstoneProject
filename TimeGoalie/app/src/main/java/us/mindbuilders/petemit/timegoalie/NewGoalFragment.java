@@ -23,7 +23,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.TimeZone;
 
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Day;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
@@ -42,6 +49,17 @@ public class NewGoalFragment extends Fragment {
     private CheckBox weeklyCb;
     private LinearLayout weeklyCheckboxLinearLayout;
     private LinearLayout timeGoalPickersLinearLayout;
+    private ArrayList<Day> selectedDays=new ArrayList<Day>();
+    private CheckBox monCb;
+    private CheckBox tueCb;
+    private CheckBox wedCb;
+    private CheckBox thuCb;
+    private CheckBox friCb;
+    private CheckBox satCb;
+    private CheckBox sunCb;
+    private String[] day_array;
+    private String[] day_array_values;
+
 
     public NewGoalFragment() {
 
@@ -80,6 +98,32 @@ public class NewGoalFragment extends Fragment {
         weeklyCb = view.findViewById(R.id.weekly_checkbox);
         weeklyCheckboxLinearLayout = view.findViewById(R.id.weekly_checkbox_list_ll);
         timeGoalPickersLinearLayout = view.findViewById(R.id.ll_time_goal_pickers);
+
+        day_array = getResources().getStringArray(R.array.days_of_the_week);
+        day_array_values = getResources().getStringArray(R.array.days_of_the_week_values);
+
+        //get the weekly checkboxes
+        monCb=view.findViewById(R.id.checkbox_mon);
+    //    monCb.setText(day_array[0]);
+        monCb.setTag(day_array_values[0]);
+        tueCb=view.findViewById(R.id.checkbox_tue);
+       // monCb.setText(day_array[1]);
+        tueCb.setTag(day_array_values[1]);
+        wedCb=view.findViewById(R.id.checkbox_wed);
+      //  monCb.setText(day_array[2]);
+        wedCb.setTag(day_array_values[2]);
+        thuCb=view.findViewById(R.id.checkbox_thu);
+      //  monCb.setText(day_array[3]);
+        thuCb.setTag(day_array_values[3]);
+        friCb=view.findViewById(R.id.checkbox_fri);
+      //  monCb.setText(day_array[4]);
+        friCb.setTag(day_array_values[4]);
+        satCb=view.findViewById(R.id.checkbox_sat);
+      //  monCb.setText(day_array[5]);
+        satCb.setTag(day_array_values[5]);
+        sunCb=view.findViewById(R.id.checkbox_sun);
+       // monCb.setText(day_array[6]);
+        sunCb.setTag(day_array_values[6]);
 
         goalTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -149,6 +193,67 @@ public class NewGoalFragment extends Fragment {
                 Goal goal = new Goal();
                 goal.setName((newGoalEditText).getText().toString());
                 goal.setGoalTypeId(goalTypeSpinner.getSelectedItemId());
+                goal.setHours(npHour.getValue());
+                goal.setMinutes(npMinute.getValue());
+
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                String date = df.format(new java.util.Date());
+                goal.setCreationDate(date);
+
+
+                //really not my favorite solution... want to move on to other things, though
+                if(monCb.getVisibility() == View.VISIBLE && monCb.isChecked()){
+                    Day day = new Day();
+                    day.setSequence(Integer.parseInt((String)monCb.getTag()));
+                    day.setName(day_array[0]);
+                    selectedDays.add(day);
+                }
+                if(tueCb.getVisibility() == View.VISIBLE && tueCb.isChecked()){
+                    Day day = new Day();
+                    day.setSequence(Integer.parseInt((String)tueCb.getTag()));
+                    day.setName(day_array[1]);
+                    selectedDays.add(day);
+                }
+                if(wedCb.getVisibility() == View.VISIBLE && wedCb.isChecked()){
+                    Day day = new Day();
+                    day.setSequence(Integer.parseInt((String)wedCb.getTag()));
+                    day.setName(day_array[2]);
+                    selectedDays.add(day);
+                }
+                if(thuCb.getVisibility() == View.VISIBLE && thuCb.isChecked()){
+                    Day day = new Day();
+                    day.setSequence(Integer.parseInt((String)thuCb.getTag()));
+                    day.setName(day_array[3]);
+                    selectedDays.add(day);
+                }
+                if(friCb.getVisibility() == View.VISIBLE && friCb.isChecked()){
+                    Day day = new Day();
+                    day.setSequence(Integer.parseInt((String)friCb.getTag()));
+                    day.setName(day_array[4]);
+                    selectedDays.add(day);
+                }
+                if(satCb.getVisibility() == View.VISIBLE && satCb.isChecked()){
+                    Day day = new Day();
+                    day.setSequence(Integer.parseInt((String)satCb.getTag()));
+                    day.setName(day_array[5]);
+                    selectedDays.add(day);
+                }
+                if(sunCb.getVisibility() == View.VISIBLE && sunCb.isChecked()){
+                    Day day = new Day();
+                    day.setSequence(Integer.parseInt((String)sunCb.getTag()));
+                    day.setName(day_array[6]);
+                    selectedDays.add(day);
+                }
+                goal.setGoalDays(selectedDays);
+
+                if (dailyCb.isEnabled() && dailyCb.isChecked()) {
+                    goal.setIsDaily(1);
+                }
+
+                if (weeklyCb.isEnabled() && weeklyCb.isChecked()) {
+                    goal.setIsWeekly(1);
+                }
+
                 new insertNewGoal().execute(goal);
                 getContext().startActivity(new Intent(getContext(), GoalListActivity.class));
             }
@@ -181,13 +286,13 @@ public class NewGoalFragment extends Fragment {
             if (goals.length == 1) {
                 Goal goal = goals[0];
                 ContentValues goal_cv = new ContentValues();
-                Date date = goal.getIsTodayOnly();
+                String date = goal.getCreationDate();
 
                 goal_cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_NAME, goal.getName());
                 goal_cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID, goal.getGoalTypeId());
                 goal_cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_ISDAILY, goal.getIsDaily());
                 if (date != null) {
-                    goal_cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_CREATIONDATE, date.toString());
+                    goal_cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_CREATIONDATE, date);
                 }
                 goal_cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_ISWEEKLY, goal.getIsWeekly());
                 goal_cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS, goal.getHours());
@@ -195,15 +300,15 @@ public class NewGoalFragment extends Fragment {
 
                 long goal_id = ContentUris.parseId(getContext().getContentResolver()
                         .insert(TimeGoalieContract.Goals.CONTENT_URI, goal_cv));
+                for (int i = 0; i < goal.getGoalDays().size(); i++) {
+                    ContentValues goal_day_cv = new ContentValues();
 
-                ContentValues goal_day_cv = new ContentValues();
-
-                goal_day_cv.put(TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_GOAL_ID, goal_id);
-                goal_day_cv.put(TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_DAY_ID,
-                        TimeGoalieDateUtils.getDayIdFromToday());
-
-                getContext().getContentResolver().insert(TimeGoalieContract.GoalsDays.CONTENT_URI,
-                        goal_day_cv);
+                    goal_day_cv.put(TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_GOAL_ID, goal_id);
+                    goal_day_cv.put(TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_DAY_ID,
+                            goal.getGoalDays().get(i).getSequence());
+                    getContext().getContentResolver().insert(TimeGoalieContract.GoalsDays.CONTENT_URI,
+                            goal_day_cv);
+                }
             }
             return null;
         }

@@ -15,7 +15,7 @@ public class Goal {
     private long goalTypeId;
     private int isDaily;
     private int isWeekly;
-    private Date isTodayOnly;
+    private String creationDate;
     private int isDisabled;
     private ArrayList<Date> datesAccomplished;
     private ArrayList<GoalEntry> goalEntries;
@@ -78,12 +78,12 @@ public class Goal {
         this.isWeekly = isWeekly;
     }
 
-    public Date getIsTodayOnly() {
-        return isTodayOnly;
+    public String getCreationDate() {
+        return creationDate;
     }
 
-    public void setIsTodayOnly(Date isTodayOnly) {
-        this.isTodayOnly = isTodayOnly;
+    public void setCreationDate(String isTodayOnly) {
+        this.creationDate = isTodayOnly;
     }
 
     public int getIsDisabled() {
@@ -92,5 +92,29 @@ public class Goal {
 
     public void setIsDisabled(int isDisabled) {
         this.isDisabled = isDisabled;
+    }
+
+    public ArrayList<Date> getDatesAccomplished() {
+        return datesAccomplished;
+    }
+
+    public void setDatesAccomplished(ArrayList<Date> datesAccomplished) {
+        this.datesAccomplished = datesAccomplished;
+    }
+
+    public ArrayList<GoalEntry> getGoalEntries() {
+        return goalEntries;
+    }
+
+    public void setGoalEntries(ArrayList<GoalEntry> goalEntries) {
+        this.goalEntries = goalEntries;
+    }
+
+    public ArrayList<Day> getGoalDays() {
+        return goalDays;
+    }
+
+    public void setGoalDays(ArrayList<Day> goalDays) {
+        this.goalDays = goalDays;
     }
 }
