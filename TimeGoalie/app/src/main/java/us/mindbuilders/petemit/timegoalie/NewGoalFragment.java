@@ -2,6 +2,7 @@ package us.mindbuilders.petemit.timegoalie;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,6 +33,9 @@ import java.util.TimeZone;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Day;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
+import us.mindbuilders.petemit.timegoalie.data.InsertNewGoal;
+import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
@@ -196,10 +200,7 @@ public class NewGoalFragment extends Fragment {
                 goal.setHours(npHour.getValue());
                 goal.setMinutes(npMinute.getValue());
 
-                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                String date = df.format(new java.util.Date());
-                goal.setCreationDate(date);
-
+                goal.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
 
                 //really not my favorite solution... want to move on to other things, though
                 if(monCb.getVisibility() == View.VISIBLE && monCb.isChecked()){
@@ -254,7 +255,14 @@ public class NewGoalFragment extends Fragment {
                     goal.setIsWeekly(1);
                 }
 
-                new insertNewGoal().execute(goal);
+                if ((goal.getIsDaily()==0&&goal.getIsWeekly()==0)||goal.getIsDaily()==1) {
+                    GoalEntry todayGoalEntry= new GoalEntry();
+                    todayGoalEntry.setSecondsElapsed(0);
+                    todayGoalEntry.setDate(TimeGoalieDateUtils.getSqlDateString());
+                    new InsertNewGoalEntry(getContext()).execute(todayGoalEntry);
+                }
+
+                new InsertNewGoal(getContext()).execute(goal);
                 getContext().startActivity(new Intent(getContext(), GoalListActivity.class));
             }
         });
@@ -279,43 +287,4 @@ public class NewGoalFragment extends Fragment {
         weeklyCheckboxLinearLayout.setVisibility(View.VISIBLE);
     }
 
-    public class insertNewGoal extends AsyncTask<Goal, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Goal... goals) {
-            if (goals.length == 1) {
-                Goal goal = goals[0];
-                ContentValues goal_cv = new ContentValues();
-                String date = goal.getCreationDate();
-
-                goal_cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_NAME, goal.getName());
-                goal_cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID, goal.getGoalTypeId());
-                goal_cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_ISDAILY, goal.getIsDaily());
-                if (date != null) {
-                    goal_cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_CREATIONDATE, date);
-                }
-                goal_cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_ISWEEKLY, goal.getIsWeekly());
-                goal_cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS, goal.getHours());
-                goal_cv.put(TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES, goal.getMinutes());
-
-                long goal_id = ContentUris.parseId(getContext().getContentResolver()
-                        .insert(TimeGoalieContract.Goals.CONTENT_URI, goal_cv));
-                for (int i = 0; i < goal.getGoalDays().size(); i++) {
-                    ContentValues goal_day_cv = new ContentValues();
-
-                    goal_day_cv.put(TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_GOAL_ID, goal_id);
-                    goal_day_cv.put(TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_DAY_ID,
-                            goal.getGoalDays().get(i).getSequence());
-                    getContext().getContentResolver().insert(TimeGoalieContract.GoalsDays.CONTENT_URI,
-                            goal_day_cv);
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-        }
-    }
 }

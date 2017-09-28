@@ -7,6 +7,13 @@ import android.support.v4.content.Loader;
 
 import com.facebook.stetho.Stetho;
 
+import java.util.ArrayList;
+
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Day;
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
+import us.mindbuilders.petemit.timegoalie.data.InsertNewGoal;
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
+
 /**
  * Created by Peter on 9/22/2017.
  */
@@ -18,6 +25,39 @@ public class BaseApplication extends Application {
         super.onCreate();
         getDatabasePath("timeGoalie.db").delete();
         Stetho.initializeWithDefaults(this);
-    }
 
+        //dummy goal
+        Goal goal = new Goal();
+        goal.setName("Today Only Goal");
+        goal.setHours(1);
+        goal.setMinutes(30);
+        goal.setGoalTypeId(0);
+        goal.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
+        goal.setIsDaily(0);
+        goal.setIsWeekly(0);
+        Goal goal2 = new Goal();
+        goal2.setName("Thursday Only Goal");
+        goal2.setHours(2);
+        goal2.setMinutes(30);
+        goal2.setGoalTypeId(1);
+        goal2.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
+        goal2.setIsDaily(0);
+        goal2.setIsWeekly(1);
+        ArrayList<Day> dayArrayList = new ArrayList<Day>();
+        Day thu = new Day();
+        thu.setName("Thu");
+        thu.setSequence(4);
+        dayArrayList.add(thu);
+        goal2.setGoalDays(dayArrayList);
+        Goal goal3 = new Goal();
+        goal3.setName("Brush Teeth");
+        goal3.setGoalTypeId(2);
+        goal3.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
+        goal3.setIsDaily(1);
+        goal3.setIsWeekly(0);
+
+        new InsertNewGoal(getBaseContext()).execute(goal);
+        new InsertNewGoal(getBaseContext()).execute(goal2);
+        new InsertNewGoal(getBaseContext()).execute(goal3);
+    }
 }

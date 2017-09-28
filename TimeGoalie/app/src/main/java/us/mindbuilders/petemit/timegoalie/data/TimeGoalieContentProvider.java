@@ -12,6 +12,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.TextView;
 
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
+
 /**
  * ContentProvider for TimeGoalieDb
  */
@@ -39,6 +41,10 @@ public class TimeGoalieContentProvider extends ContentProvider {
 
     private static final int GOALS_DAYS = 500;
     private static final int GOALS_BY_DAY_ID = 501;
+
+    private static final int GOAL_ENTRIES = 600;
+    private static final int GOAL_ENTRIES_BY_GOAL_ID = 601;
+
 
     private static final String PARAMETER = "=? ";
 
@@ -84,6 +90,12 @@ public class TimeGoalieContentProvider extends ContentProvider {
                 TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME + "/#", GOALS_BY_DAY_ID);
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME, GOALS_DAYS);
+
+        //goalentries
+        matcher.addURI(TimeGoalieContract.AUTHORITY,
+                TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME, GOAL_ENTRIES);
+        matcher.addURI(TimeGoalieContract.AUTHORITY,
+                TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME + "/#", GOAL_ENTRIES_BY_GOAL_ID);
 
         return matcher;
 
@@ -163,19 +175,67 @@ public class TimeGoalieContentProvider extends ContentProvider {
 
             //goaldays
             case GOALS_BY_DAY_ID:
-                selection = TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_DAY_ID.concat(PARAMETER)
-                        .concat(" AND ").concat(TimeGoalieContract.Goals.GOALS_TABLE_NAME
-                                .concat(".")
-                                .concat(TimeGoalieContract.Goals._ID))
-                        .concat("=").concat(
-                                TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME
-                                        .concat(".")
-                                        .concat(
-                                                TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_GOAL_ID));
+
+
+                selection = TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_DAY_ID
+                        .concat(PARAMETER)
+                        .concat(" UNION ALL ")
+                        .concat("SELECT * FROM ")
+                        .concat(TimeGoalieContract.Goals.GOALS_TABLE_NAME)
+                        .concat(" left join ")
+                        .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME)
+                        .concat(" on ")
+                        .concat(TimeGoalieContract.Goals.GOALS_TABLE_NAME)
+                        .concat(".")
+                        .concat(TimeGoalieContract.Goals._ID)
+                        .concat("=")
+                        .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME)
+                        .concat(".")
+                        .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_GOAL_ID)
+                        .concat(" WHERE ")
+                        .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_GOAL_ID)
+                        .concat(" IS NULL ")
+                        .concat(" AND ")
+                        .concat(TimeGoalieContract.Goals.GOALS_COLUMN_CREATIONDATE)
+                        .concat("='")
+                        .concat(TimeGoalieDateUtils.getSqlDateString())
+                        .concat("'");
+
+//                selection = "("
+//                        .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_DAY_ID)
+//                        .concat(PARAMETER)
+//                        .concat(" AND ")
+//                        .concat(TimeGoalieContract.Goals.GOALS_TABLE_NAME
+//                        .concat(".")
+//                        .concat(TimeGoalieContract.Goals._ID))
+//                        .concat("=")
+//                        .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME
+//                        .concat(".")
+//                        .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_GOAL_ID)
+//                        .concat(") OR (")
+//                        .concat(TimeGoalieContract.Goals.GOALS_COLUMN_CREATIONDATE)
+//                        .concat("='")
+//                        .concat(TimeGoalieDateUtils.getSqlDateString())
+//                        .concat("')")
+//                        );
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
-                cursor = db.query(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME + ", " +
-                                TimeGoalieContract.Goals.GOALS_TABLE_NAME,
+                String tablesJoinStatement = TimeGoalieContract.Goals.GOALS_TABLE_NAME
+                        .concat(" ")
+                        .concat("LEFT JOIN ")
+                        .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME)
+                        .concat(" on ")
+                        .concat(TimeGoalieContract.Goals.GOALS_TABLE_NAME)
+                        .concat(".")
+                        .concat(TimeGoalieContract.Goals._ID)
+                        .concat("=")
+                        .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME)
+                        .concat(".")
+                        .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_GOAL_ID);
+
+
+
+                cursor = db.query(tablesJoinStatement,
                         null,
                         selection,
                         selectionArgs,
@@ -210,7 +270,6 @@ public class TimeGoalieContentProvider extends ContentProvider {
                     getContext().getContentResolver().notifyChange(returnUri, null);
                     return returnUri;
                 } else {
-
                     throw new SQLException("Insert failed!");
                 }
             case GOALS_DAYS:
@@ -224,6 +283,16 @@ public class TimeGoalieContentProvider extends ContentProvider {
                 } else {
 
                     throw new SQLException("Insert failed!");
+                }
+
+            case GOAL_ENTRIES:
+                long goal_entry_id = db.insert(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,
+                        null,
+                        contentValues);
+                if (goal_entry_id > -1) {
+                    Uri returnUri = TimeGoalieContract.buildGetAGoalEntryByGoalId(goal_entry_id);
+                    getContext().getContentResolver().notifyChange(returnUri,null);
+                    return returnUri;
                 }
             default:
                 throw new UnsupportedOperationException("That insert query didn't work, dude");
