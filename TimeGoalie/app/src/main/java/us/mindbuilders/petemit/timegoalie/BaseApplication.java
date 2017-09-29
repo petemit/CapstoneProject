@@ -55,6 +55,13 @@ public class BaseApplication extends Application {
         goal3.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
         goal3.setIsDaily(1);
         goal3.setIsWeekly(0);
+        Goal goal4 = new Goal();
+        goal4.setName("Take Nap");
+        goal4.setGoalTypeId(1);
+        goal4.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
+        goal4.setIsDaily(1);
+        goal4.setIsWeekly(0);
+
 
         new InsertNewGoal(getBaseContext()).execute(goal);
         new InsertNewGoal(getBaseContext()).execute(goal2);

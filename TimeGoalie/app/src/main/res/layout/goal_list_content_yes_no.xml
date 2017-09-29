@@ -34,8 +34,8 @@
         <ImageView
             android:id="@+id/soccer_ball_image"
 
-            android:layout_width="@dimen/midfield_image_size"
-            android:layout_height="@dimen/midfield_image_size"
+            android:layout_width="@dimen/soccerball_size"
+            android:layout_height="@dimen/soccerball_size"
             android:background="@drawable/anim_soccerball_small"
             android:paddingLeft="@dimen/left_margin"
             app:layout_constraintLeft_toRightOf="@+id/goal_image"
