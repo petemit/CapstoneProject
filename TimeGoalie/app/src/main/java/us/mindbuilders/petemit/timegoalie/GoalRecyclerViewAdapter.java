@@ -85,6 +85,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                         TimeGoalieAlarmObject timeGoalieAlarmObject =
                                 BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
                         if (b) {
+                            startStopButtonStateMap.put(goal.getGoalId(),compoundButton.isChecked());
                             long secondsElapsed = goal.getGoalEntry().getSecondsElapsed();
                             long remainingSeconds = totalSeconds - secondsElapsed;
                             if (timeGoalieAlarmObject != null) {
