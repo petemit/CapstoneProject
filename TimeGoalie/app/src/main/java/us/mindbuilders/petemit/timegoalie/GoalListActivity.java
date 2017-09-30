@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.facebook.stetho.Stetho;
 
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.dummy.DummyContent;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
@@ -34,15 +35,14 @@ import java.util.List;
  * List of Goals.  In multi-pane, shows reports as well {@link GoalReportActivity}
  */
 public class GoalListActivity extends AppCompatActivity implements View.OnClickListener,
-        LoaderManager.LoaderCallbacks<Cursor>{
-    private static final int GOAL_LOADER_ID=4;
+        LoaderManager.LoaderCallbacks<Cursor> {
+    private static final int GOAL_LOADER_ID = 4;
     private GoalRecyclerViewAdapter rvAdapter;
 
     /**
-     *
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
-     *
+     * <p>
      * Initiates a Loader
      */
     private boolean mTwoPane;
@@ -54,18 +54,18 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         getSupportLoaderManager().initLoader(GOAL_LOADER_ID, null, this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        rvAdapter=new GoalRecyclerViewAdapter(this);
+        rvAdapter = new GoalRecyclerViewAdapter(this);
         toolbar.setTitle(getTitle());
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getBaseContext(),NewGoalActivity.class));
+                startActivity(new Intent(getBaseContext(), NewGoalActivity.class));
             }
         });
 
-        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.goal_list);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.goal_list);
         if (recyclerView != null) {
             recyclerView.setAdapter(rvAdapter);
         }
@@ -78,19 +78,18 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
             mTwoPane = true;
         }
 
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu,menu);
+        getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId()==R.id.settings_key){
-            startActivity(new Intent(this,PreferenceActivity.class));
+        if (item.getItemId() == R.id.settings_key) {
+            startActivity(new Intent(this, PreferenceActivity.class));
             return true;
         }
         return true;
@@ -98,6 +97,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 
     /**
      * The Goal List Activity will handle onClicks
+     *
      * @param v
      */
     @Override
@@ -119,22 +119,22 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 //
 //            context.startActivity(intent);
 //        }
-        
+
     }
 
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch (id){
+        switch (id) {
             case GOAL_LOADER_ID:
-                CursorLoader cl= new CursorLoader(this,
-                            TimeGoalieContract.buildGetAllGoalsForASpecificDayQueryUri(
-                                    TimeGoalieDateUtils.getDayIdFromToday()),
-                            null,
-                            null,
-                            null,
-                            null
-                            );
+                CursorLoader cl = new CursorLoader(this,
+                        TimeGoalieContract.buildGetAllGoalsForASpecificDayQueryUri(
+                                TimeGoalieDateUtils.getDayIdFromToday()),
+                        null,
+                        null,
+                        null,
+                        null
+                );
                 return cl;
             default:
                 throw new RuntimeException("Loader not Implemented: " + id);
@@ -143,7 +143,8 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        rvAdapter.swapCursor(data);
+        //creates arraylist of goals
+        rvAdapter.swapCursor(Goal.createGoalListFromCursor(data));
         rvAdapter.notifyDataSetChanged();
     }
 
@@ -151,4 +152,5 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     public void onLoaderReset(Loader<Cursor> loader) {
         rvAdapter.swapCursor(null);
     }
+
 }

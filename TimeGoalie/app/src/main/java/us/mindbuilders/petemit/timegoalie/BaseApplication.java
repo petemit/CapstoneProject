@@ -1,9 +1,6 @@
 package us.mindbuilders.petemit.timegoalie;
 
 import android.app.Application;
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 
 import com.facebook.stetho.Stetho;
 
@@ -11,7 +8,9 @@ import java.util.ArrayList;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Day;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoal;
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
 /**
@@ -19,10 +18,20 @@ import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
  */
 
 public class BaseApplication extends Application {
+    private static ArrayList<TimeGoalieAlarmObject> timeGoalieAlarmObjects;
+
+    public static ArrayList<TimeGoalieAlarmObject> getTimeGoalieAlarmObjects() {
+        return timeGoalieAlarmObjects;
+    }
+
+    public static void setTimeGoalieAlarmObjects(ArrayList<TimeGoalieAlarmObject> timeGoalieAlarmObjects) {
+        BaseApplication.timeGoalieAlarmObjects = timeGoalieAlarmObjects;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        setTimeGoalieAlarmObjects(new ArrayList<TimeGoalieAlarmObject>());
         getDatabasePath("timeGoalie.db").delete();
         Stetho.initializeWithDefaults(this);
 
@@ -67,4 +76,14 @@ public class BaseApplication extends Application {
         new InsertNewGoal(getBaseContext()).execute(goal2);
         new InsertNewGoal(getBaseContext()).execute(goal3);
     }
+
+    public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id){
+        for (int i = 0 ; i < timeGoalieAlarmObjects.size() ; i ++) {
+            if (timeGoalieAlarmObjects.get(i).getGoal_id()==goal_id){
+                return timeGoalieAlarmObjects.get(i);
+            }
+        }
+        return null;
+    }
+
 }

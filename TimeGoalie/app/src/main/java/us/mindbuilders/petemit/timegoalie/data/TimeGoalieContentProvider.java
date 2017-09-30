@@ -109,7 +109,11 @@ public class TimeGoalieContentProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] strings, @Nullable String s, @Nullable String[] strings1, @Nullable String s1) {
+    public Cursor query(@NonNull Uri uri, @Nullable String[] strings, @Nullable String suppliedDate, @Nullable String[] strings1, @Nullable String s1) {
+        String date = TimeGoalieDateUtils.getSqlDateString();
+        if (suppliedDate!=null) {
+            date=suppliedDate;
+        }
         Cursor cursor = null;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         String selection = "";
@@ -180,7 +184,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
                 selection = TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_DAY_ID
                         .concat(PARAMETER)
                         .concat(" UNION ALL ")
-                        .concat("SELECT * FROM ")
+                        .concat(" SELECT * FROM ")
                         .concat(TimeGoalieContract.Goals.GOALS_TABLE_NAME)
                         .concat(" left join ")
                         .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME)
@@ -192,13 +196,30 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME)
                         .concat(".")
                         .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_GOAL_ID)
+                        .concat(" LEFT JOIN ")
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME)
+                        .concat(" on (")
+                        .concat(TimeGoalieContract.Goals.GOALS_TABLE_NAME)
+                        .concat(".")
+                        .concat(TimeGoalieContract.Goals._ID)
+                        .concat("=")
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME)
+                        .concat(".")
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID)
+                        .concat(" AND ")
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME)
+                        .concat("='")
+                        .concat(date)
+                        .concat("')")
                         .concat(" WHERE ")
+                        .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME)
+                        .concat(".")
                         .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_GOAL_ID)
                         .concat(" IS NULL ")
                         .concat(" AND ")
                         .concat(TimeGoalieContract.Goals.GOALS_COLUMN_CREATIONDATE)
                         .concat("='")
-                        .concat(TimeGoalieDateUtils.getSqlDateString())
+                        .concat(date)
                         .concat("'");
 
 //                selection = "("
@@ -221,8 +242,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
                 String tablesJoinStatement = TimeGoalieContract.Goals.GOALS_TABLE_NAME
-                        .concat(" ")
-                        .concat("LEFT JOIN ")
+                        .concat(" LEFT JOIN ")
                         .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME)
                         .concat(" on ")
                         .concat(TimeGoalieContract.Goals.GOALS_TABLE_NAME)
@@ -231,8 +251,22 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         .concat("=")
                         .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME)
                         .concat(".")
-                        .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_GOAL_ID);
-
+                        .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_GOAL_ID)
+                        .concat(" LEFT JOIN ")
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME)
+                        .concat(" on (")
+                        .concat(TimeGoalieContract.Goals.GOALS_TABLE_NAME)
+                        .concat(".")
+                        .concat(TimeGoalieContract.Goals._ID)
+                        .concat("=")
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME)
+                        .concat(".")
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID)
+                        .concat(" AND ")
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME)
+                        .concat("='")
+                        .concat(date)
+                        .concat("')");
 
 
                 cursor = db.query(tablesJoinStatement,

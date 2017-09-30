@@ -12,6 +12,10 @@ public class GoalEntry {
     private int secondsElapsed;
     private long goal_id;
 
+    public GoalEntry(){
+        secondsElapsed=0;
+    }
+
     public String getDate() {
         return date;
     }

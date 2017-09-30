@@ -250,9 +250,15 @@ public class NewGoalFragment extends Fragment {
                 if (dailyCb.isEnabled() && dailyCb.isChecked()) {
                     goal.setIsDaily(1);
                 }
+                else {
+                    goal.setIsDaily(0);
+                }
 
                 if (weeklyCb.isEnabled() && weeklyCb.isChecked()) {
                     goal.setIsWeekly(1);
+                }
+                else {
+                    goal.setIsWeekly(0);
                 }
 
                 if ((goal.getIsDaily()==0&&goal.getIsWeekly()==0)||goal.getIsDaily()==1) {

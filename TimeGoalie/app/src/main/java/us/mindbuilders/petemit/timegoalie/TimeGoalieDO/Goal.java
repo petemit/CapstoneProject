@@ -1,7 +1,13 @@
 package us.mindbuilders.petemit.timegoalie.TimeGoalieDO;
 
+import android.database.Cursor;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+
 import java.sql.Date;
 import java.util.ArrayList;
+
+import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 
 /**
  * Created by Peter on 9/23/2017.
@@ -18,9 +24,8 @@ public class Goal {
     private String creationDate;
     private int isDisabled;
     private ArrayList<Date> datesAccomplished;
-    private ArrayList<GoalEntry> goalEntries;
+    private GoalEntry goalEntry;
     private ArrayList<Day> goalDays;
-
 
     public long getGoalId() {
         return goalId;
@@ -102,12 +107,12 @@ public class Goal {
         this.datesAccomplished = datesAccomplished;
     }
 
-    public ArrayList<GoalEntry> getGoalEntries() {
-        return goalEntries;
+    public GoalEntry getGoalEntry() {
+        return goalEntry;
     }
 
-    public void setGoalEntries(ArrayList<GoalEntry> goalEntries) {
-        this.goalEntries = goalEntries;
+    public void setGoalEntry(GoalEntry goalEntry) {
+        this.goalEntry = goalEntry;
     }
 
     public ArrayList<Day> getGoalDays() {
@@ -117,4 +122,33 @@ public class Goal {
     public void setGoalDays(ArrayList<Day> goalDays) {
         this.goalDays = goalDays;
     }
+
+    public static ArrayList<Goal> createGoalListFromCursor(Cursor cursor) {
+        ArrayList<Goal> goalList = new ArrayList<Goal>();
+        while (cursor.moveToNext()) {
+            Goal goal = new Goal();
+            goal.setName(cursor.getString(cursor.
+                    getColumnIndex(TimeGoalieContract.Goals.GOALS_COLUMN_NAME)));
+            goal.setHours((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
+                    TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS))));
+            goal.setMinutes((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
+                    TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES))));
+            goal.setGoalTypeId(
+                    cursor.getInt(
+                            cursor.getColumnIndex(
+                                    TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID)));
+            GoalEntry goalEntry = new GoalEntry();
+            goalEntry.setSecondsElapsed(
+                    cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
+                    .GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED)));
+            goalEntry.setDate(cursor.getString(
+                    cursor.getColumnIndex(TimeGoalieContract
+                            .GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
+
+            goal.goalEntry=goalEntry;
+            goalList.add(goal);
+        }
+        return goalList;
+    }
+
 }
