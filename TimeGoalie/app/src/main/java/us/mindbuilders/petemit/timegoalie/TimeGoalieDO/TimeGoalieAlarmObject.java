@@ -11,6 +11,7 @@ public class TimeGoalieAlarmObject {
     private long goal_id;
     private PendingIntent pi;
     private CountDownTimer countDownTimer;
+    private int secondsElapsed;
 
     public long getGoal_id() {
         return goal_id;
@@ -34,5 +35,13 @@ public class TimeGoalieAlarmObject {
 
     public void setCountDownTimer(CountDownTimer countDownTimer) {
         this.countDownTimer = countDownTimer;
+    }
+
+    public int getSecondsElapsed() {
+        return secondsElapsed;
+    }
+
+    public void setSecondsElapsed(int secondsElapsed) {
+        this.secondsElapsed = secondsElapsed;
     }
 }

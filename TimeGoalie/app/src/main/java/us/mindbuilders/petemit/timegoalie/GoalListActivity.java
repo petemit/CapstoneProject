@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.facebook.stetho.Stetho;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.dummy.DummyContent;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
@@ -77,7 +78,15 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        for (TimeGoalieAlarmObject tgoal : BaseApplication.getTimeGoalieAlarmObjects())
+              {
+                  tgoal.getCountDownTimer().cancel();
+        }
     }
 
     @Override

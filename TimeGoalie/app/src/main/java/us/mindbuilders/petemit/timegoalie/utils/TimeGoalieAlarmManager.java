@@ -37,7 +37,7 @@ public class TimeGoalieAlarmManager {
         calendar.add(Calendar.HOUR_OF_DAY, hoursFromNow);
         calendar.add(Calendar.MINUTE, minutesFromNow);
 
-        alarmMgr.set(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),alarmIntent);
+        alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
     }
 
     public static CountDownTimer makeCountdownTimer(long secondsInFuture,
@@ -49,26 +49,27 @@ public class TimeGoalieAlarmManager {
         CountDownTimer cdTimer = new CountDownTimer(milliInFuture, intervalInSecondsInMilli) {
             @Override
             public void onTick(long millisuntilfinished) {
-//                tv.setText((String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(l)),
-//                        TimeUnit.MILLISECONDS.toMinutes(l) % TimeUnit.HOURS.toMinutes(1),
-//                        TimeUnit.MILLISECONDS.toSeconds(l) % TimeUnit.MINUTES.toSeconds(1)));
-                int seconds = (int) (millisuntilfinished)/1000;
-                int hours = seconds / (60*60);
-                int minutes = (seconds - (hours * 60 * 60)) / 60;
-                seconds = (seconds - (hours * 60 *60) - (minutes * 60));
-
-//                SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
-//                Date date = new Date(l);
-                tv.setText(String.format("%02d", hours)
-                + ":" + String.format("%02d", minutes)
-                + ":" + String.format("%02d", seconds));
-                goalEntry.setSecondsElapsed((goalEntry.getSecondsElapsed()+1));
+                tv.setText(makeTimeTextFromMillis(millisuntilfinished));
+                goalEntry.addSecondElapsed();
             }
+
             @Override
             public void onFinish() {
 
             }
         };
         return cdTimer;
+    }
+
+
+    public static String makeTimeTextFromMillis(long millis) {
+        int seconds = (int) (millis) / 1000;
+        int hours = seconds / (60 * 60);
+        int minutes = (seconds - (hours * 60 * 60)) / 60;
+        seconds = (seconds - (hours * 60 * 60) - (minutes * 60));
+
+        return (String.format("%02d", hours)
+                + ":" + String.format("%02d", minutes)
+                + ":" + String.format("%02d", seconds));
     }
 }
