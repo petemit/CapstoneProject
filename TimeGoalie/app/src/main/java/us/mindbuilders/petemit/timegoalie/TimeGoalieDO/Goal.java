@@ -5,6 +5,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 
 import java.sql.Date;
+import java.sql.Time;
 import java.util.ArrayList;
 
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
@@ -127,6 +128,7 @@ public class Goal {
         ArrayList<Goal> goalList = new ArrayList<Goal>();
         while (cursor.moveToNext()) {
             Goal goal = new Goal();
+            goal.setGoalId(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.Goals._ID)));
             goal.setName(cursor.getString(cursor.
                     getColumnIndex(TimeGoalieContract.Goals.GOALS_COLUMN_NAME)));
             goal.setHours((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
@@ -138,6 +140,7 @@ public class Goal {
                             cursor.getColumnIndex(
                                     TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID)));
             GoalEntry goalEntry = new GoalEntry();
+            goalEntry.setGoal_id(goal.getGoalId());
             goalEntry.setSecondsElapsed(
                     cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
                     .GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED)));

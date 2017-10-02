@@ -40,6 +40,12 @@
             android:authorities="us.mindbuilders.petemit.timegoalie"
             android:exported="false" />
 
+        <receiver android:name=".services.TimeGoalieAlarmReceiver">
+            <intent-filter>
+                <action android:name="us.mindbuilders.petemit.timegoalie.GOAL_FINISHED"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

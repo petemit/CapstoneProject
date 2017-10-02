@@ -52,6 +52,7 @@ public class GoalEntry {
         }
     }
 
+
     public long getGoal_id() {
         return goal_id;
     }

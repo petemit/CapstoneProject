@@ -1,6 +1,7 @@
 package us.mindbuilders.petemit.timegoalie;
 
 
+import android.app.AlarmManager;
 import android.os.CountDownTimer;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
+import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
@@ -81,6 +83,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                 if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()) != null) {
                     onBindElapsedSeconds = (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()))
                             .getSecondsElapsed();
+
                 }
                 final long totalSeconds = ((goal.getHours() * 60 * 60) + (goal.getMinutes() * 60)) -
                         onBindElapsedSeconds;
@@ -91,17 +94,35 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                         TimeGoalieAlarmObject timeGoalieAlarmObject =
                                 BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
-
+                        long newtime = totalSeconds;
+                        if (timeGoalieAlarmObject != null) {
+                            newtime = totalSeconds - timeGoalieAlarmObject.getSecondsElapsed();
+                        }
                         if (b) {
-                            startTimer(holder.time_tv, totalSeconds, goal, compoundButton);
+                            startTimer(holder.time_tv, newtime, goal, compoundButton);
                         } else {
-                            if (timeGoalieAlarmObject.getCountDownTimer() != null) {
-                                timeGoalieAlarmObject.getCountDownTimer().cancel();
+                            if (timeGoalieAlarmObject != null) {
+                                if (timeGoalieAlarmObject.getCountDownTimer() != null) {
+                                    timeGoalieAlarmObject.getCountDownTimer().cancel();
+                                    timeGoalieAlarmObject.setCountDownTimer(null);
+                                }
+                                if (timeGoalieAlarmObject.getPi() != null) {
+                                    TimeGoalieAlarmManager.cancelTimeGoalAlarm(
+                                            compoundButton.getContext(),
+                                            timeGoalieAlarmObject.getPi());
+                                    timeGoalieAlarmObject.getPi().cancel();
+                                    timeGoalieAlarmObject.setPi(null);
+                                }
                             }
                         }
-
                     }
                 });
+
+                if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()) != null) {
+                    if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()).isRunning()) {
+                        holder.startStopTimer.setChecked(true);
+                    }
+                }
 
 
                 //if the map is not null, then set the state of the button.
@@ -122,11 +143,6 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
         TimeGoalieAlarmObject timeGoalieAlarmObject =
                 BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
-        long secondsElapsed = 0;
-        if (timeGoalieAlarmObject != null) {
-            secondsElapsed = (timeGoalieAlarmObject)
-                    .getSecondsElapsed();
-        }
         long remainingSeconds = totalSeconds;// - secondsElapsed;
         if (timeGoalieAlarmObject != null) {
             timeGoalieAlarmObject.setCountDownTimer(
@@ -136,6 +152,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                             time_tv,
                             goal.getGoalEntry()));
             timeGoalieAlarmObject.getCountDownTimer().start();
+            timeGoalieAlarmObject.setRunning(true);
         } else {
             timeGoalieAlarmObject = new TimeGoalieAlarmObject();
             timeGoalieAlarmObject.setCountDownTimer(
@@ -145,7 +162,26 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                             time_tv,
                             goal.getGoalEntry()));
             timeGoalieAlarmObject.getCountDownTimer().start();
+            timeGoalieAlarmObject.setRunning(true);
+            timeGoalieAlarmObject.setGoal_id(goal.getGoalId());
             BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject);
+        }
+
+        // this will create the system alarm.  :-O !  It will not create it if the pi
+        // already exists.
+
+        if (timeGoalieAlarmObject!=null && timeGoalieAlarmObject.getPi() == null) {
+            timeGoalieAlarmObject.setPi(TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
+                    compoundButton.getContext(),(int)goal.getGoalId()));
+
+            long hours = remainingSeconds / (60 * 60);
+            long minutes = (remainingSeconds - (hours * 60 * 60)) / 60;
+
+            TimeGoalieAlarmManager.setTimeGoalAlarm(
+                    (int)hours,
+                    (int)minutes,
+                    compoundButton.getContext(),null,
+                    timeGoalieAlarmObject.getPi());
         }
     }
 

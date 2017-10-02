@@ -1,6 +1,7 @@
 package us.mindbuilders.petemit.timegoalie;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 
@@ -70,17 +71,22 @@ public class BaseApplication extends Application {
         goal4.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
         goal4.setIsDaily(1);
         goal4.setIsWeekly(0);
+        goal4.setHours(0);
+        goal4.setMinutes(1);
 
 
         new InsertNewGoal(getBaseContext()).execute(goal);
         new InsertNewGoal(getBaseContext()).execute(goal2);
         new InsertNewGoal(getBaseContext()).execute(goal3);
+        new InsertNewGoal(getBaseContext()).execute(goal4);
     }
 
     public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id){
         for (int i = 0 ; i < timeGoalieAlarmObjects.size() ; i ++) {
             if (timeGoalieAlarmObjects.get(i).getGoal_id()==goal_id){
+                Log.e("check",goal_id+"");
                 return timeGoalieAlarmObjects.get(i);
+
             }
         }
         return null;

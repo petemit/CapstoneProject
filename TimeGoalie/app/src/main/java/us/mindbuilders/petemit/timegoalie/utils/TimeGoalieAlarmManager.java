@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -25,11 +26,8 @@ public class TimeGoalieAlarmManager {
     public static int TIMEGOAL_ALARM_REQUEST_CODE = 1238;
 
     public static void setTimeGoalAlarm(int hoursFromNow, int minutesFromNow,
-                                        Context context, @Nullable Bundle extras) {
+                                        Context context, @Nullable Bundle extras, PendingIntent alarmPendingIntent) {
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, TimeGoalieAlarmReceiver.class);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, TIMEGOAL_ALARM_REQUEST_CODE,
-                intent, 0); //need one shot?
 
         //create calendar
         Calendar calendar = Calendar.getInstance();
@@ -37,8 +35,16 @@ public class TimeGoalieAlarmManager {
         calendar.add(Calendar.HOUR_OF_DAY, hoursFromNow);
         calendar.add(Calendar.MINUTE, minutesFromNow);
 
-        alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
+        alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmPendingIntent);
     }
+
+    public static void cancelTimeGoalAlarm(Context context, PendingIntent alarmPendingIntent) {
+        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        alarmMgr.cancel(alarmPendingIntent);
+        Log.e("Mindbuilders",alarmMgr.getNextAlarmClock().getShowIntent().getCreatorPackage());
+    }
+
 
     public static CountDownTimer makeCountdownTimer(long secondsInFuture,
                                                     long intervalInSeconds,

@@ -12,6 +12,7 @@ public class TimeGoalieAlarmObject {
     private PendingIntent pi;
     private CountDownTimer countDownTimer;
     private int secondsElapsed;
+    private boolean isRunning;
 
     public long getGoal_id() {
         return goal_id;
@@ -43,5 +44,13 @@ public class TimeGoalieAlarmObject {
 
     public void setSecondsElapsed(int secondsElapsed) {
         this.secondsElapsed = secondsElapsed;
+    }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public void setRunning(boolean running) {
+        isRunning = running;
     }
 }

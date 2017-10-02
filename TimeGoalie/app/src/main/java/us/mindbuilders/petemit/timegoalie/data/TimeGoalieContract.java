@@ -16,7 +16,8 @@ public class TimeGoalieContract {
     public static final String AUTHORITY = "us.mindbuilders.petemit.timegoalie";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
-    public static class Goals implements BaseColumns {
+    public static class Goals {
+        public static final String _ID = "goal_table_id";
         public static final String GOALS_TABLE_NAME = "goals";
         public static final String GOALS_COLUMN_NAME = "name";
         public static final String GOALS_COLUMN_TIMEGOALHOURS = "time_goal_hours";

@@ -83,9 +83,9 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onPause() {
         super.onPause();
-        for (TimeGoalieAlarmObject tgoal : BaseApplication.getTimeGoalieAlarmObjects())
-              {
-                  tgoal.getCountDownTimer().cancel();
+        for (TimeGoalieAlarmObject tgoal : BaseApplication.getTimeGoalieAlarmObjects()) {
+            if (tgoal.getCountDownTimer() != null)
+                tgoal.getCountDownTimer().cancel();
         }
     }
 
