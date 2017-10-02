@@ -23,4 +23,10 @@
     <dimen name="soccerball_size">30dp</dimen>
     <dimen name="half_margin">8dp</dimen>
     <dimen name="time_tv">70dp</dimen>
+    <dimen name="tiny_margin">2dp</dimen>
+    <dimen name="widget_min_height">200dp</dimen>
+    <dimen name="widget_min_width">300dp</dimen>
+    <dimen name="widget_frame_size">50dp</dimen>
+    <dimen name="checkbox_size">30dp</dimen>
+    <dimen name="extra_right_margin">20dp</dimen>
 </resources>

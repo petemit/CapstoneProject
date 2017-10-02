@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/goal_list"
-    android:name="us.mindbuilders.petemit.timegoalie.GoalListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layoutManager="LinearLayoutManager"
-    tools:context="us.mindbuilders.petemit.timegoalie.GoalListActivity"
-    tools:listitem="@layout/goal_list_content_less" />
+    android:orientation="vertical">
+
+
+
+
+    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/goal_list"
+        android:name="us.mindbuilders.petemit.timegoalie.GoalListFragment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layoutManager="LinearLayoutManager"
+        tools:context="us.mindbuilders.petemit.timegoalie.GoalListActivity"
+        tools:listitem="@layout/goal_list_content_less"
+        android:layout_marginTop="@dimen/half_margin"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="@dimen/half_margin"
+        android:layout_marginRight="@dimen/half_margin"
+        android:paddingBottom="64dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
+</android.support.constraint.ConstraintLayout>

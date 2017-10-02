@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="@dimen/left_margin"
+    android:layout_marginBottom="@dimen/tiny_margin"
+
     android:layout_marginRight="@dimen/right_margin"
 
     android:layout_marginTop="@dimen/top_margin">
@@ -20,8 +22,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="8dp" />
+            android:layout_marginStart="@dimen/left_margin"
+            android:layout_marginTop="@dimen/half_margin" />
 
         <ImageView
             android:id="@+id/goal_image"
@@ -48,12 +50,12 @@
             app:layout_constraintTop_toTopOf="@+id/goal_image" />
 
         <android.support.v7.widget.AppCompatCheckBox
-            android:id="@+id/appCompatCheckBox"
-            android:layout_width="30dp"
+            android:id="@+id/yes_no_checkbox"
+            android:layout_width="@dimen/checkbox_size"
             android:scaleX="1.5"
             android:scaleY="1.5"
-            android:layout_height="30dp"
-            android:layout_marginRight="20dp"
+            android:layout_height="@dimen/checkbox_size"
+            android:layout_marginRight="@dimen/extra_right_margin"
 
             app:layout_constraintBottom_toBottomOf="@+id/goal_image"
             app:layout_constraintRight_toRightOf="parent"

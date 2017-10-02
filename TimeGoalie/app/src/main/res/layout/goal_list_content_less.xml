@@ -7,6 +7,7 @@
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
     android:layout_marginStart="@dimen/left_margin"
+    android:layout_marginBottom="@dimen/tiny_margin"
     android:layout_marginEnd="@dimen/right_margin"
     android:layout_marginTop="@dimen/top_margin">
 
@@ -92,7 +93,7 @@
 
         <TextView
             android:id="@+id/timeTextView"
-            android:layout_width="70dp"
+            android:layout_width="74dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/left_margin"
             android:layout_marginTop="@dimen/half_margin"

@@ -10,27 +10,63 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="100dp"
         android:theme="@style/TimeGoalTheme.AppBarOverlay">
 
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:title="@string/defend_the_goals"
+        <!--<android.support.design.widget.CollapsingToolbarLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--app:title="@string/defend_the_goals"-->
+            <!--app:layout_scrollFlags="scroll|exitUntilCollapsed"-->
+            <!--&gt;-->
 
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            >
 
-            <android.support.v7.widget.Toolbar
+
+
+        <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
+                android:title="@string/app_name"
+
                 android:layout_height="?attr/actionBarSize"
-
-                app:popupTheme="@style/TimeGoalTheme.PopupOverlay" />
-
-        </android.support.design.widget.CollapsingToolbarLayout>
+                app:popupTheme="@style/TimeGoalTheme.PopupOverlay">
 
 
+
+        </android.support.v7.widget.Toolbar>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/half_margin"
+            android:layout_height="wrap_content">
+
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="10"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_numberOfGoalsCleared"
+            android:text="0"
+
+            android:textAlignment="textEnd"
+            android:layout_marginEnd="@dimen/half_margin"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+
+   />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="5"
+
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            android:text="Goals Saved"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:id="@+id/textView"
+            android:layout_marginEnd="@dimen/right_margin"
+            />
+        </LinearLayout>
+        <!--</android.support.design.widget.CollapsingToolbarLayout>-->
 
     </android.support.design.widget.AppBarLayout>
 
@@ -38,6 +74,7 @@
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingBottom="@dimen/top_margin"
         android:orientation="vertical"
 
         app:layout_behavior="@string/appbar_scrolling_view_behavior">

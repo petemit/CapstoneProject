@@ -22,7 +22,7 @@ public class GoalReportActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_goal_report);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.report_toolbar);
         setSupportActionBar(toolbar);
 
         // Show the Up button in the action bar.
@@ -44,8 +44,6 @@ public class GoalReportActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(GoalReportFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(GoalReportFragment.ARG_ITEM_ID));
             GoalReportFragment fragment = new GoalReportFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()

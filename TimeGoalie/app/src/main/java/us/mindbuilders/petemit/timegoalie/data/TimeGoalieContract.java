@@ -16,7 +16,8 @@ public class TimeGoalieContract {
     public static final String AUTHORITY = "us.mindbuilders.petemit.timegoalie";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
-    public static class Goals implements BaseColumns {
+    public static class Goals {
+        public static final String _ID = "goal_table_id";
         public static final String GOALS_TABLE_NAME = "goals";
         public static final String GOALS_COLUMN_NAME = "name";
         public static final String GOALS_COLUMN_TIMEGOALHOURS = "time_goal_hours";
@@ -46,6 +47,11 @@ public class TimeGoalieContract {
         public static final String GOALENTRIES_TABLE_NAME = "goalentries";
         public static final String GOALENTRIES_COLUMN_GOAL_ID = "goal_id";
         public static final String GOALENTRIES_COLUMN_SECONDSELAPSED = "seconds_elapsed";
+        public static final String GOALENTRIES_COLUMN_GOALAUGMENT = "goal_augment";
+        public static final String GOALENTRIES_COLUMN_SUCCEEDED = "succeeded";
+        public static final String GOALENTRIES_COLUMN_ISRUNNING = "isRunning";
+        public static final String GOALENTRIES_COLUMN_TARGETTIME = "targetTime";
+        public static final String GOALENTRIES_COLUMN_ISFINISHED = "isFinished";
         public static final String GOALENTRIES_COLUMN_DATETIME = "timestamp";
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(GOALENTRIES_TABLE_NAME).build();
@@ -76,7 +82,7 @@ public class TimeGoalieContract {
     }
 
     //get all goals for a specific day of the week
-    public static Uri buildGetAllGoalsForASpecificDayQueryUri(long dayid) {
+    public static Uri buildGetAllGoalsForCurrentDayOfWeekQueryUri(long dayid) {
         return ContentUris.withAppendedId(GoalsDays.CONTENT_URI, dayid);
     }
 
@@ -92,7 +98,16 @@ public class TimeGoalieContract {
 
     //get a goal_entry by goalid
     public static Uri buildGetAGoalEntryByGoalId(long goalid) {
-        return ContentUris.withAppendedId(GoalEntries.CONTENT_URI,goalid);
+        return ContentUris.withAppendedId(GoalEntries.CONTENT_URI
+                        .buildUpon()
+                        .appendPath("goal")
+                        .build()
+                ,goalid);
+    }
+
+    //get a goal_entry by goalid
+    public static Uri buildGetAGoalEntryByGoalEntryId(long goalEntryid) {
+        return ContentUris.withAppendedId(GoalEntries.CONTENT_URI,goalEntryid);
     }
 
     // //get a day by id
@@ -113,9 +128,14 @@ public class TimeGoalieContract {
     }
 
     //get all goals with a is_today_only with the date of today
-    public static Uri getSecondsElapsedOnADayWithAGoalUri(Timestamp timestamp, long goalid) {
-        return ContentUris.withAppendedId(Goals.CONTENT_URI.buildUpon()
-                .appendPath("goal").appendQueryParameter("date", timestamp.toString()).build(), goalid);
+    public static Uri getGoalsThatHaveGoalEntryForToday() {
+        return (GoalEntries.CONTENT_URI.buildUpon()
+                .appendPath("date").build());
+    }
+
+    public static Uri getSuccessfulGoalsForToday(String date) {
+        return (GoalEntries.CONTENT_URI.buildUpon()
+        .appendPath("successfulGoals").appendQueryParameter("date",date).build());
     }
 
     //Find a date accomplished associated with a specific goal for a specific day
@@ -125,16 +145,34 @@ public class TimeGoalieContract {
     }
 
     //get a count of dates accomplished for a goal for a week
-    public static Uri getSummedWeeksForGoalsAccomplishedUri(long goalid) {
-        return ContentUris.withAppendedId(GoalsDatesAccomplished.CONTENT_URI.buildUpon()
-                .appendPath("weeks").appendPath("goal").build(), goalid);
+    public static Uri getMonthSuccessfulGoalsByGoal(long goalid, int numOfMonths) {
+        return ContentUris.withAppendedId(GoalEntries.CONTENT_URI.buildUpon()
+                .appendPath("months").appendPath("goal").appendQueryParameter(
+                        "numOfMonths", Integer.toString(numOfMonths)).build(), goalid);
     }
 
-    //get a count of dates accomplished for a goal for a month
-    public static Uri getSummedMonthsForGoalsAccomplishedUri(long goalid, long dayid) {
-        return ContentUris.withAppendedId(GoalsDatesAccomplished.CONTENT_URI.buildUpon()
-                .appendPath("months").appendPath("goal").build(), goalid);
+    //get a count of dates accomplished for a goal for a week
+    public static Uri getMonthSuccessfulGoals(int numOfMonths) {
+        return (GoalEntries.CONTENT_URI.buildUpon()
+                .appendPath("months").appendQueryParameter(
+                        "numOfMonths", Integer.toString(numOfMonths)).build());
     }
+
+    //get a count of dates accomplished for a goal for a week
+    public static Uri getWeekSuccessfulGoalsByGoal(long goalid, int numOfWeeks) {
+        return ContentUris.withAppendedId(GoalEntries.CONTENT_URI.buildUpon()
+                .appendPath("weeks").appendPath("goal").appendQueryParameter(
+                        "numOfWeeks", Integer.toString(numOfWeeks)).build(), goalid);
+    }
+
+    //get a count of dates accomplished for a goal for a week
+    public static Uri getWeekSuccessfulGoals(int numOfWeeks) {
+        return (GoalEntries.CONTENT_URI.buildUpon()
+                .appendPath("weeks").appendQueryParameter(
+                        "numOfWeeks", Integer.toString(numOfWeeks)).build());
+    }
+
+    //get a count of dates accomplished for a goal for a week
 
 
 }

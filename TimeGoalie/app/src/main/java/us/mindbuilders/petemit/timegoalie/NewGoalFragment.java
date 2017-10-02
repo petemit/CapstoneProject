@@ -260,14 +260,6 @@ public class NewGoalFragment extends Fragment {
                 else {
                     goal.setIsWeekly(0);
                 }
-
-                if ((goal.getIsDaily()==0&&goal.getIsWeekly()==0)||goal.getIsDaily()==1) {
-                    GoalEntry todayGoalEntry= new GoalEntry();
-                    todayGoalEntry.setSecondsElapsed(0);
-                    todayGoalEntry.setDate(TimeGoalieDateUtils.getSqlDateString());
-                    new InsertNewGoalEntry(getContext()).execute(todayGoalEntry);
-                }
-
                 new InsertNewGoal(getContext()).execute(goal);
                 getContext().startActivity(new Intent(getContext(), GoalListActivity.class));
             }

@@ -1,10 +1,13 @@
 package us.mindbuilders.petemit.timegoalie;
 
 import android.app.Application;
+import android.content.Context;
+import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Day;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
@@ -19,18 +22,42 @@ import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
 public class BaseApplication extends Application {
     private static ArrayList<TimeGoalieAlarmObject> timeGoalieAlarmObjects;
+    private static Calendar activeCalendarDate = Calendar.getInstance();
+    private static Context context;
+    private static GoalActivityListListener goalActivityListListener;
 
     public static ArrayList<TimeGoalieAlarmObject> getTimeGoalieAlarmObjects() {
         return timeGoalieAlarmObjects;
+    }
+
+    public static GoalActivityListListener getGoalActivityListListener() {
+        return goalActivityListListener;
+    }
+
+    public static void setGoalActivityListListener(GoalActivityListListener goalActivityListListener) {
+        BaseApplication.goalActivityListListener = goalActivityListListener;
+    }
+
+    public interface GoalActivityListListener {
+        void notifyChanges(Goal goal);
     }
 
     public static void setTimeGoalieAlarmObjects(ArrayList<TimeGoalieAlarmObject> timeGoalieAlarmObjects) {
         BaseApplication.timeGoalieAlarmObjects = timeGoalieAlarmObjects;
     }
 
+    public static Calendar getActiveCalendarDate() {
+        return activeCalendarDate;
+    }
+
+    public static void setActiveCalendarDate(Calendar activeCalendarDate) {
+        BaseApplication.activeCalendarDate = activeCalendarDate;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        setContext(getBaseContext());
         setTimeGoalieAlarmObjects(new ArrayList<TimeGoalieAlarmObject>());
         getDatabasePath("timeGoalie.db").delete();
         Stetho.initializeWithDefaults(this);
@@ -70,22 +97,46 @@ public class BaseApplication extends Application {
         goal4.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
         goal4.setIsDaily(1);
         goal4.setIsWeekly(0);
-
+        goal4.setHours(0);
+        goal4.setMinutes(1);
 
         new InsertNewGoal(getBaseContext()).execute(goal);
         new InsertNewGoal(getBaseContext()).execute(goal2);
         new InsertNewGoal(getBaseContext()).execute(goal3);
+        new InsertNewGoal(getBaseContext()).execute(goal4);
+
+
     }
 
     public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id){
         for (int i = 0 ; i < timeGoalieAlarmObjects.size() ; i ++) {
             if (timeGoalieAlarmObjects.get(i).getGoal_id()==goal_id){
+                Log.e("check",goal_id+"");
                 return timeGoalieAlarmObjects.get(i);
+
+            }
+        }
+        return null;
+    }
+
+    public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id, String date){
+        for (int i = 0 ; i < timeGoalieAlarmObjects.size() ; i ++) {
+            if (timeGoalieAlarmObjects.get(i).getGoal_id()==goal_id &&
+                    timeGoalieAlarmObjects.get(i).getDate().equals(date)){
+                Log.e("check",goal_id+"");
+                return timeGoalieAlarmObjects.get(i);
+
             }
         }
         return null;
     }
 
 
+    public static Context getContext() {
+        return context;
+    }
 
+    public void setContext(Context context) {
+        this.context = context;
+    }
 }

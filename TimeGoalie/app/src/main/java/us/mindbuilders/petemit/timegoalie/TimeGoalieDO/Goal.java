@@ -5,9 +5,11 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 
 import java.sql.Date;
+import java.sql.Time;
 import java.util.ArrayList;
 
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
 /**
  * Created by Peter on 9/23/2017.
@@ -123,32 +125,89 @@ public class Goal {
         this.goalDays = goalDays;
     }
 
-    public static ArrayList<Goal> createGoalListFromCursor(Cursor cursor) {
+    public static ArrayList<Goal> createGoalListWithGoalEntriesFromCursor(Cursor cursor) {
         ArrayList<Goal> goalList = new ArrayList<Goal>();
-        while (cursor.moveToNext()) {
-            Goal goal = new Goal();
-            goal.setName(cursor.getString(cursor.
-                    getColumnIndex(TimeGoalieContract.Goals.GOALS_COLUMN_NAME)));
-            goal.setHours((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
-                    TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS))));
-            goal.setMinutes((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
-                    TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES))));
-            goal.setGoalTypeId(
-                    cursor.getInt(
-                            cursor.getColumnIndex(
-                                    TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID)));
-            GoalEntry goalEntry = new GoalEntry();
-            goalEntry.setSecondsElapsed(
-                    cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
-                    .GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED)));
-            goalEntry.setDate(cursor.getString(
-                    cursor.getColumnIndex(TimeGoalieContract
-                            .GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                Goal goal = new Goal();
+                goal.setGoalId(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.Goals._ID)));
+                goal.setName(cursor.getString(cursor.
+                        getColumnIndex(TimeGoalieContract.Goals.GOALS_COLUMN_NAME)));
+                goal.setHours((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
+                        TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS))));
+                goal.setMinutes((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
+                        TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES))));
+                goal.setGoalTypeId(
+                        cursor.getInt(
+                                cursor.getColumnIndex(
+                                        TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID)));
+                GoalEntry goalEntry = new GoalEntry(cursor.getLong(cursor.
+                        getColumnIndex(TimeGoalieContract.GoalEntries._ID))
+                        ,goal.getGoalId(), cursor.getString(
+                        cursor.getColumnIndex(TimeGoalieContract
+                                .GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
+                if (goalEntry.getDate() == null) {
+                    goalEntry.setDate(TimeGoalieDateUtils.getSqlDateString());
+                }
+                goalEntry.setSecondsElapsed(
+                        cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
+                                .GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED)), true);
+                goalEntry.setGoalAugment(cursor.getInt(
+                        cursor.getColumnIndex(TimeGoalieContract
+                                .GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT)));
+                goalEntry.setHasSucceeded(cursor.getInt(
+                        cursor.getColumnIndex(TimeGoalieContract.
+                                GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED)
+                ));
+                goalEntry.setHasFinished(
+                        cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
+                        .GoalEntries.GOALENTRIES_COLUMN_ISFINISHED))
+                );
+                goalEntry.setRunning(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.
+                        GoalEntries.GOALENTRIES_COLUMN_ISRUNNING)));
 
-            goal.goalEntry=goalEntry;
-            goalList.add(goal);
+                goalEntry.setTargetTime((cursor.getLong(cursor.getColumnIndex(TimeGoalieContract.
+                        GoalEntries.GOALENTRIES_COLUMN_TARGETTIME))));
+                goal.goalEntry = goalEntry;
+                goalList.add(goal);
+            }
         }
         return goalList;
     }
 
+    public static ArrayList<Goal> createGoalListFromCursor(Cursor cursor) {
+        ArrayList<Goal> goalList = new ArrayList<Goal>();
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                Goal goal = new Goal();
+                goal.setGoalId(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.Goals._ID)));
+                goal.setName(cursor.getString(cursor.
+                        getColumnIndex(TimeGoalieContract.Goals.GOALS_COLUMN_NAME)));
+                goal.setHours((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
+                        TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS))));
+                goal.setMinutes((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
+                        TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES))));
+                goal.setGoalTypeId(
+                        cursor.getInt(
+                                cursor.getColumnIndex(
+                                        TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID)));
+                goalList.add(goal);
+            }
+        }
+        return goalList;
+    }
+
+    public long getGoalSeconds() {
+        int goalAugment = 0;
+        if (this.goalEntry != null) {
+            goalAugment = this.getGoalEntry().getGoalAugment();
+        }
+
+        return ((getHours() * 60 * 60) + (getMinutes() * 60) + goalAugment);
+    }
+
+    @Override
+    public String toString() {
+        return this.getName();
+    }
 }

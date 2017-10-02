@@ -1,47 +1,98 @@
 package us.mindbuilders.petemit.timegoalie;
 
 
-import android.os.CountDownTimer;
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.drawable.RotateDrawable;
+
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+
+import android.view.animation.TranslateAnimation;
+import android.widget.Button;
 import android.widget.CompoundButton;
+
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntryGoalCounter;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
+import us.mindbuilders.petemit.timegoalie.data.GetSuccessfulGoalCount;
+import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
+import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieUtils;
 
 /**
- * Created by Peter on 9/15/2017.
+ * Data handler for goal recyclerview.  This is turning out to be the brains of this operation
  */
 
-public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerViewAdapter.GoalViewHolder> {
+public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerViewAdapter.GoalViewHolder> implements BaseApplication.GoalActivityListListener {
 
     // private final List<DummyContent.DummyItem> mValues;
 
     private View.OnClickListener onClickListener;
     private ArrayList<Goal> goalArrayList;
-    private HashMap<Long, Boolean> startStopButtonStateMap;
+    private boolean isToday;
+    private GoalCounter goalCounter;
+    private Context context;
+    private GoalEntryGoalCounter goalEntryGoalCounter;
 
+    @Override
+    public void notifyChanges(Goal goal) {
+        if (goalArrayList != null) {
+            for (int i = 0; i < goalArrayList.size(); i++) {
+                if (goal.getGoalId() == goalArrayList.get(i).getGoalId()){
+                    if (goal.getGoalEntry() != null) {
+                        goalArrayList.get(i).setGoalEntry(goal.getGoalEntry());
+                    }
+                }
+            }
+        }
+    }
+
+
+    public interface GoalCounter {
+        void updateGoalCounter(int add);
+    }
 
     //    public GoalRecyclerViewAdapter(List<DummyContent.DummyItem> items, View.OnClickListener onClickListener) {
 //        mValues = items;
 //        this.onClickListener = onClickListener;
 //    }
-    public GoalRecyclerViewAdapter(View.OnClickListener onClickListener) {
+    public GoalRecyclerViewAdapter(View.OnClickListener onClickListener, GoalCounter goalCounter, Context context) {
         this.onClickListener = onClickListener;
-        startStopButtonStateMap = new HashMap<Long, Boolean>();
+        this.goalCounter = goalCounter;
+        this.context = context;
+        BaseApplication.setGoalActivityListListener(this);
     }
 
     @Override
@@ -65,7 +116,21 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
     }
 
     public void swapCursor(ArrayList<Goal> goalArrayList) {
+        for (TimeGoalieAlarmObject tgoal : BaseApplication.getTimeGoalieAlarmObjects()) {
+            if (tgoal.getCountDownTimer() != null)
+                tgoal.getCountDownTimer().cancel();
+        }
         this.goalArrayList = goalArrayList;
+        notifyDataSetChanged();
+    }
+
+    public void swapCursor(ArrayList<Goal> goalArrayList, boolean isToday) {
+        for (TimeGoalieAlarmObject tgoal : BaseApplication.getTimeGoalieAlarmObjects()) {
+            if (tgoal.getCountDownTimer() != null)
+                tgoal.getCountDownTimer().cancel();
+        }
+        this.goalArrayList = goalArrayList;
+        this.isToday = isToday;
         notifyDataSetChanged();
     }
 
@@ -73,81 +138,352 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
     public void onBindViewHolder(final GoalViewHolder holder, int position) {
         if (getItemCount() > 0) {
             final Goal goal = goalArrayList.get(position);
+
+            TimeGoalieAlarmObject tj = new TimeGoalieAlarmObject(goal.getGoalId(),
+                    TimeGoalieDateUtils.getSqlDateString());
+            BaseApplication.getTimeGoalieAlarmObjects().add(tj);
+
+
+            goalEntryGoalCounter = new GoalEntryGoalCounter(goalCounter,
+                    TimeGoalieDateUtils.getSqlDateString(BaseApplication.getActiveCalendarDate()));
+
+
             //cursor.moveToPosition(position);
             holder.tv_goaltitle.setText(goal.getName());
-            if (holder.startStopTimer != null) {
-                long onBindElapsedSeconds = 0;
-                // long onBindElapsedSeconds = goal.getGoalEntry().getSecondsElapsed();
-                if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()) != null) {
-                    onBindElapsedSeconds = (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()))
-                            .getSecondsElapsed();
+            if (holder.spinningBallAnim != null) {
+                holder.spinningBallAnim.cancel();
+            }
+
+                if (goal.getGoalTypeId() == 1) { // if this is GoalType Limit goal
+                if (goal.getGoalEntry() != null) {
+                    
+                    }
+                    
+                if (holder.seekbar != null) {
+                    holder.seekbar.setProgressDrawable(holder.seekbar.getResources().
+                            getDrawable(R.drawable.seekbar_reverse, null));
                 }
-                final long totalSeconds = ((goal.getHours() * 60 * 60) + (goal.getMinutes() * 60)) -
-                        onBindElapsedSeconds;
-                holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(totalSeconds * 1000));
+            } else if (goal.getGoalTypeId() == 2) { // yes no
+                if (goal.getGoalEntry().getHasSucceeded()) {
+                    holder.goalCheckBox.setChecked(true);
+                } else {
+                    holder.goalCheckBox.setChecked(false);
+                }
+            }
+//            } else if (goal.getGoalTypeId() == 2) {//yes no goal
+//                if (goal.getGoalEntry() != null) {
+//                    if (goal.getGoalEntry().getHasSucceeded() == 1) {
+//                        goalCounter.updateGoalCounter(true);
+//                    }
+//                }
+//            }
 
-                holder.startStopTimer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                        TimeGoalieAlarmObject timeGoalieAlarmObject =
-                                BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
 
-                        if (b) {
-                            startTimer(holder.time_tv, totalSeconds, goal, compoundButton);
-                        } else {
-                            if (timeGoalieAlarmObject.getCountDownTimer() != null) {
-                                timeGoalieAlarmObject.getCountDownTimer().cancel();
+            //if statement checks to see if this is a time goal by the existence of a start/stop button
+            if (holder.startStopTimer != null) {
+
+                long remainingSeconds = TimeGoalieUtils.getRemainingSeconds(goal);
+
+                //Set initial Time Text labels:
+                TimeGoalieUtils.setTimeTextLabel(goal, holder.time_tv, holder.tv_timeOutOf);
+                // if this is a more goal
+                if (goal.getGoalTypeId() == 0) {
+
+                    if (holder.seekbar != null) {
+                        holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) / goal.getGoalSeconds())) * 100 * 100));
+                    }
+
+                } else {
+                    if (remainingSeconds < 0) {
+                    } else {
+
+                        //set Progress bar Progress
+                        if (holder.seekbar != null) {
+                            holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) / goal.getGoalSeconds())) * 100 * 100));
+                        }
+                    }
+                }
+                if (isToday) {
+                    holder.startStopTimer.setVisibility(View.VISIBLE);
+                    holder.startStopTimer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                            TimeGoalieAlarmObject timeGoalieAlarmObject =
+                                    BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
+
+                            Log.e("mindbuilders3", goal.getName() + " tick " + goal.getGoalEntry().getSecondsElapsed());
+
+                            long newtime = goal.getGoalSeconds();
+                            if (goal.getGoalEntry() != null) {
+                                newtime = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
+                            }
+                            if (b && goal.getGoalEntry().getDate()
+                                    .equals(TimeGoalieDateUtils.getSqlDateString())) {
+                                TimeGoalieAlarmManager.startTimer(goalCounter, holder.time_tv, newtime, goal,
+                                        compoundButton.getContext(), holder.seekbar);
+                                holder.spinningBallAnim.start();
+                                //Start the Goal!!
+                                goal.getGoalEntry().setRunning(true);
+                                Log.e("mindbuilders4", goal.getName() + " tick " + goal.getGoalEntry().getSecondsElapsed());
+                                new InsertNewGoalEntry(
+                                        compoundButton.getContext()).execute(goal.getGoalEntry());
+                            } else {
+                                if (timeGoalieAlarmObject != null) {
+                                    if (timeGoalieAlarmObject.getCountDownTimer() != null) {
+                                        timeGoalieAlarmObject.getCountDownTimer().cancel();
+                                        timeGoalieAlarmObject.setCountDownTimer(null);
+                                    }
+                                    if (timeGoalieAlarmObject.getAlarmDonePendingIntent() != null) {
+                                        TimeGoalieAlarmManager.cancelTimeGoalAlarm(
+                                                compoundButton.getContext(),
+                                                timeGoalieAlarmObject.getAlarmDonePendingIntent());
+                                        timeGoalieAlarmObject.getAlarmDonePendingIntent().cancel();
+                                        timeGoalieAlarmObject.setAlarmDonePendingIntent(null);
+                                    }
+                                    if (timeGoalieAlarmObject.getOneMinuteWarningPendingIntent() != null) {
+                                        TimeGoalieAlarmManager.cancelTimeGoalAlarm(
+                                                compoundButton.getContext(),
+                                                timeGoalieAlarmObject.getOneMinuteWarningPendingIntent());
+                                        timeGoalieAlarmObject.getOneMinuteWarningPendingIntent().cancel();
+                                        timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(null);
+                                    }
+                 //                   TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context, goal);
+                                    //timeGoalieAlarmObject.setRunning(false);
+                                    goal.getGoalEntry().setRunning(false);
+                                    Log.e("mindbuilders5", goal.getName() + " tick " + goal.getGoalEntry().getSecondsElapsed());
+                                    new InsertNewGoalEntry(
+                                            compoundButton.getContext()).execute(goal.getGoalEntry());
+                                }
+
+
+                                holder.spinningBallAnim.cancel();
                             }
                         }
+                    });
 
+                    if (goal.getGoalEntry() != null) {
+                        if (goal.getGoalEntry().isRunning()
+                                && goal.getGoalEntry().getDate()
+                                .equals(TimeGoalieDateUtils.getSqlDateString())) {
+                            holder.startStopTimer.setChecked(false);
+                            holder.startStopTimer.setChecked(true);
+                        }
+                    }
+
+
+                }// end start/stop
+                else {
+                    holder.startStopTimer.setVisibility(View.GONE);
+                }
+            }//if istoday
+            holder.mView.setOnClickListener(onClickListener);
+
+            if (isToday) {
+                if (holder.pencil != null) {
+                    holder.pencil.setVisibility(View.VISIBLE);
+                }
+                if (holder.smallAdd != null) {
+                    final TimeGoalieAlarmObject timeGoalieAlarmObject =
+                            BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
+
+                    int[] incrementValues = holder.smallAdd.getContext().getResources().getIntArray(R.array.incrementArray);
+                    // edit buttons
+                    Button[] addButtons = new Button[]{holder.smallAdd, holder.mediumAdd, holder.largeAdd};
+                    Button[] subtractButtons = new Button[]{holder.smallSubtract, holder.mediumSubtract, holder.largeSubtract};
+
+                    for (int i = 0; i < incrementValues.length; i++) {
+                        final int value = incrementValues[i];
+
+                        addButtons[i].setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                if (timeGoalieAlarmObject != null) {
+                                    if (timeGoalieAlarmObject.getCountDownTimer() != null) {
+                                        timeGoalieAlarmObject.getCountDownTimer().cancel();
+                                        timeGoalieAlarmObject.setCountDownTimer(null);
+                                    }
+                                    if (timeGoalieAlarmObject.getAlarmDonePendingIntent() != null) {
+                                        TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
+                                                timeGoalieAlarmObject.getAlarmDonePendingIntent());
+                                        timeGoalieAlarmObject.setAlarmDonePendingIntent(null);
+                                    }
+                                    if (timeGoalieAlarmObject.getOneMinuteWarningPendingIntent() != null) {
+                                        TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
+                                                timeGoalieAlarmObject.getOneMinuteWarningPendingIntent());
+                                        timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(null);
+                                    }
+                                }
+                                //old goal.setMinutes(goal.getMinutes() + value);
+                                goal.getGoalEntry().setGoalAugment(
+                                        goal.getGoalEntry().getGoalAugment() + value * 60);
+
+                                TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context, goal);
+
+                                //timeGoalieAlarmObject.setTargetTime(0);
+                                goal.getGoalEntry().setTargetTime(0);
+                                new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
+                                notifyDataSetChanged();
+
+
+                            }
+                        });
+
+                        subtractButtons[i].setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+
+                                if (timeGoalieAlarmObject != null) {
+
+                                    if (timeGoalieAlarmObject.getCountDownTimer() != null) {
+                                        timeGoalieAlarmObject.getCountDownTimer().cancel();
+                                        timeGoalieAlarmObject.setCountDownTimer(null);
+                                    }
+                                    if (timeGoalieAlarmObject.getAlarmDonePendingIntent() != null) {
+                                        TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
+                                                timeGoalieAlarmObject.getAlarmDonePendingIntent());
+                                        timeGoalieAlarmObject.setAlarmDonePendingIntent(null);
+                                    }
+                                    if (timeGoalieAlarmObject.getOneMinuteWarningPendingIntent() != null) {
+                                        TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
+                                                timeGoalieAlarmObject.getOneMinuteWarningPendingIntent());
+                                        timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(null);
+                                    }
+
+                                }
+                                    if (goal.getGoalSeconds() / 60 > value) {
+                                        goal.getGoalEntry().setGoalAugment(
+                                                goal.getGoalEntry().getGoalAugment() - value * 60);
+                                    }
+                                    TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context, goal);
+                                    //timeGoalieAlarmObject.setTargetTime(0);
+                                    goal.getGoalEntry().setTargetTime(0);
+                                    new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
+                                    notifyDataSetChanged();
+                            }
+                        });
+                    }
+                } //end add edit buttons
+            }//end istoday
+            else {
+                if (holder.pencil != null) {
+                    holder.pencil.setVisibility(View.GONE);
+                    holder.editButtons.setVisibility(View.GONE);
+                }
+            }
+
+
+            //and now, the goal Checkbox
+
+            if (holder.goalCheckBox != null) {
+                holder.goalCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                        if (b) {
+                            if (goal.getGoalEntry() != null) {
+                                goal.getGoalEntry().setHasSucceeded(1);
+                                goal.getGoalEntry().setHasFinished(true);
+                                new InsertNewGoalEntry(compoundButton.getContext())
+                                        .execute(goal.getGoalEntry());
+                                new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
+                                new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
+                                holder.soccerBallImage.animate().translationX(600f)
+                                        .setDuration(1000)
+                                        .setInterpolator(new AccelerateDecelerateInterpolator())
+                                        .setListener(new Animator.AnimatorListener() {
+                                            @Override
+                                            public void onAnimationStart(Animator animator) {
+                                                holder.spinningBallAnim.start();
+                                            }
+
+                                            @Override
+                                            public void onAnimationEnd(Animator animator) {
+                                                holder.spinningBallAnim.cancel();
+                                            }
+
+                                            @Override
+                                            public void onAnimationCancel(Animator animator) {
+                                                holder.spinningBallAnim.cancel();
+                                            }
+
+                                            @Override
+                                            public void onAnimationRepeat(Animator animator) {
+
+                                            }
+                                        });
+                            }
+                        } else {
+
+                            if (goal.getGoalEntry() != null) {
+                                goal.getGoalEntry().setHasSucceeded(0);
+                                goal.getGoalEntry().setHasFinished(true);
+                                new InsertNewGoalEntry(compoundButton.getContext())
+                                        .execute(goal.getGoalEntry());
+                                new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
+                                new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
+                                holder.soccerBallImage.animate().translationX(0)
+                                        .setDuration(1000)
+                                        .setInterpolator(new AccelerateDecelerateInterpolator())
+                                        .setListener(new Animator.AnimatorListener() {
+                                            @Override
+                                            public void onAnimationStart(Animator animator) {
+                                                holder.spinningBallAnim.start();
+                                            }
+
+                                            @Override
+                                            public void onAnimationEnd(Animator animator) {
+                                                holder.spinningBallAnim.cancel();
+
+                                            }
+
+                                            @Override
+                                            public void onAnimationCancel(Animator animator) {
+                                                holder.spinningBallAnim.cancel();
+                                            }
+
+                                            @Override
+                                            public void onAnimationRepeat(Animator animator) {
+
+                                            }
+                                        });
+
+//                                if (holder.soccerBallImage != null && holder.moveSoccerBallAnim != null) {
+//                                    holder.soccerBallImage.startAnimation(holder.moveSoccerBallAnim);
+//                                }
+                            }
+
+                        }
                     }
                 });
-
-
-                //if the map is not null, then set the state of the button.
-//                if (startStopButtonStateMap.get(goal.getGoalId()) != null) {
-//                    holder.startStopTimer.performClick();
-//                    //  holder.startStopTimer.setChecked(startStopButtonStateMap.get(goal.getGoalId()));
-//                }
-
             }
-            holder.mView.setOnClickListener(onClickListener);
-        }
-    }
+
+            //update goal counter to reflect time goals to limit
+
+
+            if (goal.getGoalTypeId() == 1) { // if this is GoalType Limit goal
+                if (goal.getGoalEntry() != null) {
+                    if (!goal.getGoalEntry().isHasFinished() &&
+                            !goal.getGoalEntry().getHasSucceeded()) {
+                        goal.getGoalEntry().setHasSucceeded(1);
+                    } else if (goal.getGoalEntry().isHasFinished() &&
+                            goal.getGoalEntry().getHasSucceeded()) {
+                        goal.getGoalEntry().setHasSucceeded(0);
+                    }
+                }
+                new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
+            }
+
+
+
+
+        } //end if itemviewcount
+    }//end BindViewHolder
 
     /* This will actually link the static list of Alarms and Countdowntimers in the baseapplication
        to the textview
     */
-    public void startTimer(TextView time_tv, long totalSeconds, Goal goal, CompoundButton compoundButton) {
 
-        TimeGoalieAlarmObject timeGoalieAlarmObject =
-                BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
-        long secondsElapsed = 0;
-        if (timeGoalieAlarmObject != null) {
-            secondsElapsed = (timeGoalieAlarmObject)
-                    .getSecondsElapsed();
-        }
-        long remainingSeconds = totalSeconds;// - secondsElapsed;
-        if (timeGoalieAlarmObject != null) {
-            timeGoalieAlarmObject.setCountDownTimer(
-                    TimeGoalieAlarmManager.makeCountdownTimer(
-                            remainingSeconds,
-                            1,
-                            time_tv,
-                            goal.getGoalEntry()));
-            timeGoalieAlarmObject.getCountDownTimer().start();
-        } else {
-            timeGoalieAlarmObject = new TimeGoalieAlarmObject();
-            timeGoalieAlarmObject.setCountDownTimer(
-                    TimeGoalieAlarmManager.makeCountdownTimer(
-                            remainingSeconds,
-                            1,
-                            time_tv,
-                            goal.getGoalEntry()));
-            timeGoalieAlarmObject.getCountDownTimer().start();
-            BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject);
-        }
-    }
 
     @Override
     public int getItemViewType(int position) {
@@ -170,15 +506,41 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
         private TextView tv_goaltitle;
         private ToggleButton startStopTimer;
         private TextView time_tv;
+        private Button smallAdd;
+        private Button mediumAdd;
+        private Button largeAdd;
+        private Button smallSubtract;
+        private Button mediumSubtract;
+        private Button largeSubtract;
+        private SeekBar seekbar;
+        private ObjectAnimator spinningBallAnim;
+        private TextView tv_timeOutOf;
+        private AppCompatCheckBox goalCheckBox;
+        private TranslateAnimation moveSoccerBallAnim;
+        private ImageView soccerBallImage;
+
 
         public GoalViewHolder(View view) {
             super(view);
             mView = view;
-            tv_goaltitle = (TextView) view.findViewById(R.id.tv_goal_title);
-            pencil = (ToggleButton) view.findViewById(R.id.pencil_button);
-            editButtons = (LinearLayout) view.findViewById(R.id.edit_button_ll);
-            startStopTimer = (ToggleButton) view.findViewById(R.id.start_stop);
-            time_tv = (TextView) view.findViewById(R.id.timeTextView);
+            tv_goaltitle = view.findViewById(R.id.tv_goal_title);
+            pencil = view.findViewById(R.id.pencil_button);
+            editButtons = view.findViewById(R.id.edit_button_ll);
+            startStopTimer = view.findViewById(R.id.start_stop);
+            time_tv = view.findViewById(R.id.timeTextView);
+
+            smallAdd = view.findViewById(R.id.plus_small);
+            mediumAdd = view.findViewById(R.id.plus_medium);
+            largeAdd = view.findViewById(R.id.plus_large);
+            smallSubtract = view.findViewById(R.id.minus_small);
+            mediumSubtract = view.findViewById(R.id.minus_medium);
+            largeSubtract = view.findViewById(R.id.minus_large);
+            seekbar = view.findViewById(R.id.goalProgressBar);
+            tv_timeOutOf = view.findViewById(R.id.timeTextView_outOf);
+            goalCheckBox = view.findViewById(R.id.yes_no_checkbox);
+            soccerBallImage = view.findViewById(R.id.soccer_ball_image);
+            RotateDrawable rt = null;
+
 
             if (pencil != null) {
                 pencil.setOnClickListener(new View.OnClickListener() {
@@ -191,6 +553,53 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                         }
                     }
                 });
+            }
+            if (seekbar != null) {
+                seekbar.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+                        return true;
+                    }
+                });
+                seekbar.setMax(seekbar.getMax() * 100);
+
+//                AnimatedVectorDrawable anim = (AnimatedVectorDrawable) view.getResources().getDrawable(R.drawable.anim_soccerball_small,null);
+//                iv.setImageDrawable(anim);
+
+                rt = new RotateDrawable();
+
+                rt.setDrawable(view.getResources().getDrawable(R.drawable.soccerball_small, null));
+                rt.setFromDegrees(0f);
+                rt.setToDegrees(70f);
+                spinningBallAnim = ObjectAnimator.ofInt(rt, "level", 10000);
+                spinningBallAnim.setInterpolator(new LinearInterpolator());
+                spinningBallAnim.setDuration(1000);
+                spinningBallAnim.setRepeatCount(ValueAnimator.INFINITE);
+                seekbar.setThumb(rt);
+//                RotateAnimation animation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+//                animation.setDuration(500);
+//                animation.setRepeatMode(Animation.INFINITE);
+//                iv.startAnimation(animation);
+//                anim.start();
+
+
+            }
+
+            if (goalCheckBox != null) {
+
+
+                spinningBallAnim = ObjectAnimator.ofFloat(soccerBallImage, "rotation", 0f, 70f);
+                spinningBallAnim.setInterpolator(new LinearInterpolator());
+                spinningBallAnim.setDuration(1000);
+                spinningBallAnim.setRepeatCount(ValueAnimator.INFINITE);
+
+
+//                moveSoccerBallAnim = new TranslateAnimation(0, 200f,0,0f);
+//                moveSoccerBallAnim.setDuration(1000);
+//                moveSoccerBallAnim.setFillAfter(true);
+//                moveSoccerBallAnim.setRepeatCount(1);
+//                moveSoccerBallAnim.setRepeatMode(Animation.REVERSE);
+
             }
 
 
