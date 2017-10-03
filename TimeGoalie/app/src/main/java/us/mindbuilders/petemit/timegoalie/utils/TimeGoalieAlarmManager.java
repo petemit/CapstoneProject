@@ -25,24 +25,18 @@ import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
 public class TimeGoalieAlarmManager {
     public static int TIMEGOAL_ALARM_REQUEST_CODE = 1238;
 
-    public static void setTimeGoalAlarm(int hoursFromNow, int minutesFromNow,
+    public static void setTimeGoalAlarm(long futureTimeInMillis,
                                         Context context, @Nullable Bundle extras, PendingIntent alarmPendingIntent) {
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        //create calendar
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.add(Calendar.HOUR_OF_DAY, hoursFromNow);
-        calendar.add(Calendar.MINUTE, minutesFromNow);
-
-        alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmPendingIntent);
+        alarmMgr.setExact(AlarmManager.RTC_WAKEUP, futureTimeInMillis, alarmPendingIntent);
     }
 
     public static void cancelTimeGoalAlarm(Context context, PendingIntent alarmPendingIntent) {
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         alarmMgr.cancel(alarmPendingIntent);
-        Log.e("Mindbuilders",alarmMgr.getNextAlarmClock().getShowIntent().getCreatorPackage());
+        Log.e("Mindbuilders", alarmMgr.getNextAlarmClock().getShowIntent().getCreatorPackage());
     }
 
 
@@ -61,6 +55,7 @@ public class TimeGoalieAlarmManager {
 
             @Override
             public void onFinish() {
+                tv.setText("00:00:00");
 
             }
         };

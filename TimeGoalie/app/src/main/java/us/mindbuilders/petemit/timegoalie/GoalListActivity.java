@@ -81,6 +81,12 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        rvAdapter.notifyDataSetChanged();
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         for (TimeGoalieAlarmObject tgoal : BaseApplication.getTimeGoalieAlarmObjects()) {
