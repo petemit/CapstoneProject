@@ -1,5 +1,6 @@
 package us.mindbuilders.petemit.timegoalie.utils;
 
+import android.animation.ObjectAnimator;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -8,6 +9,9 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -42,8 +46,10 @@ public class TimeGoalieAlarmManager {
 
     public static CountDownTimer makeCountdownTimer(long secondsInFuture,
                                                     long intervalInSeconds,
+                                                    final long totalSeconds,
                                                     final TextView tv,
-                                                    final GoalEntry goalEntry) {
+                                                    final GoalEntry goalEntry,
+                                                    final SeekBar seekbar) {
         long milliInFuture = secondsInFuture * 1000;
         long intervalInSecondsInMilli = intervalInSeconds * 1000;
         CountDownTimer cdTimer = new CountDownTimer(milliInFuture, intervalInSecondsInMilli) {
@@ -51,11 +57,25 @@ public class TimeGoalieAlarmManager {
             public void onTick(long millisuntilfinished) {
                 tv.setText(makeTimeTextFromMillis(millisuntilfinished));
                 goalEntry.addSecondElapsed();
+
+
+                //set Progress bar Progress
+                if (seekbar != null) {
+
+                    ObjectAnimator animation = ObjectAnimator.ofInt(seekbar, "progress", seekbar.getProgress(), (int)((1-((double)(millisuntilfinished/1000)/totalSeconds))*100*100));
+                    animation.setDuration(2000);
+                    animation.setInterpolator(new LinearInterpolator());
+                    animation.start();
+                }
+
             }
 
             @Override
             public void onFinish() {
                 tv.setText("00:00:00");
+                if (seekbar != null) {
+                    seekbar.setProgress(100);
+                }
 
             }
         };

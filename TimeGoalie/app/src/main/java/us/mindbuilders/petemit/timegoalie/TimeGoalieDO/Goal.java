@@ -154,4 +154,8 @@ public class Goal {
         return goalList;
     }
 
+    public long getGoalSeconds (){
+        return ((getHours() * 60 * 60) + (getMinutes() * 60));
+    }
+
 }

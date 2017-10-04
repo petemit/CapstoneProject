@@ -133,4 +133,9 @@
         <item>59</item>
         <item>60</item>
     </string-array>
+    <integer-array name="incrementArray">
+        <item>1</item>
+        <item>5</item>
+        <item>15</item>
+    </integer-array>
 </resources>

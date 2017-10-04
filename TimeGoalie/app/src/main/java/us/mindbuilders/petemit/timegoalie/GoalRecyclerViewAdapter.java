@@ -1,16 +1,30 @@
 package us.mindbuilders.petemit.timegoalie;
 
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.AlarmManager;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RotateDrawable;
 import android.os.CountDownTimer;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -35,7 +49,6 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
     private View.OnClickListener onClickListener;
     private ArrayList<Goal> goalArrayList;
-    private HashMap<Long, Boolean> startStopButtonStateMap;
 
 
     //    public GoalRecyclerViewAdapter(List<DummyContent.DummyItem> items, View.OnClickListener onClickListener) {
@@ -44,7 +57,6 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 //    }
     public GoalRecyclerViewAdapter(View.OnClickListener onClickListener) {
         this.onClickListener = onClickListener;
-        startStopButtonStateMap = new HashMap<Long, Boolean>();
     }
 
     @Override
@@ -84,7 +96,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                 if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()) != null) {
                     TimeGoalieAlarmObject timeGoalieAlarmObj = BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId());
                     //Recalculate Elapsed Seconds
-                    if (timeGoalieAlarmObj.getTargetTime()!=0) {
+
+                    if (timeGoalieAlarmObj.getTargetTime() != 0 && timeGoalieAlarmObj.isRunning()) {
                         timeGoalieAlarmObj
                                 .setSecondsElapsed(TimeGoalieDateUtils.calculateSecondsElapsed(
                                         timeGoalieAlarmObj.getTargetTime(),
@@ -95,17 +108,22 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                     }
                     onBindElapsedSeconds = (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()))
                             .getSecondsElapsed();
+                }
+                long remainingSeconds = (goal.getGoalSeconds() -
+                        onBindElapsedSeconds);
 
-                }
-                long remainingSeconds = ((goal.getHours() * 60 * 60) + (goal.getMinutes() * 60)) -
-                        onBindElapsedSeconds;
-                final long totalSeconds = ((goal.getHours() * 60 * 60) + (goal.getMinutes() * 60));
                 Log.e("Mindbuilders", "remainingSeconds: " + remainingSeconds);
-                if (remainingSeconds<0) {
+                if (remainingSeconds < 0) {
                     holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
-                }
-                else {
+                    if (holder.seekbar != null) {
+                        holder.seekbar.setProgress(0);
+                    }
+                } else {
                     holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(remainingSeconds * 1000));
+                    //set Progress bar Progress
+                    if (holder.seekbar != null) {
+                        holder.seekbar.setProgress((int)((1-((double)(remainingSeconds)/goal.getGoalSeconds()))*100*100));
+                    }
                 }
 
                 holder.startStopTimer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -113,13 +131,14 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                         TimeGoalieAlarmObject timeGoalieAlarmObject =
                                 BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
-                        long newtime = totalSeconds;
+                        long newtime = goal.getGoalSeconds();
                         if (timeGoalieAlarmObject != null) {
-                            newtime = totalSeconds - timeGoalieAlarmObject.getSecondsElapsed();
+                            newtime = goal.getGoalSeconds() - timeGoalieAlarmObject.getSecondsElapsed();
                             Log.e("Mindbuilders", "newtime: " + newtime);
                         }
                         if (b) {
-                            startTimer(holder.time_tv, newtime, goal, compoundButton);
+                            startTimer(holder.time_tv, newtime, goal, compoundButton, holder.seekbar);
+                            holder.objanim.start();
                         } else {
                             if (timeGoalieAlarmObject != null) {
                                 if (timeGoalieAlarmObject.getCountDownTimer() != null) {
@@ -133,7 +152,9 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                     timeGoalieAlarmObject.getPi().cancel();
                                     timeGoalieAlarmObject.setPi(null);
                                 }
+                                timeGoalieAlarmObject.setRunning(false);
                             }
+                            holder.objanim.cancel();
                         }
                     }
                 });
@@ -146,21 +167,90 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                 }
 
 
-                //if the map is not null, then set the state of the button.
-//                if (startStopButtonStateMap.get(goal.getGoalId()) != null) {
-//                    holder.startStopTimer.performClick();
-//                    //  holder.startStopTimer.setChecked(startStopButtonStateMap.get(goal.getGoalId()));
-//                }
-
-            }
+            }// end start/stop
             holder.mView.setOnClickListener(onClickListener);
+
+
+            if (holder.smallAdd != null) {
+                final TimeGoalieAlarmObject timeGoalieAlarmObject =
+                        BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
+
+                int[] incrementValues = holder.smallAdd.getContext().getResources().getIntArray(R.array.incrementArray);
+                // edit buttons
+                Button[] addButtons = new Button[]{holder.smallAdd, holder.mediumAdd, holder.largeAdd};
+                Button[] subtractButtons = new Button[]{holder.smallSubtract, holder.mediumSubtract, holder.largeSubtract};
+
+                for (int i = 0; i < incrementValues.length; i++) {
+                    final int value = incrementValues[i];
+
+                    addButtons[i].setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            boolean isRunning=false;
+
+                            if (timeGoalieAlarmObject != null ) {
+                                goal.setMinutes(goal.getMinutes() + value);
+
+                                isRunning = BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()).isRunning();
+                                if (timeGoalieAlarmObject.getCountDownTimer() != null) {
+                                    timeGoalieAlarmObject.getCountDownTimer().cancel();
+                                    timeGoalieAlarmObject.setCountDownTimer(null);
+                                }
+                                if (timeGoalieAlarmObject.getPi() != null) {
+                                    TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
+                                            timeGoalieAlarmObject.getPi());
+                                    timeGoalieAlarmObject.setPi(null);
+
+                                }
+                                timeGoalieAlarmObject.setTargetTime(0);
+                                notifyDataSetChanged();
+
+                            } else {
+                                goal.setMinutes(goal.getMinutes() + value);
+                                notifyDataSetChanged();
+                            }
+                        }
+                    });
+
+                    subtractButtons[i].setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            boolean isRunning=false;
+
+
+                            if (timeGoalieAlarmObject != null) {
+                                goal.setMinutes(goal.getMinutes() - value);
+
+                                isRunning = BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()).isRunning();
+                                if (timeGoalieAlarmObject.getCountDownTimer() != null) {
+                                    timeGoalieAlarmObject.getCountDownTimer().cancel();
+                                    timeGoalieAlarmObject.setCountDownTimer(null);
+                                }
+                                if (timeGoalieAlarmObject.getPi() != null) {
+                                    TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
+                                            timeGoalieAlarmObject.getPi());
+                                    timeGoalieAlarmObject.setPi(null);
+
+                                }
+                                timeGoalieAlarmObject.setTargetTime(0);
+                                notifyDataSetChanged();
+
+
+                            } else {
+                                goal.setMinutes(goal.getMinutes() - value);
+                                notifyDataSetChanged();
+                            }
+                        }
+                    });
+                }
+            }
         }
     }
 
     /* This will actually link the static list of Alarms and Countdowntimers in the baseapplication
        to the textview
     */
-    public void startTimer(TextView time_tv, long totalSeconds, Goal goal, CompoundButton compoundButton) {
+    public void startTimer(TextView time_tv, long totalSeconds, Goal goal, View view, SeekBar seekbar) {
 
         TimeGoalieAlarmObject timeGoalieAlarmObject =
                 BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
@@ -171,8 +261,10 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                     TimeGoalieAlarmManager.makeCountdownTimer(
                             remainingSeconds,
                             1,
+                            goal.getGoalSeconds(),
                             time_tv,
-                            goal.getGoalEntry()));
+                            goal.getGoalEntry(),
+                            seekbar));
             timeGoalieAlarmObject.getCountDownTimer().start();
             timeGoalieAlarmObject.setRunning(true);
         } else {
@@ -181,8 +273,10 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                     TimeGoalieAlarmManager.makeCountdownTimer(
                             remainingSeconds,
                             1,
+                            goal.getGoalSeconds(),
                             time_tv,
-                            goal.getGoalEntry()));
+                            goal.getGoalEntry(),
+                            seekbar));
             timeGoalieAlarmObject.getCountDownTimer().start();
             timeGoalieAlarmObject.setRunning(true);
             timeGoalieAlarmObject.setGoal_id(goal.getGoalId());
@@ -194,7 +288,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
         if (timeGoalieAlarmObject != null && timeGoalieAlarmObject.getPi() == null) {
             timeGoalieAlarmObject.setPi(TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
-                    compoundButton.getContext(), (int) goal.getGoalId(), goal.getName()));
+                    view.getContext(), (int) goal.getGoalId(), goal.getName()));
 
             long hours = remainingSeconds / (60 * 60);
             long minutes = (remainingSeconds - (hours * 60 * 60)) / 60;
@@ -204,19 +298,19 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
             Log.e("Mindbuilders", "minutes: " + minutes);
             Log.e("Mindbuilders", "seconds: " + seconds);
 
-            long targetTime=TimeGoalieDateUtils.createTargetCalendarTime(
+            long targetTime = TimeGoalieDateUtils.createTargetCalendarTime(
                     (int) hours,
                     (int) minutes,
                     (int) seconds);
 
             //sound the alarm!!
-            if (timeGoalieAlarmObject.getTargetTime()==0) {
+            if (timeGoalieAlarmObject.getTargetTime() == 0) {
                 timeGoalieAlarmObject.setTargetTime(targetTime);
             }
 
             TimeGoalieAlarmManager.setTimeGoalAlarm(
                     targetTime,
-                    compoundButton.getContext(), null,
+                    view.getContext(), null,
                     timeGoalieAlarmObject.getPi());
         }
     }
@@ -242,6 +336,15 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
         private TextView tv_goaltitle;
         private ToggleButton startStopTimer;
         private TextView time_tv;
+        private Button smallAdd;
+        private Button mediumAdd;
+        private Button largeAdd;
+        private Button smallSubtract;
+        private Button mediumSubtract;
+        private Button largeSubtract;
+        private SeekBar seekbar;
+        private ObjectAnimator objanim;
+
 
         public GoalViewHolder(View view) {
             super(view);
@@ -251,6 +354,15 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
             editButtons = (LinearLayout) view.findViewById(R.id.edit_button_ll);
             startStopTimer = (ToggleButton) view.findViewById(R.id.start_stop);
             time_tv = (TextView) view.findViewById(R.id.timeTextView);
+
+            smallAdd = (Button) view.findViewById(R.id.plus_small);
+            mediumAdd = (Button) view.findViewById(R.id.plus_medium);
+            largeAdd = (Button) view.findViewById(R.id.plus_large);
+            smallSubtract = (Button) view.findViewById(R.id.minus_small);
+            mediumSubtract = (Button) view.findViewById(R.id.minus_medium);
+            largeSubtract = (Button) view.findViewById(R.id.minus_large);
+            seekbar = (SeekBar) view.findViewById(R.id.goalProgressBar);
+
 
             if (pencil != null) {
                 pencil.setOnClickListener(new View.OnClickListener() {
@@ -263,6 +375,36 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                         }
                     }
                 });
+            }
+            if (seekbar!=null ) {
+                seekbar.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+                        return true;
+                    }
+                });
+                seekbar.setMax(seekbar.getMax()*100);
+
+//                AnimatedVectorDrawable anim = (AnimatedVectorDrawable) view.getResources().getDrawable(R.drawable.anim_soccerball_small,null);
+//                iv.setImageDrawable(anim);
+
+                RotateDrawable rt= new RotateDrawable();
+
+                rt.setDrawable(view.getResources().getDrawable(R.drawable.soccerball_small,null));
+                rt.setFromDegrees(0f);
+                rt.setToDegrees(70f);
+
+                objanim = ObjectAnimator.ofInt(rt, "level", 10000);
+                objanim.setInterpolator(new LinearInterpolator());
+                objanim.setDuration(1000);
+                objanim.setRepeatCount(ValueAnimator.INFINITE);
+                seekbar.setThumb(rt);
+//                RotateAnimation animation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+//                animation.setDuration(500);
+//                animation.setRepeatMode(Animation.INFINITE);
+//                iv.startAnimation(animation);
+//                anim.start();
+
             }
 
 
