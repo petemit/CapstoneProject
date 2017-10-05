@@ -23,4 +23,5 @@
     <dimen name="soccerball_size">30dp</dimen>
     <dimen name="half_margin">8dp</dimen>
     <dimen name="time_tv">70dp</dimen>
+    <dimen name="tiny_margin">2dp</dimen>
 </resources>

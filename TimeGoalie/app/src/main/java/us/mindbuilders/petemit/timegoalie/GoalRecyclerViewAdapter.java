@@ -3,12 +3,9 @@ package us.mindbuilders.petemit.timegoalie;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.app.AlarmManager;
-import android.graphics.drawable.AnimatedVectorDrawable;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.Drawable;
+
 import android.graphics.drawable.RotateDrawable;
-import android.os.CountDownTimer;
+
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,31 +13,29 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.view.animation.Animation;
-import android.view.animation.DecelerateInterpolator;
+
 import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
+
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
+
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
 /**
- * Created by Peter on 9/15/2017.
+ * Data handler for goal recyclerview.  This is turning out to be the brains of this operation
  */
 
 public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerViewAdapter.GoalViewHolder> {
@@ -264,6 +259,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                             goal.getGoalSeconds(),
                             time_tv,
                             goal.getGoalEntry(),
+                            (int)goal.getGoalTypeId(),
                             seekbar));
             timeGoalieAlarmObject.getCountDownTimer().start();
             timeGoalieAlarmObject.setRunning(true);
@@ -276,6 +272,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                             goal.getGoalSeconds(),
                             time_tv,
                             goal.getGoalEntry(),
+                            (int)goal.getGoalTypeId(),
                             seekbar));
             timeGoalieAlarmObject.getCountDownTimer().start();
             timeGoalieAlarmObject.setRunning(true);
@@ -349,19 +346,19 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
         public GoalViewHolder(View view) {
             super(view);
             mView = view;
-            tv_goaltitle = (TextView) view.findViewById(R.id.tv_goal_title);
-            pencil = (ToggleButton) view.findViewById(R.id.pencil_button);
-            editButtons = (LinearLayout) view.findViewById(R.id.edit_button_ll);
-            startStopTimer = (ToggleButton) view.findViewById(R.id.start_stop);
-            time_tv = (TextView) view.findViewById(R.id.timeTextView);
+            tv_goaltitle = view.findViewById(R.id.tv_goal_title);
+            pencil = view.findViewById(R.id.pencil_button);
+            editButtons =  view.findViewById(R.id.edit_button_ll);
+            startStopTimer =  view.findViewById(R.id.start_stop);
+            time_tv =  view.findViewById(R.id.timeTextView);
 
-            smallAdd = (Button) view.findViewById(R.id.plus_small);
-            mediumAdd = (Button) view.findViewById(R.id.plus_medium);
-            largeAdd = (Button) view.findViewById(R.id.plus_large);
-            smallSubtract = (Button) view.findViewById(R.id.minus_small);
-            mediumSubtract = (Button) view.findViewById(R.id.minus_medium);
-            largeSubtract = (Button) view.findViewById(R.id.minus_large);
-            seekbar = (SeekBar) view.findViewById(R.id.goalProgressBar);
+            smallAdd =  view.findViewById(R.id.plus_small);
+            mediumAdd =  view.findViewById(R.id.plus_medium);
+            largeAdd =  view.findViewById(R.id.plus_large);
+            smallSubtract =  view.findViewById(R.id.minus_small);
+            mediumSubtract =  view.findViewById(R.id.minus_medium);
+            largeSubtract =  view.findViewById(R.id.minus_large);
+            seekbar =  view.findViewById(R.id.goalProgressBar);
 
 
             if (pencil != null) {
@@ -393,7 +390,6 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                 rt.setDrawable(view.getResources().getDrawable(R.drawable.soccerball_small,null));
                 rt.setFromDegrees(0f);
                 rt.setToDegrees(70f);
-
                 objanim = ObjectAnimator.ofInt(rt, "level", 10000);
                 objanim.setInterpolator(new LinearInterpolator());
                 objanim.setDuration(1000);

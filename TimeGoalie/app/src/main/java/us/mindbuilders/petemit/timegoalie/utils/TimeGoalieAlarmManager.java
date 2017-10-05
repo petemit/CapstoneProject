@@ -27,7 +27,6 @@ import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
  */
 
 public class TimeGoalieAlarmManager {
-    public static int TIMEGOAL_ALARM_REQUEST_CODE = 1238;
 
     public static void setTimeGoalAlarm(long futureTimeInMillis,
                                         Context context, @Nullable Bundle extras, PendingIntent alarmPendingIntent) {
@@ -49,20 +48,30 @@ public class TimeGoalieAlarmManager {
                                                     final long totalSeconds,
                                                     final TextView tv,
                                                     final GoalEntry goalEntry,
+                                                    final int goalType,
                                                     final SeekBar seekbar) {
         long milliInFuture = secondsInFuture * 1000;
         long intervalInSecondsInMilli = intervalInSeconds * 1000;
         CountDownTimer cdTimer = new CountDownTimer(milliInFuture, intervalInSecondsInMilli) {
             @Override
             public void onTick(long millisuntilfinished) {
-                tv.setText(makeTimeTextFromMillis(millisuntilfinished));
-                goalEntry.addSecondElapsed();
 
+                switch (goalType) {
+                    case 0:
+                        tv.setText(makeTimeTextFromMillis(totalSeconds * 1000 - millisuntilfinished));
+                        break;
+                    case 1:
+
+                        tv.setText(makeTimeTextFromMillis(millisuntilfinished));
+                        break;
+                }
+
+                goalEntry.addSecondElapsed();
 
                 //set Progress bar Progress
                 if (seekbar != null) {
 
-                    ObjectAnimator animation = ObjectAnimator.ofInt(seekbar, "progress", seekbar.getProgress(), (int)((1-((double)(millisuntilfinished/1000)/totalSeconds))*100*100));
+                    ObjectAnimator animation = ObjectAnimator.ofInt(seekbar, "progress", seekbar.getProgress(), (int) ((1 - ((double) (millisuntilfinished / 1000) / totalSeconds)) * 100 * 100));
                     animation.setDuration(2000);
                     animation.setInterpolator(new LinearInterpolator());
                     animation.start();
@@ -72,9 +81,20 @@ public class TimeGoalieAlarmManager {
 
             @Override
             public void onFinish() {
-                tv.setText("00:00:00");
+
+                switch (goalType) {
+                    case 0:
+
+                        tv.setText("00:00:00");
+                        break;
+                    case 1:
+                        tv.setText(makeTimeTextFromMillis(totalSeconds / 1000));
+                        break;
+                }
+
+
                 if (seekbar != null) {
-                    seekbar.setProgress(100);
+                    seekbar.setProgress(10000);
                 }
 
             }

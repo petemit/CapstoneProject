@@ -32,7 +32,7 @@ public class TimeGoalieNotifications {
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context,null)
-                .setSmallIcon(R.drawable.soccerball_small)
+                .setSmallIcon(R.drawable.goalie)
                 .setContentTitle(message)
                 .setAutoCancel(true)
                 .setContentText("You're done with your time goal!")

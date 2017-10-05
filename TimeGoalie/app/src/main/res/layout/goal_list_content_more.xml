@@ -7,6 +7,7 @@
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
     android:layout_marginLeft="@dimen/left_margin"
+    android:layout_marginBottom="@dimen/tiny_margin"
     android:layout_marginRight="@dimen/right_margin"
     android:layout_marginTop="@dimen/top_margin">
 
@@ -102,12 +103,12 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_goal_title" />
 
         <TextView
-            android:id="@+id/timeTextView_suffix"
+            android:id="@+id/timeTextView_outOf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/half_margin"
+
             android:layout_marginTop="@dimen/half_margin"
-            android:text="@string/more_thing"
+            tools:text=" / 9:33:01"
             android:textAppearance="@style/TimeGoalTheme.title"
             app:layout_constraintLeft_toRightOf="@+id/timeTextView"
             app:layout_constraintTop_toBottomOf="@+id/tv_goal_title" />
