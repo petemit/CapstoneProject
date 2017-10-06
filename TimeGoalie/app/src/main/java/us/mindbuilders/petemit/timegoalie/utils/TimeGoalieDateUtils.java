@@ -46,5 +46,16 @@ public class TimeGoalieDateUtils {
         return Calendar.getInstance().getTimeInMillis();
     }
 
+    public static String getNicelyFormattedDate(Calendar cal) {
+       DateFormat df = new SimpleDateFormat("EEE, MMM d, yyyy");
+        String date = df.format(cal.getTime());
+        return date;
+    }
+
+    public static String getSqlDateString(Calendar cal) {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String date = df.format(cal.getTime());
+        return date;
+    }
 
 }

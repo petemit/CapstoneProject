@@ -136,6 +136,12 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                         .GOALS_DATES_ACCOMPLISHED_COLUMN_DATE + " TEXT NOT NULL);";
         db.execSQL(createGoalsDatesAccomplishedSQL);
 
+
+
+        //DUMMY DATA
+        // TODO: 10/6/2017 remove when done
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed) VALUES (1, '2017-10-05',140)");
+
     }
 
     @Override

@@ -126,30 +126,32 @@ public class Goal {
 
     public static ArrayList<Goal> createGoalListFromCursor(Cursor cursor) {
         ArrayList<Goal> goalList = new ArrayList<Goal>();
-        while (cursor.moveToNext()) {
-            Goal goal = new Goal();
-            goal.setGoalId(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.Goals._ID)));
-            goal.setName(cursor.getString(cursor.
-                    getColumnIndex(TimeGoalieContract.Goals.GOALS_COLUMN_NAME)));
-            goal.setHours((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
-                    TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS))));
-            goal.setMinutes((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
-                    TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES))));
-            goal.setGoalTypeId(
-                    cursor.getInt(
-                            cursor.getColumnIndex(
-                                    TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID)));
-            GoalEntry goalEntry = new GoalEntry();
-            goalEntry.setGoal_id(goal.getGoalId());
-            goalEntry.setSecondsElapsed(
-                    cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
-                    .GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED)));
-            goalEntry.setDate(cursor.getString(
-                    cursor.getColumnIndex(TimeGoalieContract
-                            .GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
+        if(cursor!=null) {
+            while (cursor.moveToNext()) {
+                Goal goal = new Goal();
+                goal.setGoalId(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.Goals._ID)));
+                goal.setName(cursor.getString(cursor.
+                        getColumnIndex(TimeGoalieContract.Goals.GOALS_COLUMN_NAME)));
+                goal.setHours((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
+                        TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS))));
+                goal.setMinutes((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
+                        TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES))));
+                goal.setGoalTypeId(
+                        cursor.getInt(
+                                cursor.getColumnIndex(
+                                        TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID)));
+                GoalEntry goalEntry = new GoalEntry();
+                goalEntry.setGoal_id(goal.getGoalId());
+                goalEntry.setSecondsElapsed(
+                        cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
+                                .GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED)));
+                goalEntry.setDate(cursor.getString(
+                        cursor.getColumnIndex(TimeGoalieContract
+                                .GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
 
-            goal.goalEntry=goalEntry;
-            goalList.add(goal);
+                goal.goalEntry = goalEntry;
+                goalList.add(goal);
+            }
         }
         return goalList;
     }

@@ -77,7 +77,7 @@ public class TimeGoalieContract {
     }
 
     //get all goals for a specific day of the week
-    public static Uri buildGetAllGoalsForASpecificDayQueryUri(long dayid) {
+    public static Uri buildGetAllGoalsForCurrentDayOfWeekQueryUri(long dayid) {
         return ContentUris.withAppendedId(GoalsDays.CONTENT_URI, dayid);
     }
 
@@ -114,9 +114,9 @@ public class TimeGoalieContract {
     }
 
     //get all goals with a is_today_only with the date of today
-    public static Uri getSecondsElapsedOnADayWithAGoalUri(Timestamp timestamp, long goalid) {
-        return ContentUris.withAppendedId(Goals.CONTENT_URI.buildUpon()
-                .appendPath("goal").appendQueryParameter("date", timestamp.toString()).build(), goalid);
+    public static Uri getGoalsThatHaveGoalEntryForToday() {
+        return (GoalEntries.CONTENT_URI.buildUpon()
+                .appendPath("date").build());
     }
 
     //Find a date accomplished associated with a specific goal for a specific day

@@ -44,6 +44,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
 
     private static final int GOAL_ENTRIES = 600;
     private static final int GOAL_ENTRIES_BY_GOAL_ID = 601;
+    private static final int GOAL_ENTRIES_BY_DATE = 602;
 
 
     private static final String PARAMETER = "=? ";
@@ -91,11 +92,14 @@ public class TimeGoalieContentProvider extends ContentProvider {
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME, GOALS_DAYS);
 
+
         //goalentries
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME, GOAL_ENTRIES);
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME + "/#", GOAL_ENTRIES_BY_GOAL_ID);
+        matcher.addURI(TimeGoalieContract.AUTHORITY,
+                TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME + "/date", GOAL_ENTRIES_BY_DATE);
 
         return matcher;
 
@@ -109,7 +113,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] strings, @Nullable String suppliedDate, @Nullable String[] strings1, @Nullable String s1) {
+    public Cursor query(@NonNull Uri uri, @Nullable String[] strings, @Nullable String suppliedDate, @Nullable String[] suppliedSelectionArgs, @Nullable String s1) {
         String date = TimeGoalieDateUtils.getSqlDateString();
         if (suppliedDate!=null) {
             date=suppliedDate;
@@ -172,6 +176,33 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         null,
                         selection,
                         selectionArgs,
+                        null,
+                        null,
+                        null);
+                break;
+
+            case GOAL_ENTRIES_BY_DATE:
+
+                selection = TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME
+                        .concat(PARAMETER);
+
+                String gEtablesJointatement = TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME
+                        .concat(" LEFT JOIN ")
+                        .concat(TimeGoalieContract.Goals.GOALS_TABLE_NAME)
+                        .concat(" on ")
+                        .concat(TimeGoalieContract.Goals.GOALS_TABLE_NAME)
+                        .concat(".")
+                        .concat(TimeGoalieContract.Goals._ID)
+                        .concat("=")
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME)
+                        .concat(".")
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID);
+
+
+                cursor = db.query(gEtablesJointatement,
+                        null,
+                        selection,
+                        suppliedSelectionArgs,
                         null,
                         null,
                         null);

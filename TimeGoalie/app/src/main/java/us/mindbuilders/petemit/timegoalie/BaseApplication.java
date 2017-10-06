@@ -6,6 +6,7 @@ import android.util.Log;
 import com.facebook.stetho.Stetho;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Day;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
@@ -20,6 +21,7 @@ import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
 public class BaseApplication extends Application {
     private static ArrayList<TimeGoalieAlarmObject> timeGoalieAlarmObjects;
+    private static Calendar activeCalendarDate = Calendar.getInstance();
 
     public static ArrayList<TimeGoalieAlarmObject> getTimeGoalieAlarmObjects() {
         return timeGoalieAlarmObjects;
@@ -27,6 +29,14 @@ public class BaseApplication extends Application {
 
     public static void setTimeGoalieAlarmObjects(ArrayList<TimeGoalieAlarmObject> timeGoalieAlarmObjects) {
         BaseApplication.timeGoalieAlarmObjects = timeGoalieAlarmObjects;
+    }
+
+    public static Calendar getActiveCalendarDate() {
+        return activeCalendarDate;
+    }
+
+    public static void setActiveCalendarDate(Calendar activeCalendarDate) {
+        BaseApplication.activeCalendarDate = activeCalendarDate;
     }
 
     @Override
@@ -79,6 +89,8 @@ public class BaseApplication extends Application {
         new InsertNewGoal(getBaseContext()).execute(goal2);
         new InsertNewGoal(getBaseContext()).execute(goal3);
         new InsertNewGoal(getBaseContext()).execute(goal4);
+
+
     }
 
     public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id){

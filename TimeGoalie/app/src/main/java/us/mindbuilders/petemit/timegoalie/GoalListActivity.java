@@ -1,42 +1,34 @@
 package us.mindbuilders.petemit.timegoalie;
 
 import android.app.DatePickerDialog;
-import android.app.DialogFragment;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.text.Layout;
-import android.view.LayoutInflater;
+import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 
-import com.facebook.stetho.Stetho;
-
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
-import us.mindbuilders.petemit.timegoalie.dummy.DummyContent;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * List of Goals.  In multi-pane, shows reports as well {@link GoalReportActivity}
@@ -44,7 +36,11 @@ import java.util.List;
 public class GoalListActivity extends AppCompatActivity implements View.OnClickListener,
         LoaderManager.LoaderCallbacks<Cursor>, DatePickerDialog.OnDateSetListener {
     private static final int GOAL_LOADER_ID = 4;
+    private static final String noDateString = "NODATE";
     private GoalRecyclerViewAdapter rvAdapter;
+    Spinner datespinner;
+    private TextView dateSpinnerTextView;
+    private ArrayAdapter<String> spinnerAdapter;
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -89,6 +85,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onResume() {
         super.onResume();
+        getSupportLoaderManager().restartLoader(GOAL_LOADER_ID,null,this);
         rvAdapter.notifyDataSetChanged();
     }
 
@@ -106,13 +103,44 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         getMenuInflater().inflate(R.menu.menu, menu);
 
         MenuItem dateItem = menu.findItem(R.id.date_spinner);
-        Spinner spinner = (Spinner) dateItem.getActionView();
-        spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,new String[]{"Wed, Oct 5 2017"}));
-        android.support.v4.app.DialogFragment dateFrag = new myDatePickerFragment();
-        dateFrag.show(getSupportFragmentManager(), "datepicker");
+        datespinner = (Spinner) dateItem.getActionView();
+        setDateAdapter(TimeGoalieDateUtils.getNicelyFormattedDate(Calendar.getInstance()));
+        datespinner.setPopupBackgroundDrawable(null);
+        datespinner.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    android.support.v4.app.DialogFragment dateFrag = new myDatePickerFragment();
+                    dateFrag.show(getSupportFragmentManager(), "datepicker");
+                    return true;
+                } else {
+                    return true;
+                }
+            }
+        });
         return true;
     }
 
+    public void setDateAdapter(String s) {
+        ArrayList<String> list = new ArrayList<String>();
+        list.add(s);
+        spinnerAdapter = new ArrayAdapter<String>(this,
+                R.layout.spinner_text_layout, list);
+        datespinner.setAdapter(spinnerAdapter);
+
+    }
+
+    public void changeOutDate(String s) {
+        if (spinnerAdapter != null) {
+            spinnerAdapter.clear();
+            spinnerAdapter.add(s);
+            spinnerAdapter.notifyDataSetChanged();
+            //make sure and change active date first
+            getSupportLoaderManager().restartLoader(GOAL_LOADER_ID,null,this);
+        }
+
+
+    }
 
 
     @Override
@@ -158,15 +186,29 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case GOAL_LOADER_ID:
-                CursorLoader cl = new CursorLoader(this,
-                        TimeGoalieContract.buildGetAllGoalsForASpecificDayQueryUri(
-                                TimeGoalieDateUtils.getDayIdFromToday()),
-                        null,
-                        null,
-                        null,
-                        null
-                );
-                return cl;
+                //if it's today
+                if (DateUtils.isToday(BaseApplication.getActiveCalendarDate().getTimeInMillis())){
+                    CursorLoader cl = new CursorLoader(this,
+                            TimeGoalieContract.buildGetAllGoalsForCurrentDayOfWeekQueryUri(
+                                    TimeGoalieDateUtils.getDayIdFromToday()),
+                            null,
+                            null,
+                            null,
+                            null
+                    );
+                    return cl;
+                } //else if another day, do same query except filter by day.
+                else {
+                    CursorLoader cl = new CursorLoader(this,
+                            TimeGoalieContract.getGoalsThatHaveGoalEntryForToday(),
+                            null,
+                            null,
+                            new String[]{TimeGoalieDateUtils.
+                                    getSqlDateString(BaseApplication.getActiveCalendarDate())},
+                            null
+                    );
+                    return cl;
+                }
             default:
                 throw new RuntimeException("Loader not Implemented: " + id);
         }
@@ -185,10 +227,20 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-
-
     @Override
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        int er = i;
+        int ere = i1;
+        int eree = i2;
+        cal.set(i, i1, i2);
+        //very important to set date first
+        BaseApplication.setActiveCalendarDate(cal);
+
+        //Now change the gui and restart the loader
+        changeOutDate(TimeGoalieDateUtils.getNicelyFormattedDate(cal));
+
 
     }
 }
