@@ -10,26 +10,23 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="120dp"
         android:theme="@style/TimeGoalTheme.AppBarOverlay">
 
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:title="@string/defend_the_goals"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            >
-
+        <!--<android.support.design.widget.CollapsingToolbarLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--app:title="@string/defend_the_goals"-->
+            <!--app:layout_scrollFlags="scroll|exitUntilCollapsed"-->
+            <!--&gt;-->
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
+                android:title="@string/app_name"
                 android:layout_height="?attr/actionBarSize"
-
                 app:popupTheme="@style/TimeGoalTheme.PopupOverlay" />
 
-        </android.support.design.widget.CollapsingToolbarLayout>
-
-
+        <!--</android.support.design.widget.CollapsingToolbarLayout>-->
 
     </android.support.design.widget.AppBarLayout>
 

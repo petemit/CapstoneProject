@@ -14,6 +14,7 @@ public class TimeGoalieAlarmObject {
     private int secondsElapsed;
     private long targetTime;
     private boolean isRunning;
+    private boolean isHasFinished;
 
     public long getGoal_id() {
         return goal_id;
@@ -61,5 +62,13 @@ public class TimeGoalieAlarmObject {
 
     public void setTargetTime(long targetTime) {
         this.targetTime = targetTime;
+    }
+
+    public boolean isHasFinished() {
+        return isHasFinished;
+    }
+
+    public void setHasFinished(boolean hasFinished) {
+        isHasFinished = hasFinished;
     }
 }

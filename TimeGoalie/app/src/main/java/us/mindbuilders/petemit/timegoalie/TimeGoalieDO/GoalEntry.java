@@ -12,6 +12,7 @@ public class GoalEntry {
     private long id;
     private String date;
     private long goal_id;
+    private boolean hasFinished;
 
     public GoalEntry(){
     }
@@ -67,5 +68,19 @@ public class GoalEntry {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public boolean isHasFinished() {
+        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id)!=null) {
+            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id).isHasFinished();
+        }
+
+        return hasFinished;
+    }
+
+    public void setHasFinished(boolean hasFinished) {
+        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id)!=null) {
+            BaseApplication.getTimeGoalieAlarmObjectById(goal_id).setHasFinished(hasFinished);
+        }
     }
 }

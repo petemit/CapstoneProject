@@ -1,5 +1,7 @@
 package us.mindbuilders.petemit.timegoalie;
 
+import android.app.DatePickerDialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -8,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -19,6 +22,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 
@@ -36,7 +42,7 @@ import java.util.List;
  * List of Goals.  In multi-pane, shows reports as well {@link GoalReportActivity}
  */
 public class GoalListActivity extends AppCompatActivity implements View.OnClickListener,
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, DatePickerDialog.OnDateSetListener {
     private static final int GOAL_LOADER_ID = 4;
     private GoalRecyclerViewAdapter rvAdapter;
 
@@ -98,8 +104,16 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
+
+        MenuItem dateItem = menu.findItem(R.id.date_spinner);
+        Spinner spinner = (Spinner) dateItem.getActionView();
+        spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,new String[]{"Wed, Oct 5 2017"}));
+        android.support.v4.app.DialogFragment dateFrag = new myDatePickerFragment();
+        dateFrag.show(getSupportFragmentManager(), "datepicker");
         return true;
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -107,6 +121,8 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
             startActivity(new Intent(this, PreferenceActivity.class));
             return true;
         }
+
+
         return true;
     }
 
@@ -168,4 +184,11 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         rvAdapter.swapCursor(null);
     }
 
+
+
+
+    @Override
+    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+
+    }
 }

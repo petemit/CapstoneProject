@@ -22,7 +22,8 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
         int id = -1;
         id = intent.getIntExtra(context.getString(R.string.goal_id_key),-1);
         if (id != -1) {
-            BaseApplication.getTimeGoalieAlarmObjectById(id).setRunning(false);
+          //  BaseApplication.getTimeGoalieAlarmObjectById(id).setRunning(false);
+            BaseApplication.getTimeGoalieAlarmObjectById(id).setHasFinished(true);
         }
     }
 

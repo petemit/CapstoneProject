@@ -52,24 +52,33 @@ public class TimeGoalieAlarmManager {
                                                     final SeekBar seekbar) {
         long milliInFuture = secondsInFuture * 1000;
         long intervalInSecondsInMilli = intervalInSeconds * 1000;
-        CountDownTimer cdTimer = new CountDownTimer(milliInFuture, intervalInSecondsInMilli) {
+        final CountDownTimer cdTimer = new CountDownTimer(milliInFuture, intervalInSecondsInMilli) {
             @Override
             public void onTick(long millisuntilfinished) {
 
                 switch (goalType) {
-                    case 0:
-                        tv.setText(makeTimeTextFromMillis(totalSeconds * 1000 - millisuntilfinished));
+                    case 0: //Time Goal To Encourage
+                        if (!goalEntry.isHasFinished()) {
+                            tv.setText(makeTimeTextFromMillis(totalSeconds * 1000 - millisuntilfinished));
+                        }
+                        else {
+                            tv.setText(makeTimeTextFromMillis(goalEntry.getSecondsElapsed()*1000+totalSeconds));
+                        }
                         break;
-                    case 1:
-
-                        tv.setText(makeTimeTextFromMillis(millisuntilfinished));
+                    case 1: //Time Goal to Limit
+                        if (!goalEntry.isHasFinished()) {
+                            tv.setText(makeTimeTextFromMillis(millisuntilfinished));
+                        }
+                        else {
+                            tv.setText("-"+makeTimeTextFromMillis(-1*(totalSeconds*1000-goalEntry.getSecondsElapsed()*1000)));
+                        }
                         break;
                 }
 
                 goalEntry.addSecondElapsed();
 
                 //set Progress bar Progress
-                if (seekbar != null) {
+                if (seekbar != null && !goalEntry.isHasFinished()) {
 
                     ObjectAnimator animation = ObjectAnimator.ofInt(seekbar, "progress", seekbar.getProgress(), (int) ((1 - ((double) (millisuntilfinished / 1000) / totalSeconds)) * 100 * 100));
                     animation.setDuration(2000);
@@ -84,18 +93,21 @@ public class TimeGoalieAlarmManager {
 
                 switch (goalType) {
                     case 0:
-
-                        tv.setText("00:00:00");
+                        goalEntry.setHasFinished(true);
+                        this.start();
+                      //  tv.setText("00:00:00");
                         break;
                     case 1:
-                        tv.setText(makeTimeTextFromMillis(totalSeconds / 1000));
+                      //  tv.setText(makeTimeTextFromMillis(totalSeconds / 1000));
+                        goalEntry.setHasFinished(true);
+                        this.start();
                         break;
                 }
 
 
-                if (seekbar != null) {
+              /*  if (seekbar != null) {
                     seekbar.setProgress(10000);
-                }
+                }*/
 
             }
         };

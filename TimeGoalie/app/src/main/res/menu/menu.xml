@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:title="@string/settings"
         android:id="@+id/settings_key"/>
+    <item android:title="date_spinner"
+        android:id="@+id/date_spinner"
+        app:actionViewClass="android.widget.Spinner"
+        app:showAsAction="always"></item>
 
 </menu>
