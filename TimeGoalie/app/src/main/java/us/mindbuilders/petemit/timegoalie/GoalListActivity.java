@@ -41,6 +41,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     Spinner datespinner;
     private TextView dateSpinnerTextView;
     private ArrayAdapter<String> spinnerAdapter;
+    private boolean isToday;
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -85,7 +86,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onResume() {
         super.onResume();
-        getSupportLoaderManager().restartLoader(GOAL_LOADER_ID,null,this);
+        getSupportLoaderManager().restartLoader(GOAL_LOADER_ID, null, this);
         rvAdapter.notifyDataSetChanged();
     }
 
@@ -104,7 +105,10 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 
         MenuItem dateItem = menu.findItem(R.id.date_spinner);
         datespinner = (Spinner) dateItem.getActionView();
-        setDateAdapter(TimeGoalieDateUtils.getNicelyFormattedDate(Calendar.getInstance()));
+        if (BaseApplication.getActiveCalendarDate() != null) {
+            setDateAdapter(TimeGoalieDateUtils.
+                    getNicelyFormattedDate(BaseApplication.getActiveCalendarDate()));
+        }
         datespinner.setPopupBackgroundDrawable(null);
         datespinner.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -136,7 +140,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
             spinnerAdapter.add(s);
             spinnerAdapter.notifyDataSetChanged();
             //make sure and change active date first
-            getSupportLoaderManager().restartLoader(GOAL_LOADER_ID,null,this);
+            getSupportLoaderManager().restartLoader(GOAL_LOADER_ID, null, this);
         }
 
 
@@ -184,10 +188,12 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
         switch (id) {
             case GOAL_LOADER_ID:
                 //if it's today
-                if (DateUtils.isToday(BaseApplication.getActiveCalendarDate().getTimeInMillis())){
+                if (DateUtils.isToday(BaseApplication.getActiveCalendarDate().getTimeInMillis())) {
+                    isToday = true;
                     CursorLoader cl = new CursorLoader(this,
                             TimeGoalieContract.buildGetAllGoalsForCurrentDayOfWeekQueryUri(
                                     TimeGoalieDateUtils.getDayIdFromToday()),
@@ -199,6 +205,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
                     return cl;
                 } //else if another day, do same query except filter by day.
                 else {
+                    isToday = false;
                     CursorLoader cl = new CursorLoader(this,
                             TimeGoalieContract.getGoalsThatHaveGoalEntryForToday(),
                             null,
@@ -216,13 +223,18 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        //creates arraylist of goals
-        rvAdapter.swapCursor(Goal.createGoalListWithGoalEntriesFromCursor(data));
+
+            //creates arraylist of goals
+            rvAdapter.swapCursor(Goal.createGoalListWithGoalEntriesFromCursor(data), isToday);
         rvAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        for (TimeGoalieAlarmObject tgoal : BaseApplication.getTimeGoalieAlarmObjects()) {
+            if (tgoal.getCountDownTimer() != null)
+                tgoal.getCountDownTimer().cancel();
+        }
         rvAdapter.swapCursor(null);
     }
 

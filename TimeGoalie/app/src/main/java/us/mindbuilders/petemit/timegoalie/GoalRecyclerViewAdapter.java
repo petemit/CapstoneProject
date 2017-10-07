@@ -31,6 +31,7 @@ import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
+import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
@@ -45,6 +46,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
     private View.OnClickListener onClickListener;
     private ArrayList<Goal> goalArrayList;
+    private boolean isToday;
 
 
     //    public GoalRecyclerViewAdapter(List<DummyContent.DummyItem> items, View.OnClickListener onClickListener) {
@@ -76,7 +78,17 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
     }
 
     public void swapCursor(ArrayList<Goal> goalArrayList) {
+        for (TimeGoalieAlarmObject tgoal : BaseApplication.getTimeGoalieAlarmObjects()) {
+            if (tgoal.getCountDownTimer() != null)
+                tgoal.getCountDownTimer().cancel();
+        }
         this.goalArrayList = goalArrayList;
+        notifyDataSetChanged();
+    }
+
+    public void swapCursor(ArrayList<Goal> goalArrayList, boolean isToday) {
+        this.goalArrayList = goalArrayList;
+        this.isToday = isToday;
         notifyDataSetChanged();
     }
 
@@ -100,7 +112,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                 timeGoalieAlarmObj.getTargetTime(),
                                 TimeGoalieDateUtils.getCurrentTimeInMillis(),
                                 goal.getHours(),
-                                goal.getMinutes())),true);
+                                goal.getMinutes())), true);
 
 //
 //                        timeGoalieAlarmObj
@@ -122,16 +134,15 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
                 // if this is a more goal
                 if (holder.tv_timeOutOf != null) {
-                    holder.tv_timeOutOf.setText(" / " +TimeGoalieAlarmManager.makeTimeTextFromMillis(
-                                    goal.getGoalSeconds()*1000
+                    holder.tv_timeOutOf.setText(" / " + TimeGoalieAlarmManager.makeTimeTextFromMillis(
+                            goal.getGoalSeconds() * 1000
                     ));
                     holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
                     if (holder.seekbar != null) {
                         holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) / goal.getGoalSeconds())) * 100 * 100));
                     }
 
-                }
-                else {
+                } else {
 
                     if (remainingSeconds < 0) {
 //                        holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
@@ -146,134 +157,142 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                         }
                     }
                 }
+                if (isToday) {
+                    holder.startStopTimer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                            TimeGoalieAlarmObject timeGoalieAlarmObject =
+                                    BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
 
-                holder.startStopTimer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                        TimeGoalieAlarmObject timeGoalieAlarmObject =
-                                BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
-                        long newtime = goal.getGoalSeconds();
-                        if (timeGoalieAlarmObject != null) {
-                            newtime = goal.getGoalSeconds() - timeGoalieAlarmObject.getSecondsElapsed();
-                            Log.e("Mindbuilders", "newtime: " + newtime);
-                        }
-                        if (b) {
-                            TimeGoalieAlarmManager.startTimer(holder.time_tv, newtime, goal,
-                                    compoundButton, holder.seekbar);
-                            holder.objanim.start();
-                        } else {
-                            if (timeGoalieAlarmObject != null) {
-                                if (timeGoalieAlarmObject.getCountDownTimer() != null) {
-                                    timeGoalieAlarmObject.getCountDownTimer().cancel();
-                                    timeGoalieAlarmObject.setCountDownTimer(null);
-                                }
-                                if (timeGoalieAlarmObject.getPi() != null) {
-                                    TimeGoalieAlarmManager.cancelTimeGoalAlarm(
-                                            compoundButton.getContext(),
-                                            timeGoalieAlarmObject.getPi());
-                                    timeGoalieAlarmObject.getPi().cancel();
-                                    timeGoalieAlarmObject.setPi(null);
-                                }
-                                timeGoalieAlarmObject.setRunning(false);
-                            }
-                            if (goal.getGoalEntry()!=null) {
+                            if (goal.getGoalEntry() != null) {
                                 goal.getGoalEntry().setDate(TimeGoalieDateUtils.getSqlDateString());
                                 new InsertNewGoalEntry(
                                         compoundButton.getContext()).execute(goal.getGoalEntry());
                             }
 
-                            holder.objanim.cancel();
+                            long newtime = goal.getGoalSeconds();
+                            if (timeGoalieAlarmObject != null) {
+                                newtime = goal.getGoalSeconds() - timeGoalieAlarmObject.getSecondsElapsed();
+                                Log.e("Mindbuilders", "newtime: " + newtime);
+                            }
+                            if (b && goal.getGoalEntry().getDate()
+                                    .equals(TimeGoalieDateUtils.getSqlDateString())) {
+                                TimeGoalieAlarmManager.startTimer(holder.time_tv, newtime, goal,
+                                        compoundButton, holder.seekbar);
+                                holder.objanim.start();
+                            } else {
+                                if (timeGoalieAlarmObject != null) {
+                                    if (timeGoalieAlarmObject.getCountDownTimer() != null) {
+                                        timeGoalieAlarmObject.getCountDownTimer().cancel();
+                                        timeGoalieAlarmObject.setCountDownTimer(null);
+                                    }
+                                    if (timeGoalieAlarmObject.getPi() != null) {
+                                        TimeGoalieAlarmManager.cancelTimeGoalAlarm(
+                                                compoundButton.getContext(),
+                                                timeGoalieAlarmObject.getPi());
+                                        timeGoalieAlarmObject.getPi().cancel();
+                                        timeGoalieAlarmObject.setPi(null);
+                                    }
+                                    timeGoalieAlarmObject.setRunning(false);
+                                }
+
+
+                                holder.objanim.cancel();
+                            }
+                        }
+                    });
+
+                    if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()) != null) {
+                        if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()).isRunning()
+                                && goal.getGoalEntry().getDate()
+                                .equals(TimeGoalieDateUtils.getSqlDateString())) {
+                            holder.startStopTimer.setChecked(false);
+                            holder.startStopTimer.setChecked(true);
                         }
                     }
-                });
-
-                if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()) != null) {
-                    if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()).isRunning()) {
-                        holder.startStopTimer.setChecked(false);
-                        holder.startStopTimer.setChecked(true);
-                    }
-                }
 
 
-            }// end start/stop
+                }// end start/stop
+            }//if istoday
             holder.mView.setOnClickListener(onClickListener);
 
+            if (isToday) {
+                if (holder.smallAdd != null) {
+                    final TimeGoalieAlarmObject timeGoalieAlarmObject =
+                            BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
 
-            if (holder.smallAdd != null) {
-                final TimeGoalieAlarmObject timeGoalieAlarmObject =
-                        BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
+                    int[] incrementValues = holder.smallAdd.getContext().getResources().getIntArray(R.array.incrementArray);
+                    // edit buttons
+                    Button[] addButtons = new Button[]{holder.smallAdd, holder.mediumAdd, holder.largeAdd};
+                    Button[] subtractButtons = new Button[]{holder.smallSubtract, holder.mediumSubtract, holder.largeSubtract};
 
-                int[] incrementValues = holder.smallAdd.getContext().getResources().getIntArray(R.array.incrementArray);
-                // edit buttons
-                Button[] addButtons = new Button[]{holder.smallAdd, holder.mediumAdd, holder.largeAdd};
-                Button[] subtractButtons = new Button[]{holder.smallSubtract, holder.mediumSubtract, holder.largeSubtract};
+                    for (int i = 0; i < incrementValues.length; i++) {
+                        final int value = incrementValues[i];
 
-                for (int i = 0; i < incrementValues.length; i++) {
-                    final int value = incrementValues[i];
+                        addButtons[i].setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                boolean isRunning = false;
 
-                    addButtons[i].setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            boolean isRunning=false;
+                                if (timeGoalieAlarmObject != null) {
+                                    goal.setMinutes(goal.getMinutes() + value);
 
-                            if (timeGoalieAlarmObject != null ) {
-                                goal.setMinutes(goal.getMinutes() + value);
+                                    isRunning = BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()).isRunning();
+                                    if (timeGoalieAlarmObject.getCountDownTimer() != null) {
+                                        timeGoalieAlarmObject.getCountDownTimer().cancel();
+                                        timeGoalieAlarmObject.setCountDownTimer(null);
+                                    }
+                                    if (timeGoalieAlarmObject.getPi() != null) {
+                                        TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
+                                                timeGoalieAlarmObject.getPi());
+                                        timeGoalieAlarmObject.setPi(null);
 
-                                isRunning = BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()).isRunning();
-                                if (timeGoalieAlarmObject.getCountDownTimer() != null) {
-                                    timeGoalieAlarmObject.getCountDownTimer().cancel();
-                                    timeGoalieAlarmObject.setCountDownTimer(null);
+                                    }
+                                    timeGoalieAlarmObject.setTargetTime(0);
+                                    notifyDataSetChanged();
+
+                                } else {
+                                    goal.setMinutes(goal.getMinutes() + value);
+                                    notifyDataSetChanged();
                                 }
-                                if (timeGoalieAlarmObject.getPi() != null) {
-                                    TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
-                                            timeGoalieAlarmObject.getPi());
-                                    timeGoalieAlarmObject.setPi(null);
-
-                                }
-                                timeGoalieAlarmObject.setTargetTime(0);
-                                notifyDataSetChanged();
-
-                            } else {
-                                goal.setMinutes(goal.getMinutes() + value);
-                                notifyDataSetChanged();
                             }
-                        }
-                    });
+                        });
 
-                    subtractButtons[i].setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            boolean isRunning=false;
+                        subtractButtons[i].setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                boolean isRunning = false;
 
 
-                            if (timeGoalieAlarmObject != null) {
-                                if ((goal.getHours()*60 + goal.getMinutes()) > value) {
+                                if (timeGoalieAlarmObject != null) {
+                                    if ((goal.getHours() * 60 + goal.getMinutes()) > value) {
+                                        goal.setMinutes(goal.getMinutes() - value);
+                                    }
+
+                                    isRunning = BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()).isRunning();
+                                    if (timeGoalieAlarmObject.getCountDownTimer() != null) {
+                                        timeGoalieAlarmObject.getCountDownTimer().cancel();
+                                        timeGoalieAlarmObject.setCountDownTimer(null);
+                                    }
+                                    if (timeGoalieAlarmObject.getPi() != null) {
+                                        TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
+                                                timeGoalieAlarmObject.getPi());
+                                        timeGoalieAlarmObject.setPi(null);
+
+                                    }
+                                    timeGoalieAlarmObject.setTargetTime(0);
+                                    notifyDataSetChanged();
+
+
+                                } else {
                                     goal.setMinutes(goal.getMinutes() - value);
+                                    notifyDataSetChanged();
                                 }
-
-                                isRunning = BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()).isRunning();
-                                if (timeGoalieAlarmObject.getCountDownTimer() != null) {
-                                    timeGoalieAlarmObject.getCountDownTimer().cancel();
-                                    timeGoalieAlarmObject.setCountDownTimer(null);
-                                }
-                                if (timeGoalieAlarmObject.getPi() != null) {
-                                    TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
-                                            timeGoalieAlarmObject.getPi());
-                                    timeGoalieAlarmObject.setPi(null);
-
-                                }
-                                timeGoalieAlarmObject.setTargetTime(0);
-                                notifyDataSetChanged();
-
-
-                            } else {
-                                goal.setMinutes(goal.getMinutes() - value);
-                                notifyDataSetChanged();
                             }
-                        }
-                    });
-                }
-            } //end add edit buttons
+                        });
+                    }
+                } //end add edit buttons
+            }//end istoday
 
         } //end if itemviewcount
     }//end BindViewHolder
@@ -320,47 +339,55 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
             mView = view;
             tv_goaltitle = view.findViewById(R.id.tv_goal_title);
             pencil = view.findViewById(R.id.pencil_button);
-            editButtons =  view.findViewById(R.id.edit_button_ll);
-            startStopTimer =  view.findViewById(R.id.start_stop);
-            time_tv =  view.findViewById(R.id.timeTextView);
+            editButtons = view.findViewById(R.id.edit_button_ll);
+            startStopTimer = view.findViewById(R.id.start_stop);
+            time_tv = view.findViewById(R.id.timeTextView);
 
-            smallAdd =  view.findViewById(R.id.plus_small);
-            mediumAdd =  view.findViewById(R.id.plus_medium);
-            largeAdd =  view.findViewById(R.id.plus_large);
-            smallSubtract =  view.findViewById(R.id.minus_small);
-            mediumSubtract =  view.findViewById(R.id.minus_medium);
-            largeSubtract =  view.findViewById(R.id.minus_large);
-            seekbar =  view.findViewById(R.id.goalProgressBar);
+            smallAdd = view.findViewById(R.id.plus_small);
+            mediumAdd = view.findViewById(R.id.plus_medium);
+            largeAdd = view.findViewById(R.id.plus_large);
+            smallSubtract = view.findViewById(R.id.minus_small);
+            mediumSubtract = view.findViewById(R.id.minus_medium);
+            largeSubtract = view.findViewById(R.id.minus_large);
+            seekbar = view.findViewById(R.id.goalProgressBar);
             tv_timeOutOf = view.findViewById(R.id.timeTextView_outOf);
 
+            if (!isToday) {
+                startStopTimer.setVisibility(View.GONE);
+            }
 
             if (pencil != null) {
-                pencil.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (editButtons.getVisibility() != View.VISIBLE) {
-                            editButtons.setVisibility(View.VISIBLE);
-                        } else {
-                            editButtons.setVisibility(View.GONE);
+                if (isToday) {
+                    pencil.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (editButtons.getVisibility() != View.VISIBLE) {
+                                editButtons.setVisibility(View.VISIBLE);
+                            } else {
+                                editButtons.setVisibility(View.GONE);
+                            }
                         }
-                    }
-                });
+                    });
+                }
+                else {
+                    pencil.setVisibility(View.GONE);
+                }
             }
-            if (seekbar!=null ) {
+            if (seekbar != null) {
                 seekbar.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent) {
                         return true;
                     }
                 });
-                seekbar.setMax(seekbar.getMax()*100);
+                seekbar.setMax(seekbar.getMax() * 100);
 
 //                AnimatedVectorDrawable anim = (AnimatedVectorDrawable) view.getResources().getDrawable(R.drawable.anim_soccerball_small,null);
 //                iv.setImageDrawable(anim);
 
-                RotateDrawable rt= new RotateDrawable();
+                RotateDrawable rt = new RotateDrawable();
 
-                rt.setDrawable(view.getResources().getDrawable(R.drawable.soccerball_small,null));
+                rt.setDrawable(view.getResources().getDrawable(R.drawable.soccerball_small, null));
                 rt.setFromDegrees(0f);
                 rt.setToDegrees(70f);
                 objanim = ObjectAnimator.ofInt(rt, "level", 10000);
@@ -373,7 +400,6 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 //                animation.setRepeatMode(Animation.INFINITE);
 //                iv.startAnimation(animation);
 //                anim.start();
-
 
 
             }

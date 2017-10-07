@@ -116,7 +116,7 @@ public class TimeGoalieAlarmManager {
                                     goalType,
                                     seekbar).start());
                         }
-                        makeCountdownTimer(1000,intervalInSeconds,totalSeconds,tv,goalEntry,goalType,seekbar).start();
+                      //  makeCountdownTimer(1000,intervalInSeconds,totalSeconds,tv,goalEntry,goalType,seekbar).start();
                       //  tv.setText("00:00:00");
                         break;
                     case 1:

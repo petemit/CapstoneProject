@@ -371,9 +371,9 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         PARAMETER;
                 String[] selectionArgs = new String[] {contentValues.getAsLong(
                         TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID)+""};
-
-                db.update(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,contentValues,
-                        selection,selectionArgs);
+//
+//                db.update(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,contentValues,
+//                        selection,selectionArgs);
 
                 long goal_entry_id = db.insertWithOnConflict(
                         TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,
