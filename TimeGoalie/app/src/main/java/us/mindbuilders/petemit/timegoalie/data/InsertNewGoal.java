@@ -6,12 +6,14 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
 /**
  * Created by Peter on 9/27/2017.
  */
 
-public class InsertNewGoal extends AsyncTask<Goal, Void, Void> {
+public class InsertNewGoal extends AsyncTask<Goal, Void, Goal> {
     Context context;
 
     public InsertNewGoal(Context context) {
@@ -19,7 +21,7 @@ public class InsertNewGoal extends AsyncTask<Goal, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Goal... goals) {
+    protected Goal doInBackground(Goal... goals) {
         if (goals.length == 1) {
             Goal goal = goals[0];
             ContentValues goal_cv = new ContentValues();
@@ -37,6 +39,9 @@ public class InsertNewGoal extends AsyncTask<Goal, Void, Void> {
 
             long goal_id = ContentUris.parseId(context.getContentResolver()
                     .insert(TimeGoalieContract.Goals.CONTENT_URI, goal_cv));
+            goals[0].setGoalId(goal_id);
+
+
             if (goal.getGoalDays()!=null) {
                 for (int i = 0; i < goal.getGoalDays().size(); i++) {
                     ContentValues goal_day_cv = new ContentValues();
@@ -48,13 +53,21 @@ public class InsertNewGoal extends AsyncTask<Goal, Void, Void> {
                             goal_day_cv);
                 }
             }
+            return goals[0];
         }
         return null;
     }
 
     @Override
-    protected void onPostExecute(Void aVoid) {
-        super.onPostExecute(aVoid);
+    protected void onPostExecute(Goal goal) {
+        super.onPostExecute(goal);
+
+        if (goal!=null && ((goal.getIsDaily()==0&&goal.getIsWeekly()==0)||goal.getIsDaily()==1)) {
+            GoalEntry todayGoalEntry= new GoalEntry();
+            todayGoalEntry.setSecondsElapsed(0);
+            todayGoalEntry.setDate(TimeGoalieDateUtils.getSqlDateString());
+            new InsertNewGoalEntry(context).execute(todayGoalEntry);
+        }
     }
 }
 

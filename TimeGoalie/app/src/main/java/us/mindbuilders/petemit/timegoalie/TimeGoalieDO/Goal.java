@@ -124,7 +124,7 @@ public class Goal {
         this.goalDays = goalDays;
     }
 
-    public static ArrayList<Goal> createGoalListFromCursor(Cursor cursor) {
+    public static ArrayList<Goal> createGoalListWithGoalEntriesFromCursor(Cursor cursor) {
         ArrayList<Goal> goalList = new ArrayList<Goal>();
         if(cursor!=null) {
             while (cursor.moveToNext()) {
@@ -150,6 +150,28 @@ public class Goal {
                                 .GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
 
                 goal.goalEntry = goalEntry;
+                goalList.add(goal);
+            }
+        }
+        return goalList;
+    }
+
+    public static ArrayList<Goal> createGoalListFromCursor(Cursor cursor) {
+        ArrayList<Goal> goalList = new ArrayList<Goal>();
+        if(cursor!=null) {
+            while (cursor.moveToNext()) {
+                Goal goal = new Goal();
+                goal.setGoalId(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.Goals._ID)));
+                goal.setName(cursor.getString(cursor.
+                        getColumnIndex(TimeGoalieContract.Goals.GOALS_COLUMN_NAME)));
+                goal.setHours((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
+                        TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS))));
+                goal.setMinutes((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
+                        TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES))));
+                goal.setGoalTypeId(
+                        cursor.getInt(
+                                cursor.getColumnIndex(
+                                        TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID)));
                 goalList.add(goal);
             }
         }

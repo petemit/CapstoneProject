@@ -24,6 +24,7 @@ import us.mindbuilders.petemit.timegoalie.BaseApplication;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
+import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
 
 /**
@@ -48,13 +49,14 @@ public class TimeGoalieAlarmManager {
 
 
     public static CountDownTimer makeCountdownTimer(long secondsInFuture,
-                                                    long intervalInSeconds,
+                                                    final long intervalInSeconds,
                                                     final long totalSeconds,
                                                     final TextView tv,
                                                     final GoalEntry goalEntry,
                                                     final int goalType,
                                                     final SeekBar seekbar) {
         long milliInFuture = secondsInFuture * 1000;
+        final boolean hasFinished=goalEntry.isHasFinished();
         long intervalInSecondsInMilli = intervalInSeconds * 1000;
         final CountDownTimer cdTimer = new CountDownTimer(milliInFuture, intervalInSecondsInMilli) {
             @Override
@@ -78,8 +80,8 @@ public class TimeGoalieAlarmManager {
                         }
                         break;
                 }
-
                 goalEntry.addSecondElapsed();
+                new InsertNewGoalEntry(tv.getContext()).execute(goalEntry);
 
                 //set Progress bar Progress
                 if (seekbar != null && !goalEntry.isHasFinished()) {
@@ -88,6 +90,9 @@ public class TimeGoalieAlarmManager {
                     animation.setDuration(2000);
                     animation.setInterpolator(new LinearInterpolator());
                     animation.start();
+                }
+                else if (seekbar != null) {
+                    seekbar.setProgress(10000);
                 }
 
             }
@@ -98,13 +103,39 @@ public class TimeGoalieAlarmManager {
                 switch (goalType) {
                     case 0:
                         goalEntry.setHasFinished(true);
-                        this.start();
+                        if (BaseApplication.getTimeGoalieAlarmObjectById(goalEntry.getGoal_id())!=null) {
+                            TimeGoalieAlarmObject timeGoalieAlarmObject =
+                                    BaseApplication.getTimeGoalieAlarmObjectById(
+                                            goalEntry.getGoal_id());
+                            timeGoalieAlarmObject.getCountDownTimer().cancel();
+                            timeGoalieAlarmObject.setCountDownTimer(makeCountdownTimer(1000,
+                                    intervalInSeconds,
+                                    totalSeconds,
+                                    tv,
+                                    goalEntry,
+                                    goalType,
+                                    seekbar).start());
+                        }
+                        makeCountdownTimer(1000,intervalInSeconds,totalSeconds,tv,goalEntry,goalType,seekbar).start();
                       //  tv.setText("00:00:00");
                         break;
                     case 1:
                       //  tv.setText(makeTimeTextFromMillis(totalSeconds / 1000));
                         goalEntry.setHasFinished(true);
-                        this.start();
+                        if (BaseApplication.getTimeGoalieAlarmObjectById(goalEntry.getGoal_id())!=null) {
+                            TimeGoalieAlarmObject timeGoalieAlarmObject =
+                                    BaseApplication.getTimeGoalieAlarmObjectById(
+                                            goalEntry.getGoal_id());
+                            timeGoalieAlarmObject.getCountDownTimer().cancel();
+                            timeGoalieAlarmObject.setCountDownTimer(makeCountdownTimer(1000,
+                                    intervalInSeconds,
+                                    totalSeconds,
+                                    tv,
+                                    goalEntry,
+                                    goalType,
+                                    seekbar).start());
+                        }
+
                         break;
                 }
 
@@ -133,7 +164,9 @@ public class TimeGoalieAlarmManager {
 
 
     public static void startTimer(TextView time_tv, long totalSeconds, Goal goal, View view, SeekBar seekbar) {
-
+        if (goal.getGoalEntry().getDate()==null) {
+            goal.getGoalEntry().setDate(TimeGoalieDateUtils.getSqlDateString());
+        }
         TimeGoalieAlarmObject timeGoalieAlarmObject =
                 BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
         long remainingSeconds = totalSeconds;// - secondsElapsed;
@@ -168,9 +201,10 @@ public class TimeGoalieAlarmManager {
         }
 
         // this will create the system alarm.  :-O !  It will not create it if the pi
-        // already exists.
+        // already exists, or if the goal has already finished
 
-        if (timeGoalieAlarmObject != null && timeGoalieAlarmObject.getPi() == null) {
+        if (timeGoalieAlarmObject != null && timeGoalieAlarmObject.getPi() == null &&
+                !goal.getGoalEntry().isHasFinished()) {
             timeGoalieAlarmObject.setPi(TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
                     view.getContext(), (int) goal.getGoalId(), goal.getName()));
 

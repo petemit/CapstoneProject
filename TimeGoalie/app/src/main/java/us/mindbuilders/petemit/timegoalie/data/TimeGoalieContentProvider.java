@@ -180,9 +180,8 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         null,
                         null);
                 break;
-
+            //Goal Entries
             case GOAL_ENTRIES_BY_DATE:
-
                 selection = TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME
                         .concat(PARAMETER);
 
@@ -208,6 +207,23 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         null);
                 break;
 
+            case GOAL_ENTRIES_BY_GOAL_ID:
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                selection = TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID
+                        .concat(PARAMETER)
+                        .concat(" AND ")
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME)
+                        .concat(" ='")
+                        .concat(suppliedSelectionArgs[0])
+                        .concat("'");
+                cursor = db.query(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,
+                        null,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        null);
+                break;
             //goaldays
             case GOALS_BY_DAY_ID:
 
@@ -351,9 +367,19 @@ public class TimeGoalieContentProvider extends ContentProvider {
                 }
 
             case GOAL_ENTRIES:
-                long goal_entry_id = db.insert(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,
+                String selection = TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID +
+                        PARAMETER;
+                String[] selectionArgs = new String[] {contentValues.getAsLong(
+                        TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID)+""};
+
+                db.update(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,contentValues,
+                        selection,selectionArgs);
+
+                long goal_entry_id = db.insertWithOnConflict(
+                        TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,
                         null,
-                        contentValues);
+                        contentValues,
+                        SQLiteDatabase.CONFLICT_REPLACE);
                 if (goal_entry_id > -1) {
                     Uri returnUri = TimeGoalieContract.buildGetAGoalEntryByGoalId(goal_entry_id);
                     getContext().getContentResolver().notifyChange(returnUri,null);

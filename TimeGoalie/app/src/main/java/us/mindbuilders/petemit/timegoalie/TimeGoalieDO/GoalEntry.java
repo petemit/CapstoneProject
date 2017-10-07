@@ -3,6 +3,7 @@ package us.mindbuilders.petemit.timegoalie.TimeGoalieDO;
 import java.sql.Date;
 
 import us.mindbuilders.petemit.timegoalie.BaseApplication;
+import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 
 /**
  * Created by Peter on 9/23/2017.
@@ -53,6 +54,22 @@ public class GoalEntry {
         }
     }
 
+    public void setSecondsElapsed(int secondsElapsed, boolean isAlarm) {
+        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id)!=null) {
+            if (isAlarm) {
+                TimeGoalieAlarmObject timeGoalieAlarmObject =
+                        BaseApplication.getTimeGoalieAlarmObjectById(goal_id);
+                timeGoalieAlarmObject.setSecondsElapsed(secondsElapsed);
+            }
+        }
+        else {
+            TimeGoalieAlarmObject timeGoalieAlarmObject = new TimeGoalieAlarmObject();
+            timeGoalieAlarmObject.setSecondsElapsed(secondsElapsed);
+            timeGoalieAlarmObject.setGoal_id(goal_id);
+            BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject
+            );
+        }
+    }
 
     public long getGoal_id() {
         return goal_id;

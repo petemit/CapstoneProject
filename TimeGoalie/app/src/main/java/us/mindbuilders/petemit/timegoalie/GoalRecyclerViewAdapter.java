@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
+import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
@@ -93,13 +94,22 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                     //Recalculate Elapsed Seconds
 
                     if (timeGoalieAlarmObj.getTargetTime() != 0 && timeGoalieAlarmObj.isRunning()) {
-                        timeGoalieAlarmObj
-                                .setSecondsElapsed(TimeGoalieDateUtils.calculateSecondsElapsed(
-                                        timeGoalieAlarmObj.getTargetTime(),
-                                        TimeGoalieDateUtils.getCurrentTimeInMillis(),
-                                        goal.getHours(),
-                                        goal.getMinutes()
-                                ));
+
+
+                        goal.getGoalEntry().setSecondsElapsed((TimeGoalieDateUtils.calculateSecondsElapsed(
+                                timeGoalieAlarmObj.getTargetTime(),
+                                TimeGoalieDateUtils.getCurrentTimeInMillis(),
+                                goal.getHours(),
+                                goal.getMinutes())),true);
+
+//
+//                        timeGoalieAlarmObj
+//                                .setSecondsElapsed(TimeGoalieDateUtils.calculateSecondsElapsed(
+//                                        timeGoalieAlarmObj.getTargetTime(),
+//                                        TimeGoalieDateUtils.getCurrentTimeInMillis(),
+//                                        goal.getHours(),
+//                                        goal.getMinutes()
+//                                ));
                     }
                     onBindElapsedSeconds = (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()))
                             .getSecondsElapsed();
@@ -124,10 +134,10 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                 else {
 
                     if (remainingSeconds < 0) {
-                        holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
-                        if (holder.seekbar != null) {
-                            holder.seekbar.setProgress(0);
-                        }
+//                        holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
+//                        if (holder.seekbar != null) {
+//                            holder.seekbar.setProgress(10000);
+//                        }
                     } else {
                         holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(remainingSeconds * 1000));
                         //set Progress bar Progress
@@ -166,6 +176,12 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                 }
                                 timeGoalieAlarmObject.setRunning(false);
                             }
+                            if (goal.getGoalEntry()!=null) {
+                                goal.getGoalEntry().setDate(TimeGoalieDateUtils.getSqlDateString());
+                                new InsertNewGoalEntry(
+                                        compoundButton.getContext()).execute(goal.getGoalEntry());
+                            }
+
                             holder.objanim.cancel();
                         }
                     }

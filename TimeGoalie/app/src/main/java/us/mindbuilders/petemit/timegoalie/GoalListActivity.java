@@ -217,7 +217,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         //creates arraylist of goals
-        rvAdapter.swapCursor(Goal.createGoalListFromCursor(data));
+        rvAdapter.swapCursor(Goal.createGoalListWithGoalEntriesFromCursor(data));
         rvAdapter.notifyDataSetChanged();
     }
 

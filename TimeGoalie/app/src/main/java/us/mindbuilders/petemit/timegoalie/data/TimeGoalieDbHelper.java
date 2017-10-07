@@ -43,9 +43,14 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME +
                 "(" + TimeGoalieContract.GoalEntries._ID +
                 " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID + " INTEGER NOT NULL, " +
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME + " TEXT NOT NULL, " +
-        TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED + " INTEGER);";
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED + " INTEGER, "+
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID + " INTEGER NOT NULL, "+
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME + " TEXT NOT NULL, "+
+        " UNIQUE("+
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID + "," +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME +
+                ") "+
+                " ON CONFLICT REPLACE )";
         db.execSQL(createGoalEntriesTable);
 
         //create goaltypes table
@@ -140,7 +145,7 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
 
         //DUMMY DATA
         // TODO: 10/6/2017 remove when done
-        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed) VALUES (1, '2017-10-05',140)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed) VALUES (1, '2017-10-05',3000)");
 
     }
 
