@@ -87,6 +87,10 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
     }
 
     public void swapCursor(ArrayList<Goal> goalArrayList, boolean isToday) {
+        for (TimeGoalieAlarmObject tgoal : BaseApplication.getTimeGoalieAlarmObjects()) {
+            if (tgoal.getCountDownTimer() != null)
+                tgoal.getCountDownTimer().cancel();
+        }
         this.goalArrayList = goalArrayList;
         this.isToday = isToday;
         notifyDataSetChanged();
@@ -98,11 +102,21 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
             final Goal goal = goalArrayList.get(position);
             //cursor.moveToPosition(position);
             holder.tv_goaltitle.setText(goal.getName());
+            if (holder.objanim != null) {
+                holder.objanim.cancel();
+            }
+
             if (holder.startStopTimer != null) {
                 long onBindElapsedSeconds = 0;
 
                 if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()) != null) {
                     TimeGoalieAlarmObject timeGoalieAlarmObj = BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId());
+                    if (timeGoalieAlarmObj.isRunning()){
+
+                    }
+                    else{
+
+                    }
                     //Recalculate Elapsed Seconds
 
                     if (timeGoalieAlarmObj.getTargetTime() != 0 && timeGoalieAlarmObj.isRunning()) {
@@ -352,12 +366,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
             seekbar = view.findViewById(R.id.goalProgressBar);
             tv_timeOutOf = view.findViewById(R.id.timeTextView_outOf);
 
-            if (!isToday) {
-                startStopTimer.setVisibility(View.GONE);
-            }
 
             if (pencil != null) {
-                if (isToday) {
                     pencil.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -368,10 +378,6 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                             }
                         }
                     });
-                }
-                else {
-                    pencil.setVisibility(View.GONE);
-                }
             }
             if (seekbar != null) {
                 seekbar.setOnTouchListener(new View.OnTouchListener() {

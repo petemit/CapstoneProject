@@ -56,7 +56,7 @@ public class TimeGoalieAlarmManager {
                                                     final int goalType,
                                                     final SeekBar seekbar) {
         long milliInFuture = secondsInFuture * 1000;
-        final boolean hasFinished=goalEntry.isHasFinished();
+        final boolean hasFinished = goalEntry.isHasFinished();
         long intervalInSecondsInMilli = intervalInSeconds * 1000;
         final CountDownTimer cdTimer = new CountDownTimer(milliInFuture, intervalInSecondsInMilli) {
             @Override
@@ -66,17 +66,15 @@ public class TimeGoalieAlarmManager {
                     case 0: //Time Goal To Encourage
                         if (!goalEntry.isHasFinished()) {
                             tv.setText(makeTimeTextFromMillis(totalSeconds * 1000 - millisuntilfinished));
-                        }
-                        else {
-                            tv.setText(makeTimeTextFromMillis(goalEntry.getSecondsElapsed()*1000+totalSeconds));
+                        } else {
+                            tv.setText(makeTimeTextFromMillis(goalEntry.getSecondsElapsed() * 1000 + totalSeconds));
                         }
                         break;
                     case 1: //Time Goal to Limit
                         if (!goalEntry.isHasFinished()) {
                             tv.setText(makeTimeTextFromMillis(millisuntilfinished));
-                        }
-                        else {
-                            tv.setText("-"+makeTimeTextFromMillis(-1*(totalSeconds*1000-goalEntry.getSecondsElapsed()*1000)));
+                        } else {
+                            tv.setText("-" + makeTimeTextFromMillis(-1 * (totalSeconds * 1000 - goalEntry.getSecondsElapsed() * 1000)));
                         }
                         break;
                 }
@@ -90,8 +88,7 @@ public class TimeGoalieAlarmManager {
                     animation.setDuration(2000);
                     animation.setInterpolator(new LinearInterpolator());
                     animation.start();
-                }
-                else if (seekbar != null) {
+                } else if (seekbar != null) {
                     seekbar.setProgress(10000);
                 }
 
@@ -103,37 +100,41 @@ public class TimeGoalieAlarmManager {
                 switch (goalType) {
                     case 0:
                         goalEntry.setHasFinished(true);
-                        if (BaseApplication.getTimeGoalieAlarmObjectById(goalEntry.getGoal_id())!=null) {
+                        if (BaseApplication.getTimeGoalieAlarmObjectById(goalEntry.getGoal_id()) != null) {
                             TimeGoalieAlarmObject timeGoalieAlarmObject =
                                     BaseApplication.getTimeGoalieAlarmObjectById(
                                             goalEntry.getGoal_id());
                             timeGoalieAlarmObject.getCountDownTimer().cancel();
-                            timeGoalieAlarmObject.setCountDownTimer(makeCountdownTimer(1000,
-                                    intervalInSeconds,
-                                    totalSeconds,
-                                    tv,
-                                    goalEntry,
-                                    goalType,
-                                    seekbar).start());
+                            if (goalEntry.getDate().equals(TimeGoalieDateUtils.getSqlDateString())) {
+                                timeGoalieAlarmObject.setCountDownTimer(makeCountdownTimer(1000,
+                                        intervalInSeconds,
+                                        totalSeconds,
+                                        tv,
+                                        goalEntry,
+                                        goalType,
+                                        seekbar).start());
+                            }
                         }
-                      //  makeCountdownTimer(1000,intervalInSeconds,totalSeconds,tv,goalEntry,goalType,seekbar).start();
-                      //  tv.setText("00:00:00");
+                        //  makeCountdownTimer(1000,intervalInSeconds,totalSeconds,tv,goalEntry,goalType,seekbar).start();
+                        //  tv.setText("00:00:00");
                         break;
                     case 1:
-                      //  tv.setText(makeTimeTextFromMillis(totalSeconds / 1000));
+                        //  tv.setText(makeTimeTextFromMillis(totalSeconds / 1000));
                         goalEntry.setHasFinished(true);
-                        if (BaseApplication.getTimeGoalieAlarmObjectById(goalEntry.getGoal_id())!=null) {
+                        if (BaseApplication.getTimeGoalieAlarmObjectById(goalEntry.getGoal_id()) != null) {
                             TimeGoalieAlarmObject timeGoalieAlarmObject =
                                     BaseApplication.getTimeGoalieAlarmObjectById(
                                             goalEntry.getGoal_id());
                             timeGoalieAlarmObject.getCountDownTimer().cancel();
-                            timeGoalieAlarmObject.setCountDownTimer(makeCountdownTimer(1000,
-                                    intervalInSeconds,
-                                    totalSeconds,
-                                    tv,
-                                    goalEntry,
-                                    goalType,
-                                    seekbar).start());
+                            if (goalEntry.getDate().equals(TimeGoalieDateUtils.getSqlDateString())) {
+                                timeGoalieAlarmObject.setCountDownTimer(makeCountdownTimer(1000,
+                                        intervalInSeconds,
+                                        totalSeconds,
+                                        tv,
+                                        goalEntry,
+                                        goalType,
+                                        seekbar).start());
+                            }
                         }
 
                         break;
@@ -162,9 +163,8 @@ public class TimeGoalieAlarmManager {
     }
 
 
-
     public static void startTimer(TextView time_tv, long totalSeconds, Goal goal, View view, SeekBar seekbar) {
-        if (goal.getGoalEntry().getDate()==null) {
+        if (goal.getGoalEntry().getDate() == null) {
             goal.getGoalEntry().setDate(TimeGoalieDateUtils.getSqlDateString());
         }
         TimeGoalieAlarmObject timeGoalieAlarmObject =
@@ -179,7 +179,7 @@ public class TimeGoalieAlarmManager {
                             goal.getGoalSeconds(),
                             time_tv,
                             goal.getGoalEntry(),
-                            (int)goal.getGoalTypeId(),
+                            (int) goal.getGoalTypeId(),
                             seekbar));
             timeGoalieAlarmObject.getCountDownTimer().start();
             timeGoalieAlarmObject.setRunning(true);
@@ -192,7 +192,7 @@ public class TimeGoalieAlarmManager {
                             goal.getGoalSeconds(),
                             time_tv,
                             goal.getGoalEntry(),
-                            (int)goal.getGoalTypeId(),
+                            (int) goal.getGoalTypeId(),
                             seekbar));
             timeGoalieAlarmObject.getCountDownTimer().start();
             timeGoalieAlarmObject.setRunning(true);
