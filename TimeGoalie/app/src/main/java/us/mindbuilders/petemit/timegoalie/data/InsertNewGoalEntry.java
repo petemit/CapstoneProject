@@ -23,24 +23,20 @@ public class InsertNewGoalEntry extends AsyncTask<GoalEntry, Void, Void> {
 
     @Override
     protected Void doInBackground(GoalEntry... goalEntries) {
+        ContentValues goalEntries_cv = new ContentValues();
+        for (int i = 0 ; i < goalEntries.length ; i++ ) {
+            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID,
+                    goalEntries[i].getGoal_id());
+            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME,
+                    goalEntries[i].getDate());
+            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED,
+                    goalEntries[i].getSecondsElapsed());
+        }
+
+        context.getContentResolver().insert(TimeGoalieContract.GoalEntries.CONTENT_URI,goalEntries_cv);
 
         if (goalEntries.length > 0) {
-            for (int i = 0; i < goalEntries.length; i++) {
-                GoalEntry goalEntry = goalEntries[i];
-                ContentValues goal_entry_cv = new ContentValues();
-                String date = goalEntry.getDate();
-                int secondsElapsed = goalEntry.getSecondsElapsed();
-                long goal_id = goalEntry.getGoal_id();
-
-                goal_entry_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID, goalEntry.getGoal_id());
-                goal_entry_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED, goalEntry.getSecondsElapsed());
-                goal_entry_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME, goalEntry.getDate());
-
-
-
-                long goalEntry_id = ContentUris.parseId(context.getContentResolver()
-                        .insert(TimeGoalieContract.GoalEntries.CONTENT_URI, goal_entry_cv));
-            }
+            for (int i = 0; i < goalEntries.length; i++) {}
 
         }
         return null;
