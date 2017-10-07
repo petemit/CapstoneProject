@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.SeekBar;
@@ -19,7 +20,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import us.mindbuilders.petemit.timegoalie.BaseApplication;
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
 
 /**
@@ -125,4 +129,74 @@ public class TimeGoalieAlarmManager {
                 + ":" + String.format("%02d", minutes)
                 + ":" + String.format("%02d", seconds));
     }
+
+
+
+    public static void startTimer(TextView time_tv, long totalSeconds, Goal goal, View view, SeekBar seekbar) {
+
+        TimeGoalieAlarmObject timeGoalieAlarmObject =
+                BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
+        long remainingSeconds = totalSeconds;// - secondsElapsed;
+        Log.e("Mindbuilders", "remainingseconds: " + remainingSeconds);
+        if (timeGoalieAlarmObject != null) {
+            timeGoalieAlarmObject.setCountDownTimer(
+                    TimeGoalieAlarmManager.makeCountdownTimer(
+                            remainingSeconds,
+                            1,
+                            goal.getGoalSeconds(),
+                            time_tv,
+                            goal.getGoalEntry(),
+                            (int)goal.getGoalTypeId(),
+                            seekbar));
+            timeGoalieAlarmObject.getCountDownTimer().start();
+            timeGoalieAlarmObject.setRunning(true);
+        } else {
+            timeGoalieAlarmObject = new TimeGoalieAlarmObject();
+            timeGoalieAlarmObject.setCountDownTimer(
+                    TimeGoalieAlarmManager.makeCountdownTimer(
+                            remainingSeconds,
+                            1,
+                            goal.getGoalSeconds(),
+                            time_tv,
+                            goal.getGoalEntry(),
+                            (int)goal.getGoalTypeId(),
+                            seekbar));
+            timeGoalieAlarmObject.getCountDownTimer().start();
+            timeGoalieAlarmObject.setRunning(true);
+            timeGoalieAlarmObject.setGoal_id(goal.getGoalId());
+            BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject);
+        }
+
+        // this will create the system alarm.  :-O !  It will not create it if the pi
+        // already exists.
+
+        if (timeGoalieAlarmObject != null && timeGoalieAlarmObject.getPi() == null) {
+            timeGoalieAlarmObject.setPi(TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
+                    view.getContext(), (int) goal.getGoalId(), goal.getName()));
+
+            long hours = remainingSeconds / (60 * 60);
+            long minutes = (remainingSeconds - (hours * 60 * 60)) / 60;
+            long seconds = (remainingSeconds - (hours * 60 * 60) - (minutes * 60));
+
+            Log.e("Mindbuilders", "hours: " + hours);
+            Log.e("Mindbuilders", "minutes: " + minutes);
+            Log.e("Mindbuilders", "seconds: " + seconds);
+
+            long targetTime = TimeGoalieDateUtils.createTargetCalendarTime(
+                    (int) hours,
+                    (int) minutes,
+                    (int) seconds);
+
+            //sound the alarm!!
+            if (timeGoalieAlarmObject.getTargetTime() == 0) {
+                timeGoalieAlarmObject.setTargetTime(targetTime);
+            }
+
+            TimeGoalieAlarmManager.setTimeGoalAlarm(
+                    targetTime,
+                    view.getContext(), null,
+                    timeGoalieAlarmObject.getPi());
+        }
+    }
+
 }
