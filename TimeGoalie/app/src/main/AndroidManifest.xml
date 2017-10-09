@@ -44,6 +44,10 @@
             <intent-filter>
                 <action android:name="us.mindbuilders.petemit.timegoalie.GOAL_FINISHED"/>
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="us.mindbuilders.petemit.timegoalie.GOAL_ONE_MINUTE_WARNING"/>
+            </intent-filter>
         </receiver>
 
     </application>

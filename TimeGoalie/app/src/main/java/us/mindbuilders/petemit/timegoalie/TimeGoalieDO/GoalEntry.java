@@ -11,11 +11,15 @@ import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 
 public class GoalEntry {
     private long id;
-    private String date;
+    private String date = "";
+    private int goalAugment;
     private long goal_id;
     private boolean hasFinished;
 
-    public GoalEntry(){
+    public GoalEntry(long goal_id, String date) {
+        this.date = date;
+        this.goal_id = goal_id;
+
     }
 
     public String getDate() {
@@ -28,25 +32,24 @@ public class GoalEntry {
 
     public int getSecondsElapsed() {
 
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id)!=null) {
-            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id).getSecondsElapsed();
+        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
+            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).getSecondsElapsed();
         }
         return 0;
     }
 
     public void addSecondElapsed() {
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id)!=null) {
-            BaseApplication.getTimeGoalieAlarmObjectById(goal_id).setSecondsElapsed(
-                    BaseApplication.getTimeGoalieAlarmObjectById(goal_id).getSecondsElapsed()+1
+        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
+            BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date ).setSecondsElapsed(
+                    BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).getSecondsElapsed() + 1
             );
         }
     }
 
     public void setSecondsElapsed(int secondsElapsed) {
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id)!=null) {
-        }
-        else {
-            TimeGoalieAlarmObject timeGoalieAlarmObject = new TimeGoalieAlarmObject();
+        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
+        } else {
+            TimeGoalieAlarmObject timeGoalieAlarmObject = new TimeGoalieAlarmObject(goal_id, date);
             timeGoalieAlarmObject.setSecondsElapsed(secondsElapsed);
             timeGoalieAlarmObject.setGoal_id(goal_id);
             BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject
@@ -55,17 +58,15 @@ public class GoalEntry {
     }
 
     public void setSecondsElapsed(int secondsElapsed, boolean isAlarm) {
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id)!=null) {
+        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date) != null) {
             if (isAlarm) {
                 TimeGoalieAlarmObject timeGoalieAlarmObject =
-                        BaseApplication.getTimeGoalieAlarmObjectById(goal_id);
+                        BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date);
                 timeGoalieAlarmObject.setSecondsElapsed(secondsElapsed);
             }
-        }
-        else {
-            TimeGoalieAlarmObject timeGoalieAlarmObject = new TimeGoalieAlarmObject();
+        } else {
+            TimeGoalieAlarmObject timeGoalieAlarmObject = new TimeGoalieAlarmObject(goal_id, date);
             timeGoalieAlarmObject.setSecondsElapsed(secondsElapsed);
-            timeGoalieAlarmObject.setGoal_id(goal_id);
             BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject
             );
         }
@@ -88,16 +89,29 @@ public class GoalEntry {
     }
 
     public boolean isHasFinished() {
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id)!=null) {
-            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id).isHasFinished();
+        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id ,date) != null) {
+            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).isHasFinished();
         }
 
         return hasFinished;
     }
 
     public void setHasFinished(boolean hasFinished) {
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id)!=null) {
-            BaseApplication.getTimeGoalieAlarmObjectById(goal_id).setHasFinished(hasFinished);
+        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
+            BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).setHasFinished(hasFinished);
+        }
+    }
+
+    public int getGoalAugment() {
+        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
+            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).getGoalAugment();
+        }
+        return 0;
+    }
+
+    public void setGoalAugment(int goalAugment) {
+        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
+            BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).setGoalAugment(goalAugment);
         }
     }
 }

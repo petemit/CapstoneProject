@@ -44,6 +44,7 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 "(" + TimeGoalieContract.GoalEntries._ID +
                 " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED + " INTEGER, "+
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT + " INTEGER, "+
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID + " INTEGER NOT NULL, "+
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME + " TEXT NOT NULL, "+
         " UNIQUE("+

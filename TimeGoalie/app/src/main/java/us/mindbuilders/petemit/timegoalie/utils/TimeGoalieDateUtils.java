@@ -35,10 +35,10 @@ public class TimeGoalieDateUtils {
         return calendar.getTimeInMillis();
     }
 
-    public static int calculateSecondsElapsed(long futuremillis, long currentmillis, int hours, int minutes) {
+    public static int calculateSecondsElapsed(long futuremillis, long currentmillis, int hours, int minutes, int augment) {
         long millisleft = futuremillis - currentmillis;
         long timeElapsed = ((hours * 60 * 60) + (minutes * 60)) -
-                (millisleft/1000);
+                (millisleft/1000) + augment;
         return ((int) timeElapsed);
     }
 

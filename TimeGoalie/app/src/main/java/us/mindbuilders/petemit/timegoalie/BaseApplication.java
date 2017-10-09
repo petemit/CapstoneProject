@@ -104,6 +104,18 @@ public class BaseApplication extends Application {
         return null;
     }
 
+    public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id, String date){
+        for (int i = 0 ; i < timeGoalieAlarmObjects.size() ; i ++) {
+            if (timeGoalieAlarmObjects.get(i).getGoal_id()==goal_id &&
+                    timeGoalieAlarmObjects.get(i).getDate().equals(date)){
+                Log.e("check",goal_id+"");
+                return timeGoalieAlarmObjects.get(i);
+
+            }
+        }
+        return null;
+    }
+
 
 
 }

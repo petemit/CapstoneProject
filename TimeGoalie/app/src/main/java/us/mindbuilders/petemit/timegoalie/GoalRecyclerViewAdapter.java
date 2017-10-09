@@ -29,10 +29,9 @@ import java.util.ArrayList;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
-import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
-import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
@@ -47,7 +46,6 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
     private View.OnClickListener onClickListener;
     private ArrayList<Goal> goalArrayList;
     private boolean isToday;
-
 
     //    public GoalRecyclerViewAdapter(List<DummyContent.DummyItem> items, View.OnClickListener onClickListener) {
 //        mValues = items;
@@ -106,15 +104,26 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                 holder.objanim.cancel();
             }
 
+            if (goal.getGoalTypeId() == 1) { // if this is GoalType Limit goal
+                if (holder.seekbar != null) {
+                    holder.seekbar.setProgressDrawable(holder.seekbar.getResources().
+                            getDrawable(R.drawable.seekbar_reverse, null));
+                }
+            }
+
             if (holder.startStopTimer != null) {
                 long onBindElapsedSeconds = 0;
 
-                if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()) != null) {
-                    TimeGoalieAlarmObject timeGoalieAlarmObj = BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId());
-                    if (timeGoalieAlarmObj.isRunning()){
+                if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId(),
+                        TimeGoalieDateUtils.getSqlDateString(
+                                BaseApplication.getActiveCalendarDate())) != null) {
+                    TimeGoalieAlarmObject timeGoalieAlarmObj =
+                            BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId(),
+                                    TimeGoalieDateUtils.
+                                            getSqlDateString(BaseApplication.getActiveCalendarDate()));
+                    if (timeGoalieAlarmObj.isRunning()) {
 
-                    }
-                    else{
+                    } else {
 
                     }
                     //Recalculate Elapsed Seconds
@@ -126,7 +135,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                 timeGoalieAlarmObj.getTargetTime(),
                                 TimeGoalieDateUtils.getCurrentTimeInMillis(),
                                 goal.getHours(),
-                                goal.getMinutes())), true);
+                                goal.getMinutes(),
+                                goal.getGoalEntry().getGoalAugment())), true);
 
 //
 //                        timeGoalieAlarmObj
@@ -151,7 +161,15 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                     holder.tv_timeOutOf.setText(" / " + TimeGoalieAlarmManager.makeTimeTextFromMillis(
                             goal.getGoalSeconds() * 1000
                     ));
-                    holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
+
+                  //  holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
+                    if (goal.getGoalEntry()!=null) {
+                        holder.time_tv.setText(TimeGoalieAlarmManager.
+                                makeTimeTextFromMillis(goal.getGoalEntry().getSecondsElapsed()*1000));
+                    }
+                    else {
+                        holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
+                    }
                     if (holder.seekbar != null) {
                         holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) / goal.getGoalSeconds())) * 100 * 100));
                     }
@@ -172,6 +190,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                     }
                 }
                 if (isToday) {
+                    holder.startStopTimer.setVisibility(View.VISIBLE);
                     holder.startStopTimer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -200,12 +219,19 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                         timeGoalieAlarmObject.getCountDownTimer().cancel();
                                         timeGoalieAlarmObject.setCountDownTimer(null);
                                     }
-                                    if (timeGoalieAlarmObject.getPi() != null) {
+                                    if (timeGoalieAlarmObject.getAlarmDonePendingIntent() != null) {
                                         TimeGoalieAlarmManager.cancelTimeGoalAlarm(
                                                 compoundButton.getContext(),
-                                                timeGoalieAlarmObject.getPi());
-                                        timeGoalieAlarmObject.getPi().cancel();
-                                        timeGoalieAlarmObject.setPi(null);
+                                                timeGoalieAlarmObject.getAlarmDonePendingIntent());
+                                        timeGoalieAlarmObject.getAlarmDonePendingIntent().cancel();
+                                        timeGoalieAlarmObject.setAlarmDonePendingIntent(null);
+                                    }
+                                    if (timeGoalieAlarmObject.getOneMinuteWarningPendingIntent() != null) {
+                                        TimeGoalieAlarmManager.cancelTimeGoalAlarm(
+                                                compoundButton.getContext(),
+                                                timeGoalieAlarmObject.getOneMinuteWarningPendingIntent());
+                                        timeGoalieAlarmObject.getOneMinuteWarningPendingIntent().cancel();
+                                        timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(null);
                                     }
                                     timeGoalieAlarmObject.setRunning(false);
                                 }
@@ -227,10 +253,16 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
 
                 }// end start/stop
+                else {
+                    holder.startStopTimer.setVisibility(View.GONE);
+                }
             }//if istoday
             holder.mView.setOnClickListener(onClickListener);
 
             if (isToday) {
+                if (holder.pencil!=null) {
+                    holder.pencil.setVisibility(View.VISIBLE);
+                }
                 if (holder.smallAdd != null) {
                     final TimeGoalieAlarmObject timeGoalieAlarmObject =
                             BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
@@ -249,24 +281,35 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                 boolean isRunning = false;
 
                                 if (timeGoalieAlarmObject != null) {
-                                    goal.setMinutes(goal.getMinutes() + value);
+                                    if (goal.getGoalEntry() == null) {
+                                        goal.setGoalEntry(new GoalEntry(goal.getGoalId(),
+                                                TimeGoalieDateUtils.getSqlDateString()));
+                                    }
+                                    //old goal.setMinutes(goal.getMinutes() + value);
+                                    goal.getGoalEntry().setGoalAugment(
+                                            goal.getGoalEntry().getGoalAugment() + value * 60);
 
                                     isRunning = BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()).isRunning();
                                     if (timeGoalieAlarmObject.getCountDownTimer() != null) {
                                         timeGoalieAlarmObject.getCountDownTimer().cancel();
                                         timeGoalieAlarmObject.setCountDownTimer(null);
                                     }
-                                    if (timeGoalieAlarmObject.getPi() != null) {
+                                    if (timeGoalieAlarmObject.getAlarmDonePendingIntent() != null) {
                                         TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
-                                                timeGoalieAlarmObject.getPi());
-                                        timeGoalieAlarmObject.setPi(null);
-
+                                                timeGoalieAlarmObject.getAlarmDonePendingIntent());
+                                        timeGoalieAlarmObject.setAlarmDonePendingIntent(null);
+                                    }
+                                    if (timeGoalieAlarmObject.getOneMinuteWarningPendingIntent() != null) {
+                                        TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
+                                                timeGoalieAlarmObject.getOneMinuteWarningPendingIntent());
+                                        timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(null);
                                     }
                                     timeGoalieAlarmObject.setTargetTime(0);
                                     notifyDataSetChanged();
 
                                 } else {
-                                    goal.setMinutes(goal.getMinutes() + value);
+                                    goal.getGoalEntry().setGoalAugment(
+                                            goal.getGoalEntry().getGoalAugment() + value * 60);
                                     notifyDataSetChanged();
                                 }
                             }
@@ -279,8 +322,9 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
 
                                 if (timeGoalieAlarmObject != null) {
-                                    if ((goal.getHours() * 60 + goal.getMinutes()) > value) {
-                                        goal.setMinutes(goal.getMinutes() - value);
+                                    if (goal.getGoalSeconds() / 60 > value) {
+                                        goal.getGoalEntry().setGoalAugment(
+                                                goal.getGoalEntry().getGoalAugment() - value * 60);
                                     }
 
                                     isRunning = BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()).isRunning();
@@ -288,18 +332,23 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                         timeGoalieAlarmObject.getCountDownTimer().cancel();
                                         timeGoalieAlarmObject.setCountDownTimer(null);
                                     }
-                                    if (timeGoalieAlarmObject.getPi() != null) {
+                                    if (timeGoalieAlarmObject.getAlarmDonePendingIntent() != null) {
                                         TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
-                                                timeGoalieAlarmObject.getPi());
-                                        timeGoalieAlarmObject.setPi(null);
-
+                                                timeGoalieAlarmObject.getAlarmDonePendingIntent());
+                                        timeGoalieAlarmObject.setAlarmDonePendingIntent(null);
+                                    }
+                                    if (timeGoalieAlarmObject.getOneMinuteWarningPendingIntent() != null) {
+                                        TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
+                                                timeGoalieAlarmObject.getOneMinuteWarningPendingIntent());
+                                        timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(null);
                                     }
                                     timeGoalieAlarmObject.setTargetTime(0);
                                     notifyDataSetChanged();
 
 
                                 } else {
-                                    goal.setMinutes(goal.getMinutes() - value);
+                                    goal.getGoalEntry().setGoalAugment(
+                                            goal.getGoalEntry().getGoalAugment() - value * 60);
                                     notifyDataSetChanged();
                                 }
                             }
@@ -307,6 +356,11 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                     }
                 } //end add edit buttons
             }//end istoday
+            else {
+                if (holder.pencil != null) {
+                    holder.pencil.setVisibility(View.GONE);
+                }
+            }
 
         } //end if itemviewcount
     }//end BindViewHolder
@@ -368,16 +422,16 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
 
             if (pencil != null) {
-                    pencil.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (editButtons.getVisibility() != View.VISIBLE) {
-                                editButtons.setVisibility(View.VISIBLE);
-                            } else {
-                                editButtons.setVisibility(View.GONE);
-                            }
+                pencil.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (editButtons.getVisibility() != View.VISIBLE) {
+                            editButtons.setVisibility(View.VISIBLE);
+                        } else {
+                            editButtons.setVisibility(View.GONE);
                         }
-                    });
+                    }
+                });
             }
             if (seekbar != null) {
                 seekbar.setOnTouchListener(new View.OnTouchListener() {

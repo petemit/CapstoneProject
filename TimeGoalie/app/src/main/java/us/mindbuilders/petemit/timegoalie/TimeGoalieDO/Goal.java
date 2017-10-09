@@ -9,6 +9,7 @@ import java.sql.Time;
 import java.util.ArrayList;
 
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
 /**
  * Created by Peter on 9/23/2017.
@@ -126,7 +127,7 @@ public class Goal {
 
     public static ArrayList<Goal> createGoalListWithGoalEntriesFromCursor(Cursor cursor) {
         ArrayList<Goal> goalList = new ArrayList<Goal>();
-        if(cursor!=null) {
+        if (cursor != null) {
             while (cursor.moveToNext()) {
                 Goal goal = new Goal();
                 goal.setGoalId(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.Goals._ID)));
@@ -140,14 +141,18 @@ public class Goal {
                         cursor.getInt(
                                 cursor.getColumnIndex(
                                         TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID)));
-                GoalEntry goalEntry = new GoalEntry();
-                goalEntry.setGoal_id(goal.getGoalId());
-                goalEntry.setSecondsElapsed(
-                        cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
-                                .GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED)));
-                goalEntry.setDate(cursor.getString(
+                GoalEntry goalEntry = new GoalEntry(goal.getGoalId(), cursor.getString(
                         cursor.getColumnIndex(TimeGoalieContract
                                 .GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
+                if (goalEntry.getDate() == null) {
+                    goalEntry.setDate(TimeGoalieDateUtils.getSqlDateString());
+                }
+                goalEntry.setSecondsElapsed(
+                        cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
+                                .GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED)), true);
+                goalEntry.setGoalAugment(cursor.getInt(
+                        cursor.getColumnIndex(TimeGoalieContract
+                                .GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT)));
 
                 goal.goalEntry = goalEntry;
                 goalList.add(goal);
@@ -158,7 +163,7 @@ public class Goal {
 
     public static ArrayList<Goal> createGoalListFromCursor(Cursor cursor) {
         ArrayList<Goal> goalList = new ArrayList<Goal>();
-        if(cursor!=null) {
+        if (cursor != null) {
             while (cursor.moveToNext()) {
                 Goal goal = new Goal();
                 goal.setGoalId(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.Goals._ID)));
@@ -178,8 +183,13 @@ public class Goal {
         return goalList;
     }
 
-    public long getGoalSeconds (){
-        return ((getHours() * 60 * 60) + (getMinutes() * 60));
+    public long getGoalSeconds() {
+        int goalAugment = 0;
+        if (this.goalEntry != null) {
+            goalAugment = this.getGoalEntry().getGoalAugment();
+        }
+
+        return ((getHours() * 60 * 60) + (getMinutes() * 60) + goalAugment);
     }
 
 }

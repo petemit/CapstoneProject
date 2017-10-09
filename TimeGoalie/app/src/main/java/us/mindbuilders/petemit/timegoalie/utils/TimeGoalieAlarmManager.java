@@ -4,21 +4,14 @@ import android.animation.ObjectAnimator;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import us.mindbuilders.petemit.timegoalie.BaseApplication;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
@@ -32,6 +25,8 @@ import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
  */
 
 public class TimeGoalieAlarmManager {
+
+    private static final int ONE_MINUTE_WARNING_TIME = 1;
 
     public static void setTimeGoalAlarm(long futureTimeInMillis,
                                         Context context, @Nullable Bundle extras, PendingIntent alarmPendingIntent) {
@@ -169,6 +164,7 @@ public class TimeGoalieAlarmManager {
         }
         TimeGoalieAlarmObject timeGoalieAlarmObject =
                 BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
+
         long remainingSeconds = totalSeconds;// - secondsElapsed;
         Log.e("Mindbuilders", "remainingseconds: " + remainingSeconds);
         if (timeGoalieAlarmObject != null) {
@@ -184,7 +180,8 @@ public class TimeGoalieAlarmManager {
             timeGoalieAlarmObject.getCountDownTimer().start();
             timeGoalieAlarmObject.setRunning(true);
         } else {
-            timeGoalieAlarmObject = new TimeGoalieAlarmObject();
+            timeGoalieAlarmObject = new TimeGoalieAlarmObject(goal.getGoalId(),
+                    TimeGoalieDateUtils.getSqlDateString());
             timeGoalieAlarmObject.setCountDownTimer(
                     TimeGoalieAlarmManager.makeCountdownTimer(
                             remainingSeconds,
@@ -196,17 +193,21 @@ public class TimeGoalieAlarmManager {
                             seekbar));
             timeGoalieAlarmObject.getCountDownTimer().start();
             timeGoalieAlarmObject.setRunning(true);
-            timeGoalieAlarmObject.setGoal_id(goal.getGoalId());
             BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject);
         }
 
         // this will create the system alarm.  :-O !  It will not create it if the pi
         // already exists, or if the goal has already finished
 
-        if (timeGoalieAlarmObject != null && timeGoalieAlarmObject.getPi() == null &&
+        if (timeGoalieAlarmObject != null && timeGoalieAlarmObject.getAlarmDonePendingIntent() == null &&
                 !goal.getGoalEntry().isHasFinished()) {
-            timeGoalieAlarmObject.setPi(TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
-                    view.getContext(), (int) goal.getGoalId(), goal.getName()));
+            timeGoalieAlarmObject.setAlarmDonePendingIntent(TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
+                    view.getContext(), TimeGoalieAlarmReceiver.createAlarmDoneTimeGoalieAlarmIntent
+                            (       view.getContext(),
+                                    goal.getName(),
+                                    (int) goal.getGoalId()
+                            ),(int) goal.getGoalId()));
+
 
             long hours = remainingSeconds / (60 * 60);
             long minutes = (remainingSeconds - (hours * 60 * 60)) / 60;
@@ -216,10 +217,13 @@ public class TimeGoalieAlarmManager {
             Log.e("Mindbuilders", "minutes: " + minutes);
             Log.e("Mindbuilders", "seconds: " + seconds);
 
+
             long targetTime = TimeGoalieDateUtils.createTargetCalendarTime(
                     (int) hours,
                     (int) minutes,
                     (int) seconds);
+
+
 
             //sound the alarm!!
             if (timeGoalieAlarmObject.getTargetTime() == 0) {
@@ -229,7 +233,32 @@ public class TimeGoalieAlarmManager {
             TimeGoalieAlarmManager.setTimeGoalAlarm(
                     targetTime,
                     view.getContext(), null,
-                    timeGoalieAlarmObject.getPi());
+                    timeGoalieAlarmObject.getAlarmDonePendingIntent());
+
+            if (goal.getGoalTypeId() == 1) { //Limit Goal Type
+                timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(TimeGoalieAlarmReceiver.
+                        createTimeGoaliePendingIntent(view.getContext(),
+                        TimeGoalieAlarmReceiver.createOneMinuteWarningTimeGoalieAlarmIntent(
+                                view.getContext(),
+                                goal.getName(),
+                                (int) goal.getGoalId()
+                        ),
+                        (int) goal.getGoalId()));
+
+               long targetTimeLimitGoal = TimeGoalieDateUtils.createTargetCalendarTime(
+                        (int) hours,
+                        (int) minutes,
+                        (int) seconds - ONE_MINUTE_WARNING_TIME*60);
+
+                if(timeGoalieAlarmObject.getOneMinuteWarningPendingIntent() != null) {
+                    TimeGoalieAlarmManager.setTimeGoalAlarm(
+                            targetTimeLimitGoal,
+                            view.getContext(), null,
+                            timeGoalieAlarmObject.getOneMinuteWarningPendingIntent());
+                }
+
+            }
+
         }
     }
 

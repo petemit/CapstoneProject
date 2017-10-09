@@ -20,7 +20,7 @@ import us.mindbuilders.petemit.timegoalie.R;
 public class TimeGoalieNotifications {
     private static final int NOTIFICATIONID = 1;
 
-    public static void createNotification(Context context, Intent intent) {
+    public static void createNotification(Context context, Intent intent, String injectedMessage) {
         String message = "";
         message = intent.getStringExtra(context.getString(R.string.goal_title_key));
         if (message == null) {
@@ -35,7 +35,7 @@ public class TimeGoalieNotifications {
                 .setSmallIcon(R.drawable.goalie)
                 .setContentTitle(message)
                 .setAutoCancel(true)
-                .setContentText("You're done with your time goal!")
+                .setContentText(injectedMessage)
                 .setSound(soundUri);
 
         Intent resultIntent = new Intent(context, GoalListActivity.class);

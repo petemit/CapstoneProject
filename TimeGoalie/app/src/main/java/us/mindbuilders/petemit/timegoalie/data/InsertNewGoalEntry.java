@@ -31,6 +31,8 @@ public class InsertNewGoalEntry extends AsyncTask<GoalEntry, Void, Void> {
                     goalEntries[i].getDate());
             goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED,
                     goalEntries[i].getSecondsElapsed());
+            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT,
+                    goalEntries[i].getGoalAugment());
         }
 
         context.getContentResolver().insert(TimeGoalieContract.GoalEntries.CONTENT_URI,goalEntries_cv);
