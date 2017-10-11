@@ -13,11 +13,11 @@ import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
  * Created by Peter on 9/27/2017.
  */
 
-public class InsertNewGoalEntry extends AsyncTask<GoalEntry, Void, Void> {
+public class InsertNewGoalAccomplished extends AsyncTask<GoalEntry, Void, Void> {
 
     Context context;
 
-    public InsertNewGoalEntry(Context context){
+    public InsertNewGoalAccomplished(Context context){
         this.context=context;
     }
 
@@ -33,8 +33,6 @@ public class InsertNewGoalEntry extends AsyncTask<GoalEntry, Void, Void> {
                     goalEntries[i].getSecondsElapsed());
             goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT,
                     goalEntries[i].getGoalAugment());
-            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED,
-                    goalEntries[i].getHasSucceeded());
         }
 
         context.getContentResolver().insert(TimeGoalieContract.GoalEntries.CONTENT_URI,goalEntries_cv);

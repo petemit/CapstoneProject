@@ -17,7 +17,9 @@ public class TimeGoalieAlarmObject {
     private boolean isRunning;
     private int goalAugment;
     private boolean isHasFinished;
+    private boolean isHasBeenWarned;
     private String date;
+    private int hasSucceeded;
 
     public TimeGoalieAlarmObject(long goal_id, String date) {
         this.goal_id = goal_id;
@@ -102,5 +104,22 @@ public class TimeGoalieAlarmObject {
 
     public void setOneMinuteWarningPendingIntent(PendingIntent oneMinuteWarningPendingIntent) {
         this.oneMinuteWarningPendingIntent = oneMinuteWarningPendingIntent;
+    }
+
+    public boolean isHasBeenWarned() {
+        return isHasBeenWarned;
+    }
+
+    public void setHasBeenWarned(boolean hasBeenWarned) {
+        isHasBeenWarned = hasBeenWarned;
+    }
+
+
+    public int getHasSucceeded() {
+        return hasSucceeded;
+    }
+
+    public void setHasSucceeded(int hasSucceeded) {
+        this.hasSucceeded = hasSucceeded;
     }
 }

@@ -15,6 +15,7 @@ public class GoalEntry {
     private int goalAugment;
     private long goal_id;
     private boolean hasFinished;
+    private int hasSucceeded;
 
     public GoalEntry(long goal_id, String date) {
         this.date = date;
@@ -113,5 +114,13 @@ public class GoalEntry {
         if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
             BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).setGoalAugment(goalAugment);
         }
+    }
+
+    public int getHasSucceeded() {
+        return hasSucceeded;
+    }
+
+    public void setHasSucceeded(int hasSucceeded) {
+        this.hasSucceeded = hasSucceeded;
     }
 }

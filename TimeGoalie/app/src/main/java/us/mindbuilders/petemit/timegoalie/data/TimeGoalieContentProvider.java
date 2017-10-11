@@ -45,6 +45,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
     private static final int GOAL_ENTRIES = 600;
     private static final int GOAL_ENTRIES_BY_GOAL_ID = 601;
     private static final int GOAL_ENTRIES_BY_DATE = 602;
+    private static final int SUCCESSFUL_GOAL_ENTRIES_BY_DATE = 603;
 
 
     private static final String PARAMETER = "=? ";
@@ -100,6 +101,9 @@ public class TimeGoalieContentProvider extends ContentProvider {
                 TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME + "/#", GOAL_ENTRIES_BY_GOAL_ID);
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME + "/date", GOAL_ENTRIES_BY_DATE);
+        matcher.addURI(TimeGoalieContract.AUTHORITY,
+                TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME + "/successfulGoals",
+                SUCCESSFUL_GOAL_ENTRIES_BY_DATE);
 
         return matcher;
 
@@ -216,6 +220,21 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         .concat(" ='")
                         .concat(suppliedSelectionArgs[0])
                         .concat("'");
+                cursor = db.query(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,
+                        null,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        null);
+                break;
+            case SUCCESSFUL_GOAL_ENTRIES_BY_DATE:
+                selectionArgs = new String[]{String.valueOf(uri.getQueryParameter("date")),"1"};
+                selection = TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME
+                        .concat(PARAMETER)
+                        .concat(" AND ")
+                .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED)
+                .concat(PARAMETER);
                 cursor = db.query(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,
                         null,
                         selection,

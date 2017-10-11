@@ -31,53 +31,79 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.e("Mindbuilders", "Alarm Finished!");
         String action = intent.getAction();
+        Goal goal = null;
+        GoalEntry goalEntry = null;
+        int id = intent.getIntExtra(context.getString(R.string.goal_id_key), -1);
+        Cursor cursor = context.getContentResolver().query(TimeGoalieContract.buildGetaGoalByIdUri(id),
+                null,
+                null,
+                null,
+                null);
+        if (cursor != null) {
+            ArrayList<Goal> goals = Goal.createGoalListFromCursor(cursor);
+            if (goals.get(0) != null) {
+                goal = goals.get(0);
+                Cursor goalEntryCursor = context.getContentResolver().query(
+                        TimeGoalieContract.buildGetAGoalEntryByGoalId(goal.getGoalId()),
+                        null,
+                        null,
+                        new String[]{TimeGoalieDateUtils.getSqlDateString()},
+                        null);
+
+                if (goalEntryCursor != null) {
+                    goalEntryCursor.moveToFirst();
+                    goalEntry = new GoalEntry(goal.getGoalId(), goalEntryCursor.getString(
+                            goalEntryCursor.getColumnIndex(
+                                    TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
+                    goalEntry.setGoalAugment(goalEntryCursor.getInt(goalEntryCursor.getColumnIndex(
+                            TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT
+                    )));
+
+
+                }
+            }
+        }
+
         switch (action) {
             case GOAL_FINISHED:
-                TimeGoalieNotifications.createNotification(context, intent, "You're done with your goal!");
-                int id = -1;
-                id = intent.getIntExtra(context.getString(R.string.goal_id_key), -1);
+
+                if (goal != null) {
+                    if (goal.getGoalTypeId() == 0) { //goal to encourage
+                        TimeGoalieNotifications.createNotification(context, intent, "You're done with your goal!");
+                        if (goalEntry != null) {
+                            goalEntry.setHasSucceeded(1);
+                        }
+                    } else if (goal.getGoalTypeId() == 1) {
+                        TimeGoalieNotifications.createNotification(context, intent, "Oops! Ran out of time.  Maybe next time.");
+                        if (goalEntry != null) {
+                            goalEntry.setHasSucceeded(0);
+                        }
+                    }
+                }
+                if (goalEntry != null) {
+                    goalEntry.setSecondsElapsed((int) goal.getGoalSeconds() + goalEntry.getGoalAugment(), true);
+                }
                 if (id != -1) {
                     //  BaseApplication.getTimeGoalieAlarmObjectById(id).setRunning(false);
                     BaseApplication.getTimeGoalieAlarmObjectById(id).setHasFinished(true);
                 }
-                Cursor cursor = context.getContentResolver().query(TimeGoalieContract.buildGetaGoalByIdUri(id),
-                        null,
-                        null,
-                        null,
-                        null);
-                if (cursor != null) {
-                    ArrayList<Goal> goals = Goal.createGoalListFromCursor(cursor);
-                    if (goals.get(0) != null) {
-                        Goal goal = goals.get(0);
-                        Cursor goalEntryCursor = context.getContentResolver().query(
-                                TimeGoalieContract.buildGetAGoalEntryByGoalId(goal.getGoalId()),
-                                null,
-                                null,
-                                new String[]{TimeGoalieDateUtils.getSqlDateString()},
-                                null);
 
-                        if (goalEntryCursor != null) {
-                            goalEntryCursor.moveToFirst();
-                            GoalEntry goalEntry = new GoalEntry(goal.getGoalId(), goalEntryCursor.getString(
-                                    goalEntryCursor.getColumnIndex(
-                                            TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
-                            goalEntry.setGoalAugment(goalEntryCursor.getInt(goalEntryCursor.getColumnIndex(
-                                    TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT
-                            )));
-
-                            goalEntry.setSecondsElapsed((int) goal.getGoalSeconds() + goalEntry.getGoalAugment(), true);
-                            new InsertNewGoalEntry(context).execute(goalEntry);
-
-
-                        }
-                    }
-                }
                 break;
             case GOAL_ONE_MINUTE_WARNING:
                 TimeGoalieNotifications.createNotification(context, intent, "Hurry up! " +
                         " You have only one minute left");
+                id = intent.getIntExtra(context.getString(R.string.goal_id_key), -1);
+                if (id != -1) {
+                    //  BaseApplication.getTimeGoalieAlarmObjectById(id).setRunning(false);
+                    BaseApplication.getTimeGoalieAlarmObjectById(id).setHasBeenWarned(true);
+                }
+
                 break;
         }//end switch
+
+        if (goalEntry != null) {
+            new InsertNewGoalEntry(context).execute(goalEntry);
+        }
     }
 
     public static Intent createAlarmDoneTimeGoalieAlarmIntent(Context context, String message, int goal_id) {

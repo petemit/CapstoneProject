@@ -48,6 +48,7 @@ public class TimeGoalieContract {
         public static final String GOALENTRIES_COLUMN_GOAL_ID = "goal_id";
         public static final String GOALENTRIES_COLUMN_SECONDSELAPSED = "seconds_elapsed";
         public static final String GOALENTRIES_COLUMN_GOALAUGMENT = "goal_augment";
+        public static final String GOALENTRIES_COLUMN_SUCCEEDED = "succeeded";
         public static final String GOALENTRIES_COLUMN_DATETIME = "timestamp";
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(GOALENTRIES_TABLE_NAME).build();
@@ -118,6 +119,11 @@ public class TimeGoalieContract {
     public static Uri getGoalsThatHaveGoalEntryForToday() {
         return (GoalEntries.CONTENT_URI.buildUpon()
                 .appendPath("date").build());
+    }
+
+    public static Uri getSuccessfulGoalsForToday(String date) {
+        return (GoalEntries.CONTENT_URI.buildUpon()
+        .appendPath("successfulGoals").appendQueryParameter("date",date).build());
     }
 
     //Find a date accomplished associated with a specific goal for a specific day

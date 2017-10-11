@@ -45,6 +45,7 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED + " INTEGER, "+
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT + " INTEGER, "+
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED + " INTEGER, "+
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID + " INTEGER NOT NULL, "+
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME + " TEXT NOT NULL, "+
         " UNIQUE("+
@@ -146,7 +147,7 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
 
         //DUMMY DATA
         // TODO: 10/6/2017 remove when done
-        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed) VALUES (1, '2017-10-05',3000)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (1, '2017-10-05',3000,0)");
 
     }
 

@@ -65,6 +65,9 @@ public class InsertNewGoal extends AsyncTask<Goal, Void, Goal> {
         if (goal!=null && ((goal.getIsDaily()==0&&goal.getIsWeekly()==0)||goal.getIsDaily()==1)) {
             GoalEntry todayGoalEntry= new GoalEntry(goal.getGoalId(), TimeGoalieDateUtils.getSqlDateString());
             todayGoalEntry.setSecondsElapsed(0);
+            if (goal.getGoalTypeId()==1) {
+                todayGoalEntry.setHasSucceeded(1);
+            }
             new InsertNewGoalEntry(context).execute(todayGoalEntry);
         }
     }

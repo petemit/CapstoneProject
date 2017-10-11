@@ -153,6 +153,10 @@ public class Goal {
                 goalEntry.setGoalAugment(cursor.getInt(
                         cursor.getColumnIndex(TimeGoalieContract
                                 .GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT)));
+                goalEntry.setHasSucceeded(cursor.getInt(
+                        cursor.getColumnIndex(TimeGoalieContract.
+                                GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED)
+                ));
 
                 goal.goalEntry = goalEntry;
                 goalList.add(goal);

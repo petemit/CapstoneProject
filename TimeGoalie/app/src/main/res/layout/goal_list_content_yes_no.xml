@@ -50,7 +50,7 @@
             app:layout_constraintTop_toTopOf="@+id/goal_image" />
 
         <android.support.v7.widget.AppCompatCheckBox
-            android:id="@+id/appCompatCheckBox"
+            android:id="@+id/yes_no_checkbox"
             android:layout_width="30dp"
             android:scaleX="1.5"
             android:scaleY="1.5"

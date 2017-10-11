@@ -34,7 +34,8 @@ import java.util.Calendar;
  * List of Goals.  In multi-pane, shows reports as well {@link GoalReportActivity}
  */
 public class GoalListActivity extends AppCompatActivity implements View.OnClickListener,
-        LoaderManager.LoaderCallbacks<Cursor>, DatePickerDialog.OnDateSetListener {
+        LoaderManager.LoaderCallbacks<Cursor>, DatePickerDialog.OnDateSetListener,
+        GoalRecyclerViewAdapter.GoalCounter {
     private static final int GOAL_LOADER_ID = 4;
     private static final String noDateString = "NODATE";
     private GoalRecyclerViewAdapter rvAdapter;
@@ -42,6 +43,9 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     private TextView dateSpinnerTextView;
     private ArrayAdapter<String> spinnerAdapter;
     private boolean isToday;
+    private ArrayList<Goal> goalArrayList;
+    private int successfulGoalCount = 0;
+    private TextView tv_successfulGoalCount;
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -58,8 +62,9 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         getSupportLoaderManager().initLoader(GOAL_LOADER_ID, null, this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        rvAdapter = new GoalRecyclerViewAdapter(this);
+        rvAdapter = new GoalRecyclerViewAdapter(this, this, this);
         toolbar.setTitle(getTitle());
+        tv_successfulGoalCount = findViewById(R.id.tv_numberOfGoalsCleared);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -221,11 +226,26 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    public void updateSuccessfulGoalCount(ArrayList<Goal> goalArrayList) {
+        successfulGoalCount = 0;
+        for (int i = 0; i < goalArrayList.size(); i++) {
+            if (goalArrayList.get(i).getGoalEntry() != null) {
+                if (goalArrayList.get(i).getGoalEntry().getHasSucceeded() == 1) {
+                    successfulGoalCount++;
+                }
+            }
+
+        }
+        tv_successfulGoalCount.setText(successfulGoalCount+"");
+    }
+
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-            //creates arraylist of goals
-            rvAdapter.swapCursor(Goal.createGoalListWithGoalEntriesFromCursor(data), isToday);
+        successfulGoalCount=0;
+        tv_successfulGoalCount.setText(String.valueOf(successfulGoalCount));
+        //creates arraylist of goals
+        goalArrayList = (Goal.createGoalListWithGoalEntriesFromCursor(data));
+        rvAdapter.swapCursor(goalArrayList, isToday);
         rvAdapter.notifyDataSetChanged();
     }
 
@@ -254,5 +274,13 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         changeOutDate(TimeGoalieDateUtils.getNicelyFormattedDate(cal));
 
 
+    }
+
+    @Override
+    public void updateGoalCounter(int successfulGoalCount) {
+        //You know... I should just read from the database.  That'd be better.
+     //   this.successfulGoalCount=successfulGoalCount;
+
+        tv_successfulGoalCount.setText(String.valueOf(successfulGoalCount));
     }
 }
