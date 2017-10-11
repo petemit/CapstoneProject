@@ -425,6 +425,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
             else {
                 if (holder.pencil != null) {
                     holder.pencil.setVisibility(View.GONE);
+                    holder.editButtons.setVisibility(View.GONE);
                 }
             }
 
