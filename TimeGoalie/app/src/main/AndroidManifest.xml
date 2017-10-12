@@ -49,6 +49,8 @@
                 <action android:name="us.mindbuilders.petemit.timegoalie.GOAL_ONE_MINUTE_WARNING"/>
             </intent-filter>
         </receiver>
+
+
         <receiver android:name=".widget.TimeGoalieWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
@@ -64,6 +66,8 @@
         </receiver>
         <service android:name=".widget.TimeGoalieRvWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS"></service>
+
+
 
     </application>
 

@@ -10,6 +10,6 @@ import android.widget.RemoteViewsService;
 public class TimeGoalieRvWidgetService extends RemoteViewsService{
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
-        return null;
+        return new TimeGoalieWidgetListRemoteViewsFactory(this.getApplicationContext());
     }
 }
