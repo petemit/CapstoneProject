@@ -11,6 +11,7 @@
     android:layout_gravity="left"
     android:layout_marginStart="@dimen/half_margin"
     android:layout_height="wrap_content"
+    style="@style/TimeGoalTheme.WidgetText"
     tools:text="@string/dummy_goal_title"/>
 
     <LinearLayout
@@ -21,15 +22,19 @@
             android:layout_width="@dimen/time_tv"
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/half_margin"
+            style="@style/TimeGoalTheme.WidgetText"
             android:gravity="center_vertical"
             tools:text="00:00:00"
+            android:id="@+id/widget_time_tv"
             android:visibility="visible"/>
         <TextView
             android:layout_width="0dp"
             tools:text=" / 00:00:00"
             android:gravity="center|left"
+            style="@style/TimeGoalTheme.WidgetText"
             android:layout_height="match_parent"
             android:layout_weight=".5"
+            android:id="@+id/widget_time_out_of_tv"
             android:visibility="visible"/>
 
         <FrameLayout

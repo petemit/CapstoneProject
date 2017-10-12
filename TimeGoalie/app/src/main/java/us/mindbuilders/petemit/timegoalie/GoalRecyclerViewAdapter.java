@@ -46,6 +46,7 @@ import us.mindbuilders.petemit.timegoalie.data.GetSuccessfulGoalCount;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieUtils;
 
 /**
  * Data handler for goal recyclerview.  This is turning out to be the brains of this operation
@@ -175,77 +176,30 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 //            }
 
 
+            //if statement checks to see if this is a time goal by the existence of a start/stop button
             if (holder.startStopTimer != null) {
+
+                //setup initial timer text
                 long onBindElapsedSeconds = 0;
 
-                if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId(),
-                        TimeGoalieDateUtils.getSqlDateString(
-                                BaseApplication.getActiveCalendarDate())) != null) {
-                    TimeGoalieAlarmObject timeGoalieAlarmObj =
-                            BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId(),
-                                    TimeGoalieDateUtils.
-                                            getSqlDateString(BaseApplication.getActiveCalendarDate()));
-                    if (timeGoalieAlarmObj.isRunning()) {
+                TimeGoalieAlarmObject timeGoalieAlarmObject =
+                        TimeGoalieUtils.getTimeGoalieAlarmObjectByDate(goal);
 
-                    } else {
-
-                    }
-                    //Recalculate Elapsed Seconds
-
-                    if (timeGoalieAlarmObj.getTargetTime() != 0 && timeGoalieAlarmObj.isRunning()) {
-
-
-                        goal.getGoalEntry().setSecondsElapsed((TimeGoalieDateUtils.calculateSecondsElapsed(
-                                timeGoalieAlarmObj.getTargetTime(),
-                                TimeGoalieDateUtils.getCurrentTimeInMillis(),
-                                goal.getHours(),
-                                goal.getMinutes(),
-                                goal.getGoalEntry().getGoalAugment())), true);
-
-//
-//                        timeGoalieAlarmObj
-//                                .setSecondsElapsed(TimeGoalieDateUtils.calculateSecondsElapsed(
-//                                        timeGoalieAlarmObj.getTargetTime(),
-//                                        TimeGoalieDateUtils.getCurrentTimeInMillis(),
-//                                        goal.getHours(),
-//                                        goal.getMinutes()
-//                                ));
-                    }
-                    onBindElapsedSeconds = (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()))
-                            .getSecondsElapsed();
-                }
-                long remainingSeconds = (goal.getGoalSeconds() -
-                        onBindElapsedSeconds);
-
+                long remainingSeconds = TimeGoalieUtils.getRemainingSeconds(timeGoalieAlarmObject,goal);
 
                 //Set initial Time Text labels:
-
+                TimeGoalieUtils.setTimeTextLabel(goal,timeGoalieAlarmObject,holder.time_tv,holder.tv_timeOutOf);
                 // if this is a more goal
-                if (holder.tv_timeOutOf != null) {
-                    holder.tv_timeOutOf.setText(" / " + TimeGoalieAlarmManager.makeTimeTextFromMillis(
-                            goal.getGoalSeconds() * 1000
-                    ));
+                if (goal.getGoalTypeId()==0) {
 
-                    //  holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
-                    if (goal.getGoalEntry() != null) {
-                        holder.time_tv.setText(TimeGoalieAlarmManager.
-                                makeTimeTextFromMillis(goal.getGoalEntry().getSecondsElapsed() * 1000));
-                    } else {
-                        holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
-                    }
                     if (holder.seekbar != null) {
                         holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) / goal.getGoalSeconds())) * 100 * 100));
                     }
 
                 } else {
-
                     if (remainingSeconds < 0) {
-//                        holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
-//                        if (holder.seekbar != null) {
-//                            holder.seekbar.setProgress(10000);
-//                        }
                     } else {
-                        holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(remainingSeconds * 1000));
+
                         //set Progress bar Progress
                         if (holder.seekbar != null) {
                             holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) / goal.getGoalSeconds())) * 100 * 100));

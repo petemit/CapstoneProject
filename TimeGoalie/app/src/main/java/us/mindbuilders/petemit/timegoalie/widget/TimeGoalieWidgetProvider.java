@@ -36,7 +36,7 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
             Intent intent = new Intent(context, TimeGoalieRvWidgetService.class);
         Log.e("findme","I got here.....");
         views.setRemoteAdapter(R.id.time_goalie_widget,intent);
-        views.setEmptyView(R.id.time_goalie_widget, R.id.empty_widget_tv);
+     //   views.setEmptyView(R.id.time_goalie_widget, R.id.empty_widget_tv);
         return views;
     }
 

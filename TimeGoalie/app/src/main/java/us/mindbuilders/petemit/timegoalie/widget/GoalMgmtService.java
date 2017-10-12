@@ -65,7 +65,7 @@ public class GoalMgmtService extends IntentService {
                 TimeGoalieWidgetProvider.class));
 
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.time_goalie_widget);
-        TimeGoalieWidgetProvider.updateTimeGoalieWidgets(getBaseContext(), appWidgetManager,
+        TimeGoalieWidgetProvider.updateTimeGoalieWidgets(this, appWidgetManager,
                 appWidgetIds);
     }
 

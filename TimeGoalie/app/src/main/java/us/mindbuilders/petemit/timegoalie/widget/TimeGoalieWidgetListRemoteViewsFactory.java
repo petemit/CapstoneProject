@@ -11,8 +11,11 @@ import java.util.ArrayList;
 import us.mindbuilders.petemit.timegoalie.BaseApplication;
 import us.mindbuilders.petemit.timegoalie.R;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
+import us.mindbuilders.petemit.timegoalie.utils.CustomTextView;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieUtils;
 
 /**
  * Created by Peter on 10/11/2017.
@@ -72,6 +75,8 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
     public RemoteViews getViewAt(int i) {
         if (goalData != null && goalData.size() > 0 ){
             Goal goal = goalData.get(i);
+            TimeGoalieAlarmObject timeGoalieAlarmObj =
+                    TimeGoalieUtils.getTimeGoalieAlarmObjectByDate(goal);
 
             RemoteViews views=null;
 
@@ -85,6 +90,12 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
             else{
                 views = new RemoteViews(context.getPackageName(),
                         R.layout.time_goalie_widget_item);
+                CustomTextView timeText =
+                        new CustomTextView(context,views,R.id.widget_time_tv);
+                CustomTextView timeOutOfText =
+                        new CustomTextView(context,views,R.id.widget_time_out_of_tv);
+                TimeGoalieUtils.setTimeTextLabel(goal,timeGoalieAlarmObj,timeText,timeOutOfText);
+
             }
 
             if (views != null) {
@@ -94,7 +105,10 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
 
             return views;
         }
-        return null;
+        else {
+            //implement return empty views
+            return null;
+        }
     }
 
     @Override

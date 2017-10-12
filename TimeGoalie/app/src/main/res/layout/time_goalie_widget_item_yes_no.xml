@@ -8,24 +8,26 @@
     <TextView
         android:id="@+id/widget_goal_tv"
         android:layout_width="0dp"
-        android:layout_weight="1"
-        android:gravity="center_vertical"
-        android:layout_marginStart="@dimen/half_margin"
-
+        android:layout_gravity="center"
+        android:gravity="center"
         android:layout_height="30dp"
-        tools:text="@string/dummy_goal_title"/>
+        tools:text="@string/dummy_goal_title"
+        android:layout_weight="1"
+        />
 
-    <FrameLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1">
+<FrameLayout
+    android:layout_width="0dp"
+    android:layout_height="30dp"
+    android:layout_weight="1">
 
     <Button
         android:id="@+id/yes_no_checkbox"
-        android:layout_width="60dp"
-        android:gravity="right"
-        android:text="check"
-        android:layout_height="60dp" />
-    </FrameLayout>
+        android:layout_width="30dp"
+        android:background="@android:drawable/checkbox_off_background"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+
+        />
+</FrameLayout>
 
 </LinearLayout>
