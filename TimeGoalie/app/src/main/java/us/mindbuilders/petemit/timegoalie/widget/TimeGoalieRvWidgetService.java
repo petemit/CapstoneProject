@@ -1,6 +1,7 @@
 package us.mindbuilders.petemit.timegoalie.widget;
 
 import android.content.Intent;
+import android.util.Log;
 import android.widget.RemoteViewsService;
 
 /**
@@ -10,6 +11,7 @@ import android.widget.RemoteViewsService;
 public class TimeGoalieRvWidgetService extends RemoteViewsService{
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
+        Log.e("findme","I got here!!!");
         return new TimeGoalieWidgetListRemoteViewsFactory(this.getApplicationContext());
     }
 }

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.support.annotation.Nullable;
 import android.support.v4.content.CursorLoader;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -47,7 +48,7 @@ public class GoalMgmtService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
+    protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_GET_GOALS_FOR_TODAY.equals(action)){

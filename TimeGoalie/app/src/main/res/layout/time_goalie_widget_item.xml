@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -39,19 +39,17 @@
             android:orientation="horizontal"
             android:layout_weight="1">
 
-          <ToggleButton
+          <Button
               android:id="@+id/start_stop"
               style="@style/TimeGoalTheme.ButtonStyle"
               android:layout_marginEnd="@dimen/right_margin"
               android:layout_width="wrap_content"
              android:layout_gravity="center"
-
-              android:layout_height="@dimen/start_stop_button_height"
-              android:textOff="@string/start"
-              android:textOn="@string/stop" /> />
+              android:layout_height="60dp"
+              android:text="@string/stop" />
         </FrameLayout>
 
 
     </LinearLayout>
 
-</android.support.v7.widget.LinearLayoutCompat>
+</LinearLayout>

@@ -38,7 +38,7 @@
         <provider
             android:name=".data.TimeGoalieContentProvider"
             android:authorities="us.mindbuilders.petemit.timegoalie"
-            android:exported="false" />
+            android:exported="true" />
 
         <receiver android:name=".services.TimeGoalieAlarmReceiver">
             <intent-filter>
@@ -56,16 +56,14 @@
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
 
-            <intent-filter>
-                <action android:name="launch_time_goalie"/>
-            </intent-filter>
-
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/time_goalie_widget_config"/>
         </receiver>
         <service android:name=".widget.TimeGoalieRvWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS"></service>
+
+        <service android:name=".widget.GoalMgmtService"></service>
 
 
 
