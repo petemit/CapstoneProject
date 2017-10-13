@@ -1,6 +1,7 @@
 package us.mindbuilders.petemit.timegoalie.widget;
 
 import android.app.IntentService;
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -51,11 +52,25 @@ public class GoalMgmtService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             final String action = intent.getAction();
-            if (ACTION_GET_GOALS_FOR_TODAY.equals(action)){
-                handleActionGetGoalsForTodayAndUpdateWidgets();
+            switch (action) {
+                case ACTION_GET_GOALS_FOR_TODAY:
+                    handleActionGetGoalsForTodayAndUpdateWidgets();
+                    break;
+                case ACTION_UPDATE_GOAL_ENTRY:
+                    handleActionUpdateGoalEntry(intent);
+                    break;
             }
         }
+    }
 
+
+    public static PendingIntent getUpdateYesNoGoalState(Context context, GoalEntry goalEntry) {
+        Intent intent = new Intent(context, GoalMgmtService.class);
+        intent.setAction(GoalMgmtService.ACTION_UPDATE_GOAL_ENTRY);
+        intent.putExtra("goalentry",goalEntry);
+        PendingIntent pi =
+                PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return pi;
     }
 
     private void handleActionGetGoalsForTodayAndUpdateWidgets() {
@@ -69,5 +84,10 @@ public class GoalMgmtService extends IntentService {
                 appWidgetIds);
     }
 
+    private void handleActionUpdateGoalEntry(Intent intent) {
+        GoalEntry goalEntry = (GoalEntry) intent.getSerializableExtra("goalentry");
+        new InsertNewGoalEntry(getBaseContext()).execute(goalEntry);
+        handleActionGetGoalsForTodayAndUpdateWidgets();
+    }
 
 }

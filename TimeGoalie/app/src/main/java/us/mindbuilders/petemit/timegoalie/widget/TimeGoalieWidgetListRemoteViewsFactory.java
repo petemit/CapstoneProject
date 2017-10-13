@@ -3,6 +3,7 @@ package us.mindbuilders.petemit.timegoalie.widget;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -50,7 +51,7 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
                 null
         );
         if (cursor != null) {
-            goalData = Goal.createGoalListFromCursor(cursor);
+            goalData = Goal.createGoalListWithGoalEntriesFromCursor(cursor);
             cursor.close();
         }
 
@@ -85,6 +86,28 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
             if (goal.getGoalTypeId()==2) { //yes/no goal
                 views = new RemoteViews(context.getPackageName(),
                         R.layout.time_goalie_widget_item_yes_no);
+                if (goal.getGoalEntry().getHasSucceeded()==0) {
+                    views.setViewVisibility(R.id.widget_yes_no_checkbox_off, View.VISIBLE);
+                    views.setViewVisibility(R.id.widget_yes_no_checkbox_on, View.GONE);
+                }
+                else{
+                    views.setViewVisibility(R.id.widget_yes_no_checkbox_off, View.GONE);
+                    views.setViewVisibility(R.id.widget_yes_no_checkbox_on, View.VISIBLE);
+                }
+
+                goal.getGoalEntry().setHasFinished(!goal.getGoalEntry().isHasFinished());
+                if (goal.getGoalEntry().getHasSucceeded()==1){
+                    goal.getGoalEntry().setHasSucceeded(0);
+                }
+                else {
+                    goal.getGoalEntry().setHasSucceeded(1);
+                }
+                views.setOnClickPendingIntent(R.id.widget_yes_no_checkbox_off,
+                        GoalMgmtService.getUpdateYesNoGoalState(context,
+                                goal.getGoalEntry()));
+                views.setOnClickPendingIntent(R.id.widget_yes_no_checkbox_on,
+                        GoalMgmtService.getUpdateYesNoGoalState(context,
+                                goal.getGoalEntry()));
             }
 
             else{

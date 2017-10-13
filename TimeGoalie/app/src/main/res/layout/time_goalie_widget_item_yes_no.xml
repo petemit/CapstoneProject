@@ -21,12 +21,19 @@
     android:layout_weight="1">
 
     <Button
-        android:id="@+id/yes_no_checkbox"
+        android:id="@+id/widget_yes_no_checkbox_off"
         android:layout_width="30dp"
         android:background="@android:drawable/checkbox_off_background"
         android:layout_height="30dp"
         android:layout_gravity="center"
+        />
 
+    <Button
+        android:id="@+id/widget_yes_no_checkbox_on"
+        android:layout_width="30dp"
+        android:background="@android:drawable/checkbox_on_background"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
         />
 </FrameLayout>
 

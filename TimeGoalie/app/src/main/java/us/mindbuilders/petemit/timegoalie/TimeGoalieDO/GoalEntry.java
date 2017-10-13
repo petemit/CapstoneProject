@@ -1,5 +1,6 @@
 package us.mindbuilders.petemit.timegoalie.TimeGoalieDO;
 
+import java.io.Serializable;
 import java.sql.Date;
 
 import us.mindbuilders.petemit.timegoalie.BaseApplication;
@@ -9,12 +10,13 @@ import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
  * Created by Peter on 9/23/2017.
  */
 
-public class GoalEntry {
+public class GoalEntry implements Serializable {
     private long id;
     private String date = "";
     private int goalAugment;
     private long goal_id;
     private boolean hasFinished;
+    private int secondsElapsed;
     private int hasSucceeded;
 
     public GoalEntry(long goal_id, String date) {

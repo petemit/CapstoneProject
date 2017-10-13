@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import us.mindbuilders.petemit.timegoalie.R;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 
 /**
  * Created by Peter on 10/11/2017.
@@ -48,7 +49,6 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
 
         }
     }
-
 
     private static void setToEmptyView() {
 
