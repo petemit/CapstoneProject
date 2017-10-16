@@ -26,6 +26,7 @@ import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
+import us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -258,6 +259,13 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         rvAdapter.swapCursor(null);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Intent intent = new Intent(getBaseContext(), TimeGoalieWidgetProvider.class);
+        intent.setAction(TimeGoalieWidgetProvider.ACTION_GET_GOALS_FOR_TODAY);
+        this.sendBroadcast(intent);
+    }
 
     @Override
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {

@@ -60,4 +60,7 @@
     <style name="TimeGoalTheme.WidgetText" parent="TextAppearance.AppCompat">
         <item name="android:textColor">@color/primaryTextColor</item>
     </style>
+    <style name="TimeGoalTheme.WidgetTextTitle" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textColor">@color/primaryTextColor</item>
+    </style>
 </resources>

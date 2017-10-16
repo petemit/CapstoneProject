@@ -6,6 +6,6 @@
     android:minResizeHeight="@dimen/widget_min_height"
     android:minResizeWidth="@dimen/widget_min_width"
     android:previewImage="@mipmap/ic_goalie_with_ball"
-    android:resizeMode="vertical|horizontal"
+    android:resizeMode="vertical"
     android:widgetCategory="home_screen" />
 

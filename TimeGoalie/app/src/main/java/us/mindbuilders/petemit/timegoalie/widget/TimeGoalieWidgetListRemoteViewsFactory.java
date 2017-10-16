@@ -79,6 +79,7 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
             TimeGoalieAlarmObject timeGoalieAlarmObj =
                     TimeGoalieUtils.getTimeGoalieAlarmObjectByDate(goal);
 
+
             RemoteViews views=null;
 
 
@@ -102,14 +103,22 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
 //                        TimeGoalieWidgetProvider.getUpdateYesNoGoalFillInIntent(goal.getGoalEntry()));
             }
 
-            else{
+            else if (goal.getGoalTypeId()==1) { //Time limit Goal
                 views = new RemoteViews(context.getPackageName(),
                         R.layout.time_goalie_widget_item);
                 CustomTextView timeText =
-                        new CustomTextView(context,views,R.id.widget_time_tv);
+                        new CustomTextView(context, views, R.id.widget_time_tv);
                 CustomTextView timeOutOfText =
-                        new CustomTextView(context,views,R.id.widget_time_out_of_tv);
-                TimeGoalieUtils.setTimeTextLabel(goal,timeGoalieAlarmObj,timeText,timeOutOfText);
+                        new CustomTextView(context, views, R.id.widget_time_out_of_tv);
+                TimeGoalieUtils.setTimeTextLabel(goal, timeGoalieAlarmObj, timeText, timeOutOfText);
+            } else{
+                views = new RemoteViews(context.getPackageName(),
+                        R.layout.time_goalie_widget_item);
+                CustomTextView timeText =
+                        new CustomTextView(context, views, R.id.widget_time_tv);
+                CustomTextView timeOutOfText =
+                        new CustomTextView(context, views, R.id.widget_time_out_of_tv);
+                TimeGoalieUtils.setTimeTextLabel(goal, timeGoalieAlarmObj, timeText, timeOutOfText);
 
             }
 

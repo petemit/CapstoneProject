@@ -1,5 +1,6 @@
 package us.mindbuilders.petemit.timegoalie.utils;
 
+import android.view.View;
 import android.widget.TextView;
 
 import us.mindbuilders.petemit.timegoalie.BaseApplication;
@@ -23,10 +24,14 @@ public class TimeGoalieUtils {
                                     getSqlDateString(BaseApplication.getActiveCalendarDate()));
             return timeGoalieAlarmObj;
         } else {
+
+
+
+
             return null;
         }
-    }
 
+    }
     public static long getRemainingSeconds(TimeGoalieAlarmObject timeGoalieAlarmObj, Goal goal) {
         long onBindElapsedSeconds = 0;
         if (timeGoalieAlarmObj != null) {
@@ -76,6 +81,9 @@ public class TimeGoalieUtils {
                 if (remainingSeconds < 0) {
 
                 } else {
+                    if (tv_timeOutOf != null) {
+                        tv_timeOutOf.setVisibility(View.GONE);
+                    }
                     tv_timeText.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(remainingSeconds * 1000));
                 }
             }
