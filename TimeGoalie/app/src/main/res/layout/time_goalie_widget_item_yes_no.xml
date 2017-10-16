@@ -13,6 +13,7 @@
         android:layout_height="30dp"
         tools:text="@string/dummy_goal_title"
         android:layout_weight="1"
+        style="@style/TimeGoalTheme.WidgetText"
         />
 
 <FrameLayout

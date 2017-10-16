@@ -1,5 +1,8 @@
 package us.mindbuilders.petemit.timegoalie.TimeGoalieDO;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 import java.sql.Date;
 
@@ -10,7 +13,7 @@ import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
  * Created by Peter on 9/23/2017.
  */
 
-public class GoalEntry implements Serializable {
+public class GoalEntry implements Parcelable{
     private long id;
     private String date = "";
     private int goalAugment;
@@ -125,4 +128,43 @@ public class GoalEntry implements Serializable {
     public void setHasSucceeded(int hasSucceeded) {
         this.hasSucceeded = hasSucceeded;
     }
+
+
+    protected GoalEntry(Parcel in) {
+        id = in.readLong();
+        date = in.readString();
+        goalAugment = in.readInt();
+        goal_id = in.readLong();
+        hasFinished = in.readByte() != 0x00;
+        secondsElapsed = in.readInt();
+        hasSucceeded = in.readInt();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(date);
+        dest.writeInt(goalAugment);
+        dest.writeLong(goal_id);
+        dest.writeByte((byte) (hasFinished ? 0x01 : 0x00));
+        dest.writeInt(secondsElapsed);
+        dest.writeInt(hasSucceeded);
+    }
+
+    public static final Parcelable.Creator<GoalEntry> CREATOR = new Parcelable.Creator<GoalEntry>() {
+        @Override
+        public GoalEntry createFromParcel(Parcel in) {
+            return new GoalEntry(in);
+        }
+
+        @Override
+        public GoalEntry[] newArray(int size) {
+            return new GoalEntry[size];
+        }
+    };
 }

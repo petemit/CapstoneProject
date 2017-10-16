@@ -95,19 +95,11 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
                     views.setViewVisibility(R.id.widget_yes_no_checkbox_on, View.VISIBLE);
                 }
 
-                goal.getGoalEntry().setHasFinished(!goal.getGoalEntry().isHasFinished());
-                if (goal.getGoalEntry().getHasSucceeded()==1){
-                    goal.getGoalEntry().setHasSucceeded(0);
-                }
-                else {
-                    goal.getGoalEntry().setHasSucceeded(1);
-                }
-                views.setOnClickPendingIntent(R.id.widget_yes_no_checkbox_off,
-                        GoalMgmtService.getUpdateYesNoGoalState(context,
-                                goal.getGoalEntry()));
-                views.setOnClickPendingIntent(R.id.widget_yes_no_checkbox_on,
-                        GoalMgmtService.getUpdateYesNoGoalState(context,
-                                goal.getGoalEntry()));
+                views.setOnClickFillInIntent(R.id.widget_yes_no_checkbox_off,
+                        TimeGoalieWidgetProvider.getUpdateYesNoGoalFillInIntent(goal.getGoalEntry()));
+
+                views.setOnClickFillInIntent(R.id.widget_yes_no_checkbox_on,
+                        TimeGoalieWidgetProvider.getUpdateYesNoGoalFillInIntent(goal.getGoalEntry()));
             }
 
             else{

@@ -51,9 +51,13 @@
         </receiver>
 
 
-        <receiver android:name=".widget.TimeGoalieWidgetProvider">
+        <receiver android:name="us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED"/>
+                <action android:name="us.mindbuilders.petemit.timegoalie.action.update_goal_entry"/>
+                <action android:name="us.mindbuilders.petemit.timegoalie.action.goalentry"/>
+                <action android:name="us.mindbuilders.petemit.timegoalie.action.get_goals_for_today"/>
             </intent-filter>
 
             <meta-data
@@ -63,7 +67,7 @@
         <service android:name=".widget.TimeGoalieRvWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS"></service>
 
-        <service android:name=".widget.GoalMgmtService"></service>
+        <!--<service android:name=".widget.GoalMgmtService"></service>-->
 
 
 
