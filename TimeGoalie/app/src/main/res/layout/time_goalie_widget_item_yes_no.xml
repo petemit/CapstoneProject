@@ -1,41 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/widget_goal_tv"
-        android:layout_width="0dp"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:layout_height="30dp"
-        tools:text="@string/dummy_goal_title"
-        android:layout_weight="1"
-        style="@style/TimeGoalTheme.WidgetText"
-        />
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-<FrameLayout
-    android:layout_width="0dp"
-    android:layout_height="30dp"
-    android:layout_weight="1">
+        <TextView
+            android:id="@+id/widget_goal_tv"
+            style="@style/TimeGoalTheme.WidgetText"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center|left"
+            android:layout_marginStart="@dimen/half_margin"
+            android:layout_weight="1"
+            android:gravity="center|left"
+            tools:text="@string/dummy_goal_title" />
 
-    <Button
-        android:id="@+id/widget_yes_no_checkbox_off"
-        android:layout_width="30dp"
-        android:background="@android:drawable/checkbox_off_background"
-        android:layout_height="30dp"
-        android:layout_gravity="center"
-        />
+        <FrameLayout
+            android:id="@+id/widget_yes_no_checkbox"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="1">
 
-    <Button
-        android:id="@+id/widget_yes_no_checkbox_on"
-        android:layout_width="30dp"
-        android:background="@android:drawable/checkbox_on_background"
-        android:layout_height="30dp"
-        android:layout_gravity="center"
-        />
-</FrameLayout>
+            <Button
+                android:id="@+id/widget_yes_no_checkbox_off"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:background="@android:drawable/checkbox_off_background"
+                android:clickable="false"
+                android:focusable="false" />
 
+            <Button
+                android:id="@+id/widget_yes_no_checkbox_on"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:background="@android:drawable/checkbox_on_background"
+                android:clickable="false"
+                android:focusable="false" />
+        </FrameLayout>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginEnd="@dimen/half_margin"
+        android:background="@color/cardview_dark_background"></LinearLayout>
 </LinearLayout>

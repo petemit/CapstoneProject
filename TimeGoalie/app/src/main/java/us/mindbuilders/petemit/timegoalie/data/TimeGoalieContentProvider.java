@@ -341,7 +341,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         selectionArgs,
                         null,
                         null,
-                        null);
+                        TimeGoalieContract.Goals._ID);
                 break;
 
         }

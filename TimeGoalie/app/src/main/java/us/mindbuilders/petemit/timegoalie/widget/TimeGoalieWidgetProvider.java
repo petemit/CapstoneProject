@@ -77,7 +77,7 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
         views.setPendingIntentTemplate(R.id.time_goalie_widget,pi);
 //        views.setPendingIntentTemplate(R.id.widget_yes_no_checkbox_off,pi);
 //        views.setPendingIntentTemplate(R.id.widget_yes_no_checkbox_on,pi);
-     //   views.setEmptyView(R.id.time_goalie_widget, R.id.empty_widget_tv);
+        views.setEmptyView(R.id.time_goalie_widget, R.id.empty_widget_tv);
         return views;
     }
 
