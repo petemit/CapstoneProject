@@ -63,7 +63,7 @@ public class InsertNewGoal extends AsyncTask<Goal, Void, Goal> {
         super.onPostExecute(goal);
 
         if (goal!=null && ((goal.getIsDaily()==0&&goal.getIsWeekly()==0)||goal.getIsDaily()==1)) {
-            GoalEntry todayGoalEntry= new GoalEntry(goal.getGoalId(), TimeGoalieDateUtils.getSqlDateString());
+            GoalEntry todayGoalEntry= new GoalEntry(-1,goal.getGoalId(), TimeGoalieDateUtils.getSqlDateString());
             todayGoalEntry.setSecondsElapsed(0);
             if (goal.getGoalTypeId()==1) {
                 todayGoalEntry.setHasSucceeded(1);

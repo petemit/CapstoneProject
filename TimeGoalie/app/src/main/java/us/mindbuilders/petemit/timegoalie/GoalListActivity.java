@@ -87,6 +87,13 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
+
+
+
+
+
+
+
     }
 
     @Override

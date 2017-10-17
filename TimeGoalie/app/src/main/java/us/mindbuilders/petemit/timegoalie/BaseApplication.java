@@ -1,6 +1,7 @@
 package us.mindbuilders.petemit.timegoalie;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 
 import com.facebook.stetho.Stetho;
@@ -22,6 +23,7 @@ import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 public class BaseApplication extends Application {
     private static ArrayList<TimeGoalieAlarmObject> timeGoalieAlarmObjects;
     private static Calendar activeCalendarDate = Calendar.getInstance();
+    private static Context context;
 
     public static ArrayList<TimeGoalieAlarmObject> getTimeGoalieAlarmObjects() {
         return timeGoalieAlarmObjects;
@@ -42,6 +44,7 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        setContext(getBaseContext());
         setTimeGoalieAlarmObjects(new ArrayList<TimeGoalieAlarmObject>());
         getDatabasePath("timeGoalie.db").delete();
         Stetho.initializeWithDefaults(this);
@@ -117,5 +120,11 @@ public class BaseApplication extends Application {
     }
 
 
+    public static Context getContext() {
+        return context;
+    }
 
+    public void setContext(Context context) {
+        this.context = context;
+    }
 }

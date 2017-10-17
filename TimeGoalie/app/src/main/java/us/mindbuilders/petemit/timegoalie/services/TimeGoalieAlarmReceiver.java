@@ -52,7 +52,9 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
 
                 if (goalEntryCursor != null) {
                     goalEntryCursor.moveToFirst();
-                    goalEntry = new GoalEntry(goal.getGoalId(), goalEntryCursor.getString(
+                    goalEntry = new GoalEntry(goalEntryCursor.getLong(
+                            goalEntryCursor.getColumnIndex(TimeGoalieContract.GoalEntries._ID)
+                    ),goal.getGoalId(), goalEntryCursor.getString(
                             goalEntryCursor.getColumnIndex(
                                     TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
                     goalEntry.setGoalAugment(goalEntryCursor.getInt(goalEntryCursor.getColumnIndex(

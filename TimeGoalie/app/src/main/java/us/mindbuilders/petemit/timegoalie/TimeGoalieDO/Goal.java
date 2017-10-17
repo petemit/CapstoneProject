@@ -141,7 +141,9 @@ public class Goal {
                         cursor.getInt(
                                 cursor.getColumnIndex(
                                         TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID)));
-                GoalEntry goalEntry = new GoalEntry(goal.getGoalId(), cursor.getString(
+                GoalEntry goalEntry = new GoalEntry(cursor.getLong(cursor.
+                        getColumnIndex(TimeGoalieContract.GoalEntries._ID))
+                        ,goal.getGoalId(), cursor.getString(
                         cursor.getColumnIndex(TimeGoalieContract
                                 .GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
                 if (goalEntry.getDate() == null) {

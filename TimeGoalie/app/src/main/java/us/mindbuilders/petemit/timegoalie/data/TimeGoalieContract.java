@@ -95,7 +95,16 @@ public class TimeGoalieContract {
 
     //get a goal_entry by goalid
     public static Uri buildGetAGoalEntryByGoalId(long goalid) {
-        return ContentUris.withAppendedId(GoalEntries.CONTENT_URI,goalid);
+        return ContentUris.withAppendedId(GoalEntries.CONTENT_URI
+                        .buildUpon()
+                        .appendPath("goal")
+                        .build()
+                ,goalid);
+    }
+
+    //get a goal_entry by goalid
+    public static Uri buildGetAGoalEntryByGoalEntryId(long goalEntryid) {
+        return ContentUris.withAppendedId(GoalEntries.CONTENT_URI,goalEntryid);
     }
 
     // //get a day by id

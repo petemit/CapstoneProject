@@ -37,8 +37,9 @@ public class InsertNewGoalEntry extends AsyncTask<GoalEntry, Void, Void> {
                     goalEntries[i].getHasSucceeded());
         }
 
-        context.getContentResolver().insert(TimeGoalieContract.GoalEntries.CONTENT_URI,goalEntries_cv);
-
+       long goalEntry_id = ContentUris.parseId(context.getContentResolver()
+               .insert(TimeGoalieContract.GoalEntries.CONTENT_URI,goalEntries_cv));
+        goalEntries[0].setId(goalEntry_id);
         if (goalEntries.length > 0) {
             for (int i = 0; i < goalEntries.length; i++) {}
 

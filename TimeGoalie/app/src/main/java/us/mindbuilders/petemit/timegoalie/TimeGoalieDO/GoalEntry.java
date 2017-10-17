@@ -1,5 +1,7 @@
 package us.mindbuilders.petemit.timegoalie.TimeGoalieDO;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -7,13 +9,17 @@ import java.io.Serializable;
 import java.sql.Date;
 
 import us.mindbuilders.petemit.timegoalie.BaseApplication;
+import us.mindbuilders.petemit.timegoalie.GoalListActivity;
+import us.mindbuilders.petemit.timegoalie.data.GetGoalEntryByDateAndGoal;
+import us.mindbuilders.petemit.timegoalie.data.GetGoalEntryById;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
+import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 
 /**
  * Created by Peter on 9/23/2017.
  */
 
-public class GoalEntry implements Parcelable{
+public class GoalEntry implements Parcelable {
     private long id;
     private String date = "";
     private int goalAugment;
@@ -22,10 +28,14 @@ public class GoalEntry implements Parcelable{
     private int secondsElapsed;
     private int hasSucceeded;
 
-    public GoalEntry(long goal_id, String date) {
+
+    public GoalEntry(long id, long goal_id, String date) {
+        this.id = id;
         this.date = date;
         this.goal_id = goal_id;
-
+        if (date != null) {
+            updateSecondsElapsed(BaseApplication.getContext());
+        }
     }
 
     public String getDate() {
@@ -36,46 +46,78 @@ public class GoalEntry implements Parcelable{
         this.date = date;
     }
 
-    public int getSecondsElapsed() {
+    public void updateSecondsElapsed(Context context) {
 
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
-            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).getSecondsElapsed();
+        Cursor cursor = null;
+        cursor = context.getContentResolver().query(
+                TimeGoalieContract.buildGetAGoalEntryByGoalId(getGoal_id()),
+                null,
+                null,
+                new String[]{getDate()},
+                null);
+
+
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            this.setSecondsElapsed(cursor.getInt(cursor.getColumnIndex(
+                    TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED
+            )));
+
         }
-        return 0;
+        if (cursor != null) {
+            cursor.close();
+        }
     }
 
+    public int getSecondsElapsed() {
+
+//        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
+//            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).getSecondsElapsed();
+//        }
+//        return 0;
+        //return secondsElapsed;
+
+        return secondsElapsed;
+
+}
+
     public void addSecondElapsed() {
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
-            BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date ).setSecondsElapsed(
-                    BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).getSecondsElapsed() + 1
-            );
-        }
+//        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
+//            BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date ).setSecondsElapsed(
+//                    BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).getSecondsElapsed() + 1
+//            );
+//        }
+
+        this.secondsElapsed++;
     }
 
     public void setSecondsElapsed(int secondsElapsed) {
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
-        } else {
-            TimeGoalieAlarmObject timeGoalieAlarmObject = new TimeGoalieAlarmObject(goal_id, date);
-            timeGoalieAlarmObject.setSecondsElapsed(secondsElapsed);
-            timeGoalieAlarmObject.setGoal_id(goal_id);
-            BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject
-            );
-        }
+//        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
+//        } else {
+//            TimeGoalieAlarmObject timeGoalieAlarmObject = new TimeGoalieAlarmObject(goal_id, date);
+//            timeGoalieAlarmObject.setSecondsElapsed(secondsElapsed);
+//            timeGoalieAlarmObject.setGoal_id(goal_id);
+//            BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject
+//            );
+//        }
+        this.secondsElapsed = secondsElapsed;
+
     }
 
     public void setSecondsElapsed(int secondsElapsed, boolean isAlarm) {
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date) != null) {
-            if (isAlarm) {
-                TimeGoalieAlarmObject timeGoalieAlarmObject =
-                        BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date);
-                timeGoalieAlarmObject.setSecondsElapsed(secondsElapsed);
-            }
-        } else {
-            TimeGoalieAlarmObject timeGoalieAlarmObject = new TimeGoalieAlarmObject(goal_id, date);
-            timeGoalieAlarmObject.setSecondsElapsed(secondsElapsed);
-            BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject
-            );
-        }
+//        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date) != null) {
+//            if (isAlarm) {
+//                TimeGoalieAlarmObject timeGoalieAlarmObject =
+//                        BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date);
+//                timeGoalieAlarmObject.setSecondsElapsed(secondsElapsed);
+//            }
+//        } else {
+//            TimeGoalieAlarmObject timeGoalieAlarmObject = new TimeGoalieAlarmObject(goal_id, date);
+//            timeGoalieAlarmObject.setSecondsElapsed(secondsElapsed);
+//            BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject
+//            );
+//        }
+        this.secondsElapsed = secondsElapsed;
     }
 
     public long getGoal_id() {
@@ -95,29 +137,29 @@ public class GoalEntry implements Parcelable{
     }
 
     public boolean isHasFinished() {
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id ,date) != null) {
-            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).isHasFinished();
+        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date) != null) {
+            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date).isHasFinished();
         }
 
         return hasFinished;
     }
 
     public void setHasFinished(boolean hasFinished) {
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
-            BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).setHasFinished(hasFinished);
+        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date) != null) {
+            BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date).setHasFinished(hasFinished);
         }
     }
 
     public int getGoalAugment() {
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
-            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).getGoalAugment();
+        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date) != null) {
+            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date).getGoalAugment();
         }
         return 0;
     }
 
     public void setGoalAugment(int goalAugment) {
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
-            BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).setGoalAugment(goalAugment);
+        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date) != null) {
+            BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date).setGoalAugment(goalAugment);
         }
     }
 

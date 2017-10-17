@@ -46,7 +46,7 @@ public class TimeGoalieUtils {
                         goal.getMinutes(),
                         goal.getGoalEntry().getGoalAugment())), true);
             }
-            onBindElapsedSeconds = (timeGoalieAlarmObj.getSecondsElapsed());
+            onBindElapsedSeconds = (goal.getGoalEntry().getSecondsElapsed());
         }
         long remainingSeconds = (goal.getGoalSeconds() -
                 onBindElapsedSeconds);

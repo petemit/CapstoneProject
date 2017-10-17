@@ -225,7 +225,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
                             long newtime = goal.getGoalSeconds();
                             if (timeGoalieAlarmObject != null) {
-                                newtime = goal.getGoalSeconds() - timeGoalieAlarmObject.getSecondsElapsed();
+                                newtime = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
                                 Log.e("Mindbuilders", "newtime: " + newtime);
                             }
                             if (b && goal.getGoalEntry().getDate()
@@ -302,7 +302,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
                                 if (timeGoalieAlarmObject != null) {
                                     if (goal.getGoalEntry() == null) {
-                                        goal.setGoalEntry(new GoalEntry(goal.getGoalId(),
+                                        goal.setGoalEntry(new GoalEntry(-1,goal.getGoalId(),
                                                 TimeGoalieDateUtils.getSqlDateString()));
                                     }
                                     //old goal.setMinutes(goal.getMinutes() + value);
