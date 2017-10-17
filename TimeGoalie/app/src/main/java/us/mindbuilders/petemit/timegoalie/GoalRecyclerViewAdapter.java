@@ -135,7 +135,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
             if (true) {
                 if (goal.getGoalEntry() != null) {
-                    if (goal.getGoalEntry().getHasSucceeded()==1) {
+                    if (goal.getGoalEntry().getHasSucceeded()) {
                        new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
                         new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
                     }
@@ -145,13 +145,13 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
             if (goal.getGoalTypeId() == 1) { // if this is GoalType Limit goal
                 if (goal.getGoalEntry() != null) {
                     if (!goal.getGoalEntry().isHasFinished() &&
-                            goal.getGoalEntry().getHasSucceeded() != 1) {
+                            !goal.getGoalEntry().getHasSucceeded()) {
 
                         goal.getGoalEntry().setHasSucceeded(1);
                         new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
                         new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
                     } else if (goal.getGoalEntry().isHasFinished() &&
-                            goal.getGoalEntry().getHasSucceeded() != 0) {
+                            goal.getGoalEntry().getHasSucceeded()) {
                         goal.getGoalEntry().setHasSucceeded(0);
                         new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
                         new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
@@ -163,7 +163,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                             getDrawable(R.drawable.seekbar_reverse, null));
                 }
             } else if (goal.getGoalTypeId() == 2) { // yes no
-                if (goal.getGoalEntry().getHasSucceeded()==1) {
+                if (goal.getGoalEntry().getHasSucceeded()) {
                     holder.goalCheckBox.setChecked(true);
                 }
             }
@@ -185,10 +185,10 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                 TimeGoalieAlarmObject timeGoalieAlarmObject =
                         TimeGoalieUtils.getTimeGoalieAlarmObjectByDate(goal);
 
-                long remainingSeconds = TimeGoalieUtils.getRemainingSeconds(timeGoalieAlarmObject,goal);
+                long remainingSeconds = TimeGoalieUtils.getRemainingSeconds(goal);
 
                 //Set initial Time Text labels:
-                TimeGoalieUtils.setTimeTextLabel(goal,timeGoalieAlarmObject,holder.time_tv,holder.tv_timeOutOf);
+                TimeGoalieUtils.setTimeTextLabel(goal,holder.time_tv,holder.tv_timeOutOf);
                 // if this is a more goal
                 if (goal.getGoalTypeId()==0) {
 
@@ -253,7 +253,10 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                         timeGoalieAlarmObject.getOneMinuteWarningPendingIntent().cancel();
                                         timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(null);
                                     }
-                                    timeGoalieAlarmObject.setRunning(false);
+                                    //timeGoalieAlarmObject.setRunning(false);
+                                    goal.getGoalEntry().setRunning(false);
+                                    new InsertNewGoalEntry(
+                                            compoundButton.getContext()).execute(goal.getGoalEntry());
                                 }
 
 
@@ -262,8 +265,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                         }
                     });
 
-                    if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()) != null) {
-                        if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()).isRunning()
+                    if (goal.getGoalEntry() != null) {
+                        if (goal.getGoalEntry().isRunning()
                                 && goal.getGoalEntry().getDate()
                                 .equals(TimeGoalieDateUtils.getSqlDateString())) {
                             holder.startStopTimer.setChecked(false);
@@ -309,7 +312,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                     goal.getGoalEntry().setGoalAugment(
                                             goal.getGoalEntry().getGoalAugment() + value * 60);
 
-                                    isRunning = BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()).isRunning();
+                                   // isRunning = BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()).isRunning();
+                                    isRunning = goal.getGoalEntry().isRunning();
                                     if (timeGoalieAlarmObject.getCountDownTimer() != null) {
                                         timeGoalieAlarmObject.getCountDownTimer().cancel();
                                         timeGoalieAlarmObject.setCountDownTimer(null);
@@ -324,7 +328,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                                 timeGoalieAlarmObject.getOneMinuteWarningPendingIntent());
                                         timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(null);
                                     }
-                                    timeGoalieAlarmObject.setTargetTime(0);
+                                    //timeGoalieAlarmObject.setTargetTime(0);
+                                    goal.getGoalEntry().setTargetTime(0);
                                     notifyDataSetChanged();
 
                                 } else {
@@ -347,7 +352,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                                 goal.getGoalEntry().getGoalAugment() - value * 60);
                                     }
 
-                                    isRunning = BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()).isRunning();
+//                                    isRunning = BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId()).isRunning();
+                                    isRunning = goal.getGoalEntry().isRunning();
                                     if (timeGoalieAlarmObject.getCountDownTimer() != null) {
                                         timeGoalieAlarmObject.getCountDownTimer().cancel();
                                         timeGoalieAlarmObject.setCountDownTimer(null);
@@ -362,7 +368,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                                 timeGoalieAlarmObject.getOneMinuteWarningPendingIntent());
                                         timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(null);
                                     }
-                                    timeGoalieAlarmObject.setTargetTime(0);
+                                    //timeGoalieAlarmObject.setTargetTime(0);
+                                    goal.getGoalEntry().setTargetTime(0);
                                     notifyDataSetChanged();
 
 

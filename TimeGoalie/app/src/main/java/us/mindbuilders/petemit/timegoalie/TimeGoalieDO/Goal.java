@@ -159,7 +159,12 @@ public class Goal {
                         cursor.getColumnIndex(TimeGoalieContract.
                                 GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED)
                 ));
-
+                goalEntry.setRunning(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.
+                        GoalEntries.GOALENTRIES_COLUMN_ISRUNNING)));
+                goalEntry.setHasFinished(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.
+                        GoalEntries.GOALENTRIES_COLUMN_ISFINISHED)));
+                goalEntry.setTargetTime((cursor.getLong(cursor.getColumnIndex(TimeGoalieContract.
+                        GoalEntries.GOALENTRIES_COLUMN_TARGETTIME))));
                 goal.goalEntry = goalEntry;
                 goalList.add(goal);
             }

@@ -32,15 +32,15 @@ public class TimeGoalieUtils {
         }
 
     }
-    public static long getRemainingSeconds(TimeGoalieAlarmObject timeGoalieAlarmObj, Goal goal) {
+    public static long getRemainingSeconds(Goal goal) {
         long onBindElapsedSeconds = 0;
-        if (timeGoalieAlarmObj != null) {
+        if (goal.getGoalEntry() != null) {
 
-            if (timeGoalieAlarmObj.getTargetTime() != 0 && timeGoalieAlarmObj.isRunning()) {
+            if (goal.getGoalEntry().getTargetTime() != 0 && goal.getGoalEntry().isRunning()) {
 
 
                 goal.getGoalEntry().setSecondsElapsed((TimeGoalieDateUtils.calculateSecondsElapsed(
-                        timeGoalieAlarmObj.getTargetTime(),
+                       goal.getGoalEntry().getTargetTime(),
                         TimeGoalieDateUtils.getCurrentTimeInMillis(),
                         goal.getHours(),
                         goal.getMinutes(),
@@ -53,12 +53,11 @@ public class TimeGoalieUtils {
         return remainingSeconds;
     }
 
-    public static void setTimeTextLabel(Goal goal, TimeGoalieAlarmObject timeGoalieAlarmObj,
-                                        TextView tv_timeText, TextView tv_timeOutOf) {
+    public static void setTimeTextLabel(Goal goal, TextView tv_timeText, TextView tv_timeOutOf) {
 
-        if (timeGoalieAlarmObj != null) {
+        if (goal.getGoalEntry() != null) {
             //Recalculate Elapsed Seconds
-            long remainingSeconds = getRemainingSeconds(timeGoalieAlarmObj, goal);
+            long remainingSeconds = getRemainingSeconds(goal);
 
             //Set initial Time Text labels:
 
@@ -79,11 +78,10 @@ public class TimeGoalieUtils {
             } else {
 
                 if (remainingSeconds < 0) {
-
-                } else {
                     if (tv_timeOutOf != null) {
                         tv_timeOutOf.setVisibility(View.GONE);
                     }
+                } else {
                     tv_timeText.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(remainingSeconds * 1000));
                 }
             }

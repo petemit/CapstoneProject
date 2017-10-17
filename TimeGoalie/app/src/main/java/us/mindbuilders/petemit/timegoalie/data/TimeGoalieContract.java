@@ -49,6 +49,9 @@ public class TimeGoalieContract {
         public static final String GOALENTRIES_COLUMN_SECONDSELAPSED = "seconds_elapsed";
         public static final String GOALENTRIES_COLUMN_GOALAUGMENT = "goal_augment";
         public static final String GOALENTRIES_COLUMN_SUCCEEDED = "succeeded";
+        public static final String GOALENTRIES_COLUMN_ISRUNNING = "isRunning";
+        public static final String GOALENTRIES_COLUMN_TARGETTIME = "targetTime";
+        public static final String GOALENTRIES_COLUMN_ISFINISHED = "isFinished";
         public static final String GOALENTRIES_COLUMN_DATETIME = "timestamp";
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(GOALENTRIES_TABLE_NAME).build();

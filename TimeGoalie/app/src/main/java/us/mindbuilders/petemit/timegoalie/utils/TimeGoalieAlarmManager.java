@@ -201,7 +201,8 @@ public class TimeGoalieAlarmManager {
                             (int) goal.getGoalTypeId(),
                             seekbar));
             timeGoalieAlarmObject.getCountDownTimer().start();
-            timeGoalieAlarmObject.setRunning(true);
+            goal.getGoalEntry().setRunning(true);
+
         } else {
             timeGoalieAlarmObject = new TimeGoalieAlarmObject(goal.getGoalId(),
                     TimeGoalieDateUtils.getSqlDateString());
@@ -215,9 +216,12 @@ public class TimeGoalieAlarmManager {
                             (int) goal.getGoalTypeId(),
                             seekbar));
             timeGoalieAlarmObject.getCountDownTimer().start();
-            timeGoalieAlarmObject.setRunning(true);
+            goal.getGoalEntry().setRunning(true);
+
             BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject);
         }
+
+        new InsertNewGoalEntry(time_tv.getContext()).execute(goal.getGoalEntry());
 
         // this will create the system alarm.  :-O !  It will not create it if the pi
         // already exists, or if the goal has already finished
@@ -248,9 +252,14 @@ public class TimeGoalieAlarmManager {
 
 
             //sound the alarm!!
-            if (timeGoalieAlarmObject.getTargetTime() == 0) {
-                timeGoalieAlarmObject.setTargetTime(targetTime);
+//            if (timeGoalieAlarmObject.getTargetTime() == 0) {
+//                timeGoalieAlarmObject.setTargetTime(targetTime);
+//            }
+
+            if (goal.getGoalEntry().getTargetTime() == 0) {
+                goal.getGoalEntry().setTargetTime(targetTime);
             }
+
 
             TimeGoalieAlarmManager.setTimeGoalAlarm(
                     targetTime,

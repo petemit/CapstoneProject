@@ -87,7 +87,8 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                 }
                 if (id != -1) {
                     //  BaseApplication.getTimeGoalieAlarmObjectById(id).setRunning(false);
-                    BaseApplication.getTimeGoalieAlarmObjectById(id).setHasFinished(true);
+                    //BaseApplication.getTimeGoalieAlarmObjectById(id).setHasFinished(true);
+                    goalEntry.setHasFinished(true);
                 }
 
                 break;

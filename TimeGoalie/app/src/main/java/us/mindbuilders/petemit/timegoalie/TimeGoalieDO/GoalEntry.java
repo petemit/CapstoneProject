@@ -27,15 +27,21 @@ public class GoalEntry implements Parcelable {
     private boolean hasFinished;
     private int secondsElapsed;
     private int hasSucceeded;
+    private int isRunning;
+    private long targetTime;
+    private int isFinished;
 
 
     public GoalEntry(long id, long goal_id, String date) {
         this.id = id;
         this.date = date;
         this.goal_id = goal_id;
-        if (date != null) {
-            updateSecondsElapsed(BaseApplication.getContext());
-        }
+
+        //Hmm!  I guess I don't need this!  Cool!  The loader gets this for me.
+        ///.... what have I been working on for the past hour...
+//        if (date != null) {
+//            updateSecondsElapsed(BaseApplication.getContext());
+//        }
     }
 
     public String getDate() {
@@ -136,18 +142,40 @@ public class GoalEntry implements Parcelable {
         this.id = id;
     }
 
-    public boolean isHasFinished() {
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date) != null) {
-            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date).isHasFinished();
-        }
+//    public boolean isHasFinished() {
+//        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date) != null) {
+//            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date).isHasFinished();
+//        }
+//
+//        return hasFinished;
+//    }
+//
+//    public void setHasFinished(boolean hasFinished) {
+//        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date) != null) {
+//            BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date).setHasFinished(hasFinished);
+//        }
+//    }
 
-        return hasFinished;
+    public boolean isHasFinished() {
+        if (isFinished==1) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
-    public void setHasFinished(boolean hasFinished) {
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date) != null) {
-            BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date).setHasFinished(hasFinished);
+    public void setHasFinished(boolean running) {
+        if (running) {
+            isFinished = 1;
         }
+        else {
+            isFinished = 0;
+        }
+    }
+
+    public void setHasFinished(int running) {
+        isFinished = running;
     }
 
     public int getGoalAugment() {
@@ -163,8 +191,22 @@ public class GoalEntry implements Parcelable {
         }
     }
 
-    public int getHasSucceeded() {
-        return hasSucceeded;
+    public boolean getHasSucceeded() {
+        if (hasSucceeded==1){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public void setHasSucceeded(boolean hasSucceeded) {
+        if (hasSucceeded) {
+            this.hasSucceeded = 1;
+        }
+        else {
+            this.hasSucceeded = 0;
+        }
     }
 
     public void setHasSucceeded(int hasSucceeded) {
@@ -209,4 +251,33 @@ public class GoalEntry implements Parcelable {
             return new GoalEntry[size];
         }
     };
+
+    public boolean isRunning() {
+        if (isRunning==1) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public void setRunning(boolean running) {
+        if (running) {
+            isRunning = 1;
+        }
+        else {
+            isRunning = 0;
+        }
+    }
+    public void setRunning(int running) {
+        isRunning = running;
+    }
+
+    public long getTargetTime() {
+        return targetTime;
+    }
+
+    public void setTargetTime(long targetTime) {
+        this.targetTime = targetTime;
+    }
 }

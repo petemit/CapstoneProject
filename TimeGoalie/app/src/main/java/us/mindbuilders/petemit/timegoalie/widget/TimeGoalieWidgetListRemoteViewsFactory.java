@@ -87,7 +87,8 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
             if (goal.getGoalTypeId()==2) { //yes/no goal
                 views = new RemoteViews(context.getPackageName(),
                         R.layout.time_goalie_widget_item_yes_no);
-                if (goal.getGoalEntry().getHasSucceeded()==0) {
+                if (!goal.getGoalEntry().getHasSucceeded()) {
+
                     views.setViewVisibility(R.id.widget_yes_no_checkbox_off, View.VISIBLE);
                     views.setViewVisibility(R.id.widget_yes_no_checkbox_on, View.GONE);
                 }
@@ -110,7 +111,7 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
                         new CustomTextView(context, views, R.id.widget_time_tv);
                 CustomTextView timeOutOfText =
                         new CustomTextView(context, views, R.id.widget_time_out_of_tv);
-                TimeGoalieUtils.setTimeTextLabel(goal, timeGoalieAlarmObj, timeText, timeOutOfText);
+                TimeGoalieUtils.setTimeTextLabel(goal,  timeText, timeOutOfText);
             } else{
                 views = new RemoteViews(context.getPackageName(),
                         R.layout.time_goalie_widget_item);
@@ -118,7 +119,7 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
                         new CustomTextView(context, views, R.id.widget_time_tv);
                 CustomTextView timeOutOfText =
                         new CustomTextView(context, views, R.id.widget_time_out_of_tv);
-                TimeGoalieUtils.setTimeTextLabel(goal, timeGoalieAlarmObj, timeText, timeOutOfText);
+                TimeGoalieUtils.setTimeTextLabel(goal, timeText, timeOutOfText);
 
             }
 

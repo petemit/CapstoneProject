@@ -35,6 +35,12 @@ public class InsertNewGoalEntry extends AsyncTask<GoalEntry, Void, Void> {
                     goalEntries[i].getGoalAugment());
             goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED,
                     goalEntries[i].getHasSucceeded());
+            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISRUNNING,
+                    (goalEntries[i].isRunning()) ? 1 : 0);
+            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISFINISHED,
+                    (goalEntries[i].isHasFinished()) ? 1 : 0);
+            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_TARGETTIME,
+                    goalEntries[i].getTargetTime());
         }
 
        long goalEntry_id = ContentUris.parseId(context.getContentResolver()

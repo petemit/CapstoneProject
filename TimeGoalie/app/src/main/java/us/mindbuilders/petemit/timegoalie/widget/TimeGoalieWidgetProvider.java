@@ -106,11 +106,7 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
         Bundle bundle = new Bundle();
         if (goalEntry != null) {
             goalEntry.setHasFinished(!goalEntry.isHasFinished());
-            if (goalEntry.getHasSucceeded() == 1) {
-                goalEntry.setHasSucceeded(0);
-            } else {
-                goalEntry.setHasSucceeded(1);
-            }
+            goalEntry.setHasSucceeded(!goalEntry.getHasSucceeded());
             bundle.putParcelable("goalentry", goalEntry);
             intent.putExtra("goalentrybundle", bundle);
         }

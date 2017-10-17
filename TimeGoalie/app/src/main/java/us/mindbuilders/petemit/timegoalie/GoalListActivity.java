@@ -89,11 +89,6 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         }
 
 
-
-
-
-
-
     }
 
     @Override
@@ -238,7 +233,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         successfulGoalCount = 0;
         for (int i = 0; i < goalArrayList.size(); i++) {
             if (goalArrayList.get(i).getGoalEntry() != null) {
-                if (goalArrayList.get(i).getGoalEntry().getHasSucceeded() == 1) {
+                if (goalArrayList.get(i).getGoalEntry().getHasSucceeded()) {
                     successfulGoalCount++;
                 }
             }

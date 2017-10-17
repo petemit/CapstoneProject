@@ -46,6 +46,9 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED + " INTEGER, "+
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT + " INTEGER, "+
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED + " INTEGER, "+
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISRUNNING + " INTEGER, "+
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISFINISHED + " INTEGER, "+
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_TARGETTIME + " INTEGER, "+
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID + " INTEGER NOT NULL, "+
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME + " TEXT NOT NULL, "+
         " UNIQUE("+
