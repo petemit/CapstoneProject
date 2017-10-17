@@ -15,7 +15,7 @@
             android:id="@+id/widget_goal_tv"
             style="@style/TimeGoalTheme.WidgetTextTitle"
             android:layout_width="0dp"
-            android:layout_height="30dp"
+            android:layout_height="@dimen/checkbox_size"
             android:layout_gravity="center|left"
             android:layout_marginStart="@dimen/half_margin"
             android:layout_weight="1"
@@ -25,13 +25,13 @@
         <FrameLayout
             android:id="@+id/widget_yes_no_checkbox"
             android:layout_width="0dp"
-            android:layout_height="30dp"
+            android:layout_height="@dimen/widget_frame_size"
             android:layout_weight="1">
 
             <Button
                 android:id="@+id/widget_yes_no_checkbox_off"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/checkbox_size"
+                android:layout_height="@dimen/checkbox_size"
                 android:layout_marginEnd="@dimen/right_margin"
                 android:layout_gravity="center"
                 android:background="@android:drawable/checkbox_off_background"
@@ -40,8 +40,8 @@
 
             <Button
                 android:id="@+id/widget_yes_no_checkbox_on"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/checkbox_size"
+                android:layout_height="@dimen/checkbox_size"
                 android:layout_marginEnd="@dimen/right_margin"
                 android:layout_gravity="center"
                 android:background="@android:drawable/checkbox_on_background"

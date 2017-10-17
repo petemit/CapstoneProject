@@ -6,14 +6,21 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import us.mindbuilders.petemit.timegoalie.R;
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
+import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 
 /**
  * Created by Peter on 10/11/2017.
@@ -110,6 +117,15 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
             bundle.putParcelable("goalentry", goalEntry);
             intent.putExtra("goalentrybundle", bundle);
         }
+        return intent;
+    }
+
+    public static Intent getUpdateTimeGoalFillInIntent(GoalEntry goalEntry) {
+        Intent intent = new Intent();
+        Bundle bundle = new Bundle();
+        if (goalEntry != null) {
+            goalEntry.setRunning(!goalEntry.isRunning());
+            }
         return intent;
     }
 

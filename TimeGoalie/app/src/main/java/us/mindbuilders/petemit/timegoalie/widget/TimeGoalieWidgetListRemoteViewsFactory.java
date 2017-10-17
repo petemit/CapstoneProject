@@ -2,6 +2,8 @@ package us.mindbuilders.petemit.timegoalie.widget;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -15,6 +17,7 @@ import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.utils.CustomTextView;
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieUtils;
 
@@ -26,21 +29,22 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
     private Context context;
     private ArrayList<Goal> goalData;
 
-    public TimeGoalieWidgetListRemoteViewsFactory(Context context){
+    public TimeGoalieWidgetListRemoteViewsFactory(Context context) {
         this.context = context;
-        Log.e("findme","I got here now");
+        Log.e("findme", "I got here now");
     }
+
     @Override
     public void onCreate() {
-        Log.e("findme","I got here again");
+        Log.e("findme", "I got here again");
 
     }
 
     @Override
     public void onDataSetChanged() {
-        Log.e("findme","I got here");
+        Log.e("findme", "I got here");
         if (goalData != null) {
-            goalData=null;
+            goalData = null;
         }
         Cursor cursor = context.getContentResolver().query(
                 TimeGoalieContract.getGoalsThatHaveGoalEntryForToday(),
@@ -66,33 +70,30 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
     public int getCount() {
         if (goalData != null) {
             return goalData.size();
-        }
-        else {
+        } else {
             return 0;
         }
     }
 
     @Override
     public RemoteViews getViewAt(int i) {
-        if (goalData != null && goalData.size() > 0 ){
-            Goal goal = goalData.get(i);
+        if (goalData != null && goalData.size() > 0) {
+            final Goal goal = goalData.get(i);
             TimeGoalieAlarmObject timeGoalieAlarmObj =
                     TimeGoalieUtils.getTimeGoalieAlarmObjectByDate(goal);
 
 
-            RemoteViews views=null;
+            RemoteViews views = null;
 
 
-
-            if (goal.getGoalTypeId()==2) { //yes/no goal
+            if (goal.getGoalTypeId() == 2) { //yes/no goal
                 views = new RemoteViews(context.getPackageName(),
                         R.layout.time_goalie_widget_item_yes_no);
                 if (!goal.getGoalEntry().getHasSucceeded()) {
 
                     views.setViewVisibility(R.id.widget_yes_no_checkbox_off, View.VISIBLE);
                     views.setViewVisibility(R.id.widget_yes_no_checkbox_on, View.GONE);
-                }
-                else{
+                } else {
                     views.setViewVisibility(R.id.widget_yes_no_checkbox_off, View.GONE);
                     views.setViewVisibility(R.id.widget_yes_no_checkbox_on, View.VISIBLE);
                 }
@@ -102,35 +103,58 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
 
 //                views.setOnClickFillInIntent(R.id.widget_yes_no_checkbox_on,
 //                        TimeGoalieWidgetProvider.getUpdateYesNoGoalFillInIntent(goal.getGoalEntry()));
-            }
-
-            else if (goal.getGoalTypeId()==1) { //Time limit Goal
+            } else { //Time limit Goal
                 views = new RemoteViews(context.getPackageName(),
                         R.layout.time_goalie_widget_item);
-                CustomTextView timeText =
+                final CustomTextView timeText =
                         new CustomTextView(context, views, R.id.widget_time_tv);
                 CustomTextView timeOutOfText =
                         new CustomTextView(context, views, R.id.widget_time_out_of_tv);
-                TimeGoalieUtils.setTimeTextLabel(goal,  timeText, timeOutOfText);
-            } else{
-                views = new RemoteViews(context.getPackageName(),
-                        R.layout.time_goalie_widget_item);
-                CustomTextView timeText =
-                        new CustomTextView(context, views, R.id.widget_time_tv);
-                CustomTextView timeOutOfText =
-                        new CustomTextView(context, views, R.id.widget_time_out_of_tv);
+                views.setOnClickFillInIntent(R.id.start_stop, TimeGoalieWidgetProvider.
+                        getUpdateTimeGoalFillInIntent(goal.getGoalEntry()));
                 TimeGoalieUtils.setTimeTextLabel(goal, timeText, timeOutOfText);
 
+                //Set up the time goal if goals are running
+                if (goal.getGoalEntry().isRunning()) {
+                    views.setTextViewText(R.id.start_stop, context.getString(R.string.stop));
+
+//
+//                    //not sure if I can do this
+//                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            long newtime = goal.getGoalSeconds();
+//                            if (goal.getGoalEntry() != null) {
+//                                newtime = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
+//                            }
+//                            TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
+//                        }
+//                    });
+//                    TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
+                } else {
+                    views.setTextViewText(R.id.start_stop, context.getString(R.string.start));
+                }
+
             }
+
+
+//            } else{
+//                views = new RemoteViews(context.getPackageName(),
+//                        R.layout.time_goalie_widget_item);
+//                CustomTextView timeText =
+//                        new CustomTextView(context, views, R.id.widget_time_tv);
+//                CustomTextView timeOutOfText =
+//                        new CustomTextView(context, views, R.id.widget_time_out_of_tv);
+//                TimeGoalieUtils.setTimeTextLabel(goal, timeText, timeOutOfText);
+//
+//            }
 
             if (views != null) {
                 views.setTextViewText(R.id.widget_goal_tv, goal.getName());
-                Log.e("findme", goal.getName());
             }
 
             return views;
-        }
-        else {
+        } else {
             //implement return empty views
             return null;
         }

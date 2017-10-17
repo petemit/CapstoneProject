@@ -181,7 +181,12 @@ public class TimeGoalieAlarmManager {
     }
 
 
-    public static void startTimer(GoalRecyclerViewAdapter.GoalCounter goalCounter, TextView time_tv, long totalSeconds, Goal goal, View view, SeekBar seekbar) {
+    public static void startTimer(GoalRecyclerViewAdapter.GoalCounter goalCounter,
+                                  TextView time_tv,
+                                  long totalSeconds,
+                                  Goal goal,
+                                  Context context,
+                                  SeekBar seekbar) {
         if (goal.getGoalEntry().getDate() == null) {
             goal.getGoalEntry().setDate(TimeGoalieDateUtils.getSqlDateString());
         }
@@ -229,8 +234,8 @@ public class TimeGoalieAlarmManager {
         if (timeGoalieAlarmObject != null && timeGoalieAlarmObject.getAlarmDonePendingIntent() == null &&
                 !goal.getGoalEntry().isHasFinished()) {
             timeGoalieAlarmObject.setAlarmDonePendingIntent(TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
-                    view.getContext(), TimeGoalieAlarmReceiver.createAlarmDoneTimeGoalieAlarmIntent
-                            (view.getContext(),
+                    context, TimeGoalieAlarmReceiver.createAlarmDoneTimeGoalieAlarmIntent
+                            (context,
                                     goal.getName(),
                                     (int) goal.getGoalId()
                             ), (int) goal.getGoalId()));
@@ -263,7 +268,7 @@ public class TimeGoalieAlarmManager {
 
             TimeGoalieAlarmManager.setTimeGoalAlarm(
                     targetTime,
-                    view.getContext(), null,
+                    context, null,
                     timeGoalieAlarmObject.getAlarmDonePendingIntent());
 
 
@@ -271,9 +276,9 @@ public class TimeGoalieAlarmManager {
             //will not fire if it has been fired already for a goal.
             if (goal.getGoalTypeId() == 1 && !timeGoalieAlarmObject.isHasBeenWarned()) { //Limit Goal Type
                 timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(TimeGoalieAlarmReceiver.
-                        createTimeGoaliePendingIntent(view.getContext(),
+                        createTimeGoaliePendingIntent(context,
                                 TimeGoalieAlarmReceiver.createOneMinuteWarningTimeGoalieAlarmIntent(
-                                        view.getContext(),
+                                        context,
                                         goal.getName(),
                                         (int) goal.getGoalId()
                                 ),
@@ -287,7 +292,7 @@ public class TimeGoalieAlarmManager {
                 if (timeGoalieAlarmObject.getOneMinuteWarningPendingIntent() != null) {
                     TimeGoalieAlarmManager.setTimeGoalAlarm(
                             targetTimeLimitGoal,
-                            view.getContext(), null,
+                            context, null,
                             timeGoalieAlarmObject.getOneMinuteWarningPendingIntent());
                 }
 

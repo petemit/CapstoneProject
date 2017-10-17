@@ -166,6 +166,9 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                 if (goal.getGoalEntry().getHasSucceeded()) {
                     holder.goalCheckBox.setChecked(true);
                 }
+                else{
+                    holder.goalCheckBox.setChecked(false);
+                }
             }
 //            } else if (goal.getGoalTypeId() == 2) {//yes no goal
 //                if (goal.getGoalEntry() != null) {
@@ -224,14 +227,13 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                             }
 
                             long newtime = goal.getGoalSeconds();
-                            if (timeGoalieAlarmObject != null) {
+                            if (goal.getGoalEntry() != null) {
                                 newtime = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
-                                Log.e("Mindbuilders", "newtime: " + newtime);
                             }
                             if (b && goal.getGoalEntry().getDate()
                                     .equals(TimeGoalieDateUtils.getSqlDateString())) {
                                 TimeGoalieAlarmManager.startTimer(goalCounter, holder.time_tv, newtime, goal,
-                                        compoundButton, holder.seekbar);
+                                        compoundButton.getContext(), holder.seekbar);
                                 holder.spinningBallAnim.start();
                             } else {
                                 if (timeGoalieAlarmObject != null) {

@@ -211,7 +211,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         suppliedSelectionArgs,
                         null,
                         null,
-                        null);
+                        TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID);
                 break;
 
             case GOAL_ENTRIES_BY_GOAL_ID:
@@ -229,7 +229,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         selectionArgs,
                         null,
                         null,
-                        null);
+                        TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID);
                 break;
 
             case GOAL_ENTRY_BY_GOAL_ENTRY_ID:

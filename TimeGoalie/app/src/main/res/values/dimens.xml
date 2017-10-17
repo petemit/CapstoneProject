@@ -26,4 +26,7 @@
     <dimen name="tiny_margin">2dp</dimen>
     <dimen name="widget_min_height">200dp</dimen>
     <dimen name="widget_min_width">300dp</dimen>
+    <dimen name="widget_frame_size">50dp</dimen>
+    <dimen name="checkbox_size">30dp</dimen>
+    <dimen name="extra_right_margin">20dp</dimen>
 </resources>

@@ -67,7 +67,7 @@
         <service android:name=".widget.TimeGoalieRvWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS"></service>
 
-        <!--<service android:name=".widget.GoalMgmtService"></service>-->
+
 
 
 

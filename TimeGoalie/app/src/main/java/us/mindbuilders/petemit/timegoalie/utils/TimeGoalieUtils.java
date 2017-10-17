@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import us.mindbuilders.petemit.timegoalie.BaseApplication;
+import us.mindbuilders.petemit.timegoalie.R;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 
@@ -66,6 +67,7 @@ public class TimeGoalieUtils {
                 tv_timeOutOf.setText(" / " + TimeGoalieAlarmManager.makeTimeTextFromMillis(
                         goal.getGoalSeconds() * 1000
                 ));
+                tv_timeOutOf.setVisibility(View.VISIBLE);
 
                 //  holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
                 if (goal.getGoalEntry() != null) {
@@ -77,10 +79,12 @@ public class TimeGoalieUtils {
 
             } else {
 
+                if (tv_timeOutOf != null) {
+                    tv_timeOutOf.setText(tv_timeText.getContext().getString(R.string.less_left_thing));
+                }
+
                 if (remainingSeconds < 0) {
-                    if (tv_timeOutOf != null) {
-                        tv_timeOutOf.setVisibility(View.GONE);
-                    }
+
                 } else {
                     tv_timeText.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(remainingSeconds * 1000));
                 }
