@@ -6,21 +6,15 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.TextView;
-
-import java.util.ArrayList;
 
 import us.mindbuilders.petemit.timegoalie.R;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
-import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
-import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 
 /**
  * Created by Peter on 10/11/2017.
@@ -39,6 +33,7 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         startActionGetGoalsForToday(context);
+        super.onUpdate(context,appWidgetManager,appWidgetIds);
     }
 
     @Override
@@ -54,6 +49,17 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
                 case ACTION_UPDATE_GOAL_ENTRY:
                     Bundle bundle = intent.getBundleExtra("goalentrybundle");
                     GoalEntry goalEntry = (GoalEntry) bundle.getParcelable("goalentry");
+                    int goalType = bundle.getInt("goal_type");
+                    if (goalType == 2) {
+                        goalEntry.setHasFinished(!goalEntry.isHasFinished());
+                        goalEntry.setHasSucceeded(!goalEntry.getHasSucceeded());
+                    }
+                    else {
+                        Log.e("mindbuild-after-intent", goalEntry.getGoal_id() +" is now at " +Boolean.toString(goalEntry.isRunning()));
+                        boolean bool = bundle.getBoolean("desired_state");
+                        goalEntry.setRunning(bool);
+
+                    }
                     Log.e("mindbuilders",goalEntry.getDate() + " " + goalEntry.getGoal_id());
 //            Log.e("mindbuilders", goalEntry.getDate());
                     handleActionUpdateGoalEntry(context, goalEntry);
@@ -108,26 +114,32 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
         context.sendBroadcast(intent);
     }
 
-    public static Intent getUpdateYesNoGoalFillInIntent(GoalEntry goalEntry) {
+    public static Intent getUpdateYesNoGoalFillInIntent(Goal goal) {
         Intent intent = new Intent();
         Bundle bundle = new Bundle();
-        if (goalEntry != null) {
-            goalEntry.setHasFinished(!goalEntry.isHasFinished());
-            goalEntry.setHasSucceeded(!goalEntry.getHasSucceeded());
-            bundle.putParcelable("goalentry", goalEntry);
+        if (goal.getGoalEntry() != null) {
+            bundle.putInt("goal_type", (int)goal.getGoalTypeId());
+            bundle.putParcelable("goalentry", goal.getGoalEntry());
             intent.putExtra("goalentrybundle", bundle);
         }
         return intent;
     }
 
-    public static Intent getUpdateTimeGoalFillInIntent(GoalEntry goalEntry) {
+    public static Intent getUpdateTimeGoalFillInIntent(Goal goal) {
         Intent intent = new Intent();
         Bundle bundle = new Bundle();
-        if (goalEntry != null) {
-            goalEntry.setRunning(!goalEntry.isRunning());
+        if (goal.getGoalEntry() != null) {
+
+            bundle.putInt("goal_type",(int)goal.getGoalTypeId());
+            bundle.putBoolean("desired_state", !goal.getGoalEntry().isRunning());
+            bundle.putParcelable("goalentry", goal.getGoalEntry());
+            intent.putExtra("goalentrybundle", bundle);
+
+            Log.e("mindbuild-before-intent", goal.getName() +" is currently at " +Boolean.toString(goal.getGoalEntry().isRunning()));
             }
         return intent;
     }
+
 
     public static PendingIntent getUpdateYesNoGoalPendingIntent(Context context, int appWidgetId) {
         Intent intent = new Intent(context, TimeGoalieWidgetProvider.class);
@@ -153,7 +165,10 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
 
     private void handleActionUpdateGoalEntry(Context context, GoalEntry goalEntry) {
         new InsertNewGoalEntry(context).execute(goalEntry);
+
         startActionGetGoalsForToday(context);
+
+
     }
 
 

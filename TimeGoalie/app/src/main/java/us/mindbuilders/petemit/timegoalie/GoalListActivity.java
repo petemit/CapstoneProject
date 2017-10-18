@@ -266,7 +266,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         super.onStop();
         Intent intent = new Intent(getBaseContext(), TimeGoalieWidgetProvider.class);
         intent.setAction(TimeGoalieWidgetProvider.ACTION_GET_GOALS_FOR_TODAY);
-        this.sendBroadcast(intent);
+       this.sendBroadcast(intent);
     }
 
     @Override

@@ -2,6 +2,7 @@ package us.mindbuilders.petemit.timegoalie.widget;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -57,12 +58,14 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
         if (cursor != null) {
             goalData = Goal.createGoalListWithGoalEntriesFromCursor(cursor);
             cursor.close();
+
         }
 
     }
 
     @Override
     public void onDestroy() {
+        goalData.clear();
 
     }
 
@@ -98,11 +101,11 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
                     views.setViewVisibility(R.id.widget_yes_no_checkbox_on, View.VISIBLE);
                 }
 
+                Log.e("myMindbuilders-before", goal.getName() + " " + goal.getGoalId() + " " + Boolean.toString(goal.getGoalEntry().getHasSucceeded()));
                 views.setOnClickFillInIntent(R.id.widget_yes_no_checkbox,
-                        TimeGoalieWidgetProvider.getUpdateYesNoGoalFillInIntent(goal.getGoalEntry()));
+                        TimeGoalieWidgetProvider.getUpdateYesNoGoalFillInIntent(goal));
+                Log.e("myMindbuilders-after", goal.getName() + " " + goal.getGoalId() + " " + Boolean.toString(goal.getGoalEntry().getHasSucceeded()));
 
-//                views.setOnClickFillInIntent(R.id.widget_yes_no_checkbox_on,
-//                        TimeGoalieWidgetProvider.getUpdateYesNoGoalFillInIntent(goal.getGoalEntry()));
             } else { //Time limit Goal
                 views = new RemoteViews(context.getPackageName(),
                         R.layout.time_goalie_widget_item);
@@ -110,13 +113,15 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
                         new CustomTextView(context, views, R.id.widget_time_tv);
                 CustomTextView timeOutOfText =
                         new CustomTextView(context, views, R.id.widget_time_out_of_tv);
-                views.setOnClickFillInIntent(R.id.start_stop, TimeGoalieWidgetProvider.
-                        getUpdateTimeGoalFillInIntent(goal.getGoalEntry()));
-                TimeGoalieUtils.setTimeTextLabel(goal, timeText, timeOutOfText);
 
                 //Set up the time goal if goals are running
                 if (goal.getGoalEntry().isRunning()) {
+                    Log.e("myMindbuilders-after", goal.getName() + " " + goal.getGoalId() + " " + Boolean.toString(goal.getGoalEntry().isRunning()));
                     views.setTextViewText(R.id.start_stop, context.getString(R.string.stop));
+
+
+
+
 
 //
 //                    //not sure if I can do this
@@ -127,37 +132,54 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
 //                            if (goal.getGoalEntry() != null) {
 //                                newtime = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
 //                            }
-//                            TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
+//
+//                            CountDownTimer countDownTimer = new CountDownTimer(50000, 1000) {
+//                                @Override
+//                                public void onTick(long l) {
+//                                    timeText.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(l));
+//                                }
+//
+//                                @Override
+//                                public void onFinish() {
+//
+//                                }
+//                            };
+//                            countDownTimer.start();
+////                           // TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
+////                        }
+////                    });
+////                    TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
+//
 //                        }
 //                    });
-//                    TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
+
+
+
                 } else {
                     views.setTextViewText(R.id.start_stop, context.getString(R.string.start));
                 }
 
-            }
+                Log.e("myMindbuilders-before", goal.getName() + " " + goal.getGoalId() + " " + Boolean.toString(goal.getGoalEntry().isRunning()));
+                views.setOnClickFillInIntent(R.id.start_stop, TimeGoalieWidgetProvider.
+                        getUpdateTimeGoalFillInIntent(goal));
+                TimeGoalieUtils.setTimeTextLabel(goal, timeText, timeOutOfText);
 
 
-//            } else{
-//                views = new RemoteViews(context.getPackageName(),
-//                        R.layout.time_goalie_widget_item);
-//                CustomTextView timeText =
-//                        new CustomTextView(context, views, R.id.widget_time_tv);
-//                CustomTextView timeOutOfText =
-//                        new CustomTextView(context, views, R.id.widget_time_out_of_tv);
-//                TimeGoalieUtils.setTimeTextLabel(goal, timeText, timeOutOfText);
 //
-//            }
+//
+            }
 
             if (views != null) {
                 views.setTextViewText(R.id.widget_goal_tv, goal.getName());
             }
-
             return views;
-        } else {
+        } else
+
+        {
             //implement return empty views
             return null;
         }
+
     }
 
     @Override

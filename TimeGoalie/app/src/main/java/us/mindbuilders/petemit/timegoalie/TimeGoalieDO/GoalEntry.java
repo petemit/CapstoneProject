@@ -44,6 +44,7 @@ public class GoalEntry implements Parcelable {
 //        }
     }
 
+
     public String getDate() {
         return date;
     }

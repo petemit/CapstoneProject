@@ -58,6 +58,7 @@
         </LinearLayout>
 
         <FrameLayout
+            android:id="@+id/start_stop_layout_widget"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
