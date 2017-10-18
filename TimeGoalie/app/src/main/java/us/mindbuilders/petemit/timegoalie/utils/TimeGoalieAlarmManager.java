@@ -22,6 +22,7 @@ import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.GetSuccessfulGoalCount;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
+import us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider;
 
 /**
  * Created by Peter on 9/29/2017.
@@ -77,6 +78,7 @@ public class TimeGoalieAlarmManager {
                         }
                         break;
                 }
+                // TODO: 10/18/2017 am I really going to do this?
                 goalEntry.addSecondElapsed();
                 new InsertNewGoalEntry(tv.getContext()).execute(goalEntry);
 
@@ -231,6 +233,9 @@ public class TimeGoalieAlarmManager {
         // this will create the system alarm.  :-O !  It will not create it if the pi
         // already exists, or if the goal has already finished
 
+        // preemptively cancel secondly
+       TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context,goal);
+
         if (timeGoalieAlarmObject != null && timeGoalieAlarmObject.getAlarmDonePendingIntent() == null &&
                 !goal.getGoalEntry().isHasFinished()) {
             timeGoalieAlarmObject.setAlarmDonePendingIntent(TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
@@ -270,6 +275,15 @@ public class TimeGoalieAlarmManager {
                     targetTime,
                     context, null,
                     timeGoalieAlarmObject.getAlarmDonePendingIntent());
+
+            TimeGoalieAlarmManager.setTimeGoalAlarm(
+                    TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY,
+                    context, null,
+                    TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
+                            context,
+                            TimeGoalieAlarmReceiver.
+                                    createEverySecondDbUpdateAlarmIntent(context,
+                                            (int)goal.getGoalId()),(int)goal.getGoalId()));;
 
 
             //Sets up the running out of time alert

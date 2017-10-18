@@ -120,38 +120,23 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
                     views.setTextViewText(R.id.start_stop, context.getString(R.string.stop));
 
 
+                    //not sure if I can do this
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            long newtime = goal.getGoalSeconds();
+                            if (goal.getGoalEntry() != null) {
+                                newtime = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
+                            }
 
-
-
-//
-//                    //not sure if I can do this
-//                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            long newtime = goal.getGoalSeconds();
-//                            if (goal.getGoalEntry() != null) {
-//                                newtime = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
-//                            }
-//
-//                            CountDownTimer countDownTimer = new CountDownTimer(50000, 1000) {
-//                                @Override
-//                                public void onTick(long l) {
-//                                    timeText.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(l));
-//                                }
-//
-//                                @Override
-//                                public void onFinish() {
-//
-//                                }
-//                            };
-//                            countDownTimer.start();
-////                           // TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
-////                        }
-////                    });
-////                    TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
-//
+                            TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
+//                           // TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
 //                        }
 //                    });
+//                    TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
+
+                        }
+                    });
 
 
 

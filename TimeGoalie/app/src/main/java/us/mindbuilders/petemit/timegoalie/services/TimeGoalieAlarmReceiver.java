@@ -13,9 +13,12 @@ import us.mindbuilders.petemit.timegoalie.BaseApplication;
 import us.mindbuilders.petemit.timegoalie.R;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
+import us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider;
 
 /**
  * Created by Peter on 9/29/2017.
@@ -26,6 +29,9 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
             "us.mindbuilders.petemit.timegoalie.GOAL_FINISHED";
     public static final String GOAL_ONE_MINUTE_WARNING =
             "us.mindbuilders.petemit.timegoalie.GOAL_ONE_MINUTE_WARNING";
+    public static final String SECONDLY_GOAL_UPDATE_ENTRY =
+            "us.mindbuilders.petemit.timegoalie.SECONDLY_GOAL_UPDATE_ENTRY";
+    public static final long SECONDLY_FREQUENCY = 1000;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -54,13 +60,27 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                     goalEntryCursor.moveToFirst();
                     goalEntry = new GoalEntry(goalEntryCursor.getLong(
                             goalEntryCursor.getColumnIndex(TimeGoalieContract.GoalEntries._ID)
-                    ),goal.getGoalId(), goalEntryCursor.getString(
+                    ), goal.getGoalId(), goalEntryCursor.getString(
                             goalEntryCursor.getColumnIndex(
                                     TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
                     goalEntry.setGoalAugment(goalEntryCursor.getInt(goalEntryCursor.getColumnIndex(
                             TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT
                     )));
-
+                    goalEntry.setSecondsElapsed(goalEntryCursor.getInt(goalEntryCursor.getColumnIndex(
+                            TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED
+                    )));
+                    goalEntry.setRunning(goalEntryCursor.getInt(goalEntryCursor.getColumnIndex(
+                            TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISRUNNING
+                    )));
+                    goalEntry.setTargetTime(goalEntryCursor.getLong(goalEntryCursor.getColumnIndex(
+                            TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_TARGETTIME
+                    )));
+                    goalEntry.setHasFinished(goalEntryCursor.getInt(goalEntryCursor.getColumnIndex(
+                            TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISFINISHED
+                    )));
+                    goalEntry.setHasSucceeded(goalEntryCursor.getInt(goalEntryCursor.getColumnIndex(
+                            TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED
+                    )));
 
                 }
             }
@@ -102,6 +122,20 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                 }
 
                 break;
+            case SECONDLY_GOAL_UPDATE_ENTRY:
+                if (goalEntry.isRunning()) {
+//                    goalEntry.addSecondElapsed();
+//                    TimeGoalieAlarmManager.setTimeGoalAlarm(SECONDLY_FREQUENCY, context, null,
+//                            TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(context,
+//                                    TimeGoalieAlarmReceiver.
+//                                            createEverySecondDbUpdateAlarmIntent(context,
+//                                                    (int)goal.getGoalId()),(int)goal.getGoalId()));
+//
+//                    Intent updateWidgetintent = new Intent(context, TimeGoalieWidgetProvider.class);
+//                    updateWidgetintent.setAction(TimeGoalieWidgetProvider.ACTION_GET_GOALS_FOR_TODAY);
+//                    context.sendBroadcast(updateWidgetintent);
+                }
+
         }//end switch
 
         if (goalEntry != null) {
@@ -109,10 +143,16 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
         }
     }
 
+    public static void cancelSecondlyAlarm(Context context, Goal goal) {
+        PendingIntent secondlyPi = TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
+                context, TimeGoalieAlarmReceiver.createEverySecondDbUpdateAlarmIntent(context,
+                        (int)goal.getGoalId()),(int)goal.getGoalId());
+        TimeGoalieAlarmManager.cancelTimeGoalAlarm(context, secondlyPi);
+    }
     public static Intent createAlarmDoneTimeGoalieAlarmIntent(Context context, String message, int goal_id) {
         Intent intent = new Intent(context, TimeGoalieAlarmReceiver.class);
         intent.putExtra(context.getString(R.string.goal_id_key), goal_id);
-        intent.setAction("us.mindbuilders.petemit.timegoalie.GOAL_FINISHED");
+        intent.setAction(GOAL_FINISHED);
         intent.putExtra(context.getString(R.string.goal_title_key), message);
         return intent;
     }
@@ -121,10 +161,20 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
             (Context context, String message, int goal_id) {
         Intent intent = new Intent(context, TimeGoalieAlarmReceiver.class);
         intent.putExtra(context.getString(R.string.goal_id_key), goal_id);
-        intent.setAction("us.mindbuilders.petemit.timegoalie.GOAL_ONE_MINUTE_WARNING");
+        intent.setAction(GOAL_ONE_MINUTE_WARNING);
         intent.putExtra(context.getString(R.string.goal_title_key), message);
         return intent;
     }
+
+    public static Intent createEverySecondDbUpdateAlarmIntent(
+            Context context, int goal_id) {
+        Intent intent = new Intent(context, TimeGoalieAlarmReceiver.class);
+        intent.putExtra(context.getString(R.string.goal_id_key),goal_id);
+        intent.setAction(SECONDLY_GOAL_UPDATE_ENTRY);
+        return intent;
+    }
+
+
 
     public static PendingIntent createTimeGoaliePendingIntent(Context context, Intent intent, int goal_id) {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, goal_id,

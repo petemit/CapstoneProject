@@ -24,12 +24,13 @@ public class GoalEntry implements Parcelable {
     private String date = "";
     private int goalAugment;
     private long goal_id;
-    private boolean hasFinished;
+    private int hasFinished;
     private int secondsElapsed;
     private int hasSucceeded;
     private int isRunning;
     private long targetTime;
     private int isFinished;
+
 
 
     public GoalEntry(long id, long goal_id, String date) {
@@ -220,9 +221,12 @@ public class GoalEntry implements Parcelable {
         date = in.readString();
         goalAugment = in.readInt();
         goal_id = in.readLong();
-        hasFinished = in.readByte() != 0x00;
+        hasFinished = in.readInt();
         secondsElapsed = in.readInt();
         hasSucceeded = in.readInt();
+        isRunning = in.readInt();
+        targetTime = in.readLong();
+        isFinished = in.readInt();
     }
 
     @Override
@@ -236,9 +240,12 @@ public class GoalEntry implements Parcelable {
         dest.writeString(date);
         dest.writeInt(goalAugment);
         dest.writeLong(goal_id);
-        dest.writeByte((byte) (hasFinished ? 0x01 : 0x00));
+        dest.writeInt(hasFinished);
         dest.writeInt(secondsElapsed);
         dest.writeInt(hasSucceeded);
+        dest.writeInt(isRunning);
+        dest.writeLong(targetTime);
+        dest.writeInt(isFinished);
     }
 
     public static final Parcelable.Creator<GoalEntry> CREATOR = new Parcelable.Creator<GoalEntry>() {

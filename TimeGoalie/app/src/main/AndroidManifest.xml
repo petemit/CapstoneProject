@@ -42,33 +42,30 @@
 
         <receiver android:name=".services.TimeGoalieAlarmReceiver">
             <intent-filter>
-                <action android:name="us.mindbuilders.petemit.timegoalie.GOAL_FINISHED"/>
-            </intent-filter>
-
-            <intent-filter>
-                <action android:name="us.mindbuilders.petemit.timegoalie.GOAL_ONE_MINUTE_WARNING"/>
+                <action android:name="us.mindbuilders.petemit.timegoalie.GOAL_FINISHED" />
+                <action android:name="us.mindbuilders.petemit.timegoalie.GOAL_ONE_MINUTE_WARNING" />
+                <action android:name="us.mindbuilders.petemit.timegoalie.SECONDLY_GOAL_UPDATE_ENTRY" />
             </intent-filter>
         </receiver>
 
 
         <receiver android:name="us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-                <action android:name="android.appwidget.action.APPWIDGET_ENABLED"/>
-                <action android:name="us.mindbuilders.petemit.timegoalie.action.update_goal_entry"/>
-                <action android:name="us.mindbuilders.petemit.timegoalie.action.goalentry"/>
-                <action android:name="us.mindbuilders.petemit.timegoalie.action.get_goals_for_today"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
+                <action android:name="us.mindbuilders.petemit.timegoalie.action.update_goal_entry" />
+                <action android:name="us.mindbuilders.petemit.timegoalie.action.goalentry" />
+                <action android:name="us.mindbuilders.petemit.timegoalie.action.get_goals_for_today" />
             </intent-filter>
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/time_goalie_widget_config"/>
+                android:resource="@xml/time_goalie_widget_config" />
         </receiver>
-        <service android:name=".widget.TimeGoalieRvWidgetService"
+
+        <service
+            android:name=".widget.TimeGoalieRvWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS"></service>
-
-
-
 
 
     </application>

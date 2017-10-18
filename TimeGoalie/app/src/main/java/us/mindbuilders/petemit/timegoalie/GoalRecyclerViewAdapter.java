@@ -44,6 +44,7 @@ import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntryGoalCounter;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.GetSuccessfulGoalCount;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
+import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieUtils;
@@ -255,6 +256,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                         timeGoalieAlarmObject.getOneMinuteWarningPendingIntent().cancel();
                                         timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(null);
                                     }
+                                    TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context,goal);
                                     //timeGoalieAlarmObject.setRunning(false);
                                     goal.getGoalEntry().setRunning(false);
                                     new InsertNewGoalEntry(

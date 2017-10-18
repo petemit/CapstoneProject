@@ -55,13 +55,9 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
                         goalEntry.setHasSucceeded(!goalEntry.getHasSucceeded());
                     }
                     else {
-                        Log.e("mindbuild-after-intent", goalEntry.getGoal_id() +" is now at " +Boolean.toString(goalEntry.isRunning()));
-                        boolean bool = bundle.getBoolean("desired_state");
-                        goalEntry.setRunning(bool);
+                        goalEntry.setRunning(!goalEntry.isRunning());
 
                     }
-                    Log.e("mindbuilders",goalEntry.getDate() + " " + goalEntry.getGoal_id());
-//            Log.e("mindbuilders", goalEntry.getDate());
                     handleActionUpdateGoalEntry(context, goalEntry);
                     break;
             }
@@ -74,7 +70,6 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
     }
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-        Log.e("findme","I got here!@#!@");
         RemoteViews rv = getTimeGoalieRemoteView(context, appWidgetId, appWidgetManager);
 
         appWidgetManager.updateAppWidget(appWidgetId,rv);
@@ -84,7 +79,6 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
                                                        AppWidgetManager appWidgetManager) {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.time_goalie_widget);
             Intent intent = new Intent(context, TimeGoalieRvWidgetService.class);
-        Log.e("findme","I got here.....");
         views.setRemoteAdapter(R.id.time_goalie_widget,intent);
         PendingIntent pi = getUpdateYesNoGoalPendingIntent(context, appWidgetId);
         views.setPendingIntentTemplate(R.id.time_goalie_widget,pi);
@@ -96,7 +90,6 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
 
     public static void updateTimeGoalieWidgets(Context context, AppWidgetManager appWidgetManager,
                                                int[] appWidgetIds) {
-        Log.e("findme","I got here ??");
         for (int i = 0; i < appWidgetIds.length; i++) {
                 updateAppWidget(context, appWidgetManager, appWidgetIds[i] );
 
@@ -131,11 +124,8 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
         if (goal.getGoalEntry() != null) {
 
             bundle.putInt("goal_type",(int)goal.getGoalTypeId());
-            bundle.putBoolean("desired_state", !goal.getGoalEntry().isRunning());
             bundle.putParcelable("goalentry", goal.getGoalEntry());
             intent.putExtra("goalentrybundle", bundle);
-
-            Log.e("mindbuild-before-intent", goal.getName() +" is currently at " +Boolean.toString(goal.getGoalEntry().isRunning()));
             }
         return intent;
     }
