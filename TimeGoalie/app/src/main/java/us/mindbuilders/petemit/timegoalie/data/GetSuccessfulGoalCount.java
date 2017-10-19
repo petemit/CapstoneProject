@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 
 import us.mindbuilders.petemit.timegoalie.GoalRecyclerViewAdapter;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
+
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -33,14 +34,14 @@ public class GetSuccessfulGoalCount extends AsyncTask<GoalEntryGoalCounter, Void
     private String date;
     GoalRecyclerViewAdapter.GoalCounter goalCounter;
 
-    public GetSuccessfulGoalCount(Context context){
-        this.context=context;
+    public GetSuccessfulGoalCount(Context context) {
+        this.context = context;
     }
 
     @Override
     protected Void doInBackground(GoalEntryGoalCounter... goalEntryGoalCounters) {
         if (goalEntryGoalCounters[0] != null) {
-            goalCounter= goalEntryGoalCounters[0].getGc();
+            goalCounter = goalEntryGoalCounters[0].getGc();
             date = goalEntryGoalCounters[0].getDate();
             if (goalEntryGoalCounters[0].getGoalEntry() != null) {
                 goalEntry = goalEntryGoalCounters[0].getGoalEntry();
@@ -59,15 +60,15 @@ public class GetSuccessfulGoalCount extends AsyncTask<GoalEntryGoalCounter, Void
             goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED,
                     goalEntry.getHasSucceeded());
 
-            context.getContentResolver().insert(TimeGoalieContract.GoalEntries.CONTENT_URI,goalEntries_cv);
+            context.getContentResolver().insert(TimeGoalieContract.GoalEntries.CONTENT_URI, goalEntries_cv);
         }
 
 
-            cursor = context.getContentResolver().query(TimeGoalieContract.getSuccessfulGoalsForToday(date),
-                    null,
-                    null,
-                    null,
-                    null);
+        cursor = context.getContentResolver().query(TimeGoalieContract.getSuccessfulGoalsForToday(date),
+                null,
+                null,
+                null,
+                null);
 
 
         return null;
@@ -76,7 +77,7 @@ public class GetSuccessfulGoalCount extends AsyncTask<GoalEntryGoalCounter, Void
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        if (cursor != null) {
+        if (cursor != null && goalCounter != null) {
             goalCounter.updateGoalCounter(cursor.getCount());
         }
     }

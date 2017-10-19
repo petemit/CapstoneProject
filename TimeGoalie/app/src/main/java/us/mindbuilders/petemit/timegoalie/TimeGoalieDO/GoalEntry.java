@@ -181,16 +181,11 @@ public class GoalEntry implements Parcelable {
     }
 
     public int getGoalAugment() {
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date) != null) {
-            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date).getGoalAugment();
-        }
-        return 0;
+       return goalAugment;
     }
 
     public void setGoalAugment(int goalAugment) {
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date) != null) {
-            BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date).setGoalAugment(goalAugment);
-        }
+       this.goalAugment = goalAugment;
     }
 
     public boolean getHasSucceeded() {

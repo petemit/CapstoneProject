@@ -79,7 +79,7 @@ public class TimeGoalieAlarmManager {
                         break;
                 }
                 // TODO: 10/18/2017 am I really going to do this?
-                goalEntry.addSecondElapsed();
+              //  goalEntry.addSecondElapsed();
                 new InsertNewGoalEntry(tv.getContext()).execute(goalEntry);
 
                 //set Progress bar Progress
@@ -197,32 +197,36 @@ public class TimeGoalieAlarmManager {
 
         long remainingSeconds = totalSeconds;// - secondsElapsed;
         Log.e("Mindbuilders", "remainingseconds: " + remainingSeconds);
-        if (timeGoalieAlarmObject != null) {
-            timeGoalieAlarmObject.setCountDownTimer(
-                    TimeGoalieAlarmManager.makeCountdownTimer(goalCounter,
-                            remainingSeconds,
-                            1,
-                            goal.getGoalSeconds(),
-                            time_tv,
-                            goal.getGoalEntry(),
-                            (int) goal.getGoalTypeId(),
-                            seekbar));
-            timeGoalieAlarmObject.getCountDownTimer().start();
+        if (timeGoalieAlarmObject != null ) {
+            if (seekbar != null) {
+                timeGoalieAlarmObject.setCountDownTimer(
+                        TimeGoalieAlarmManager.makeCountdownTimer(goalCounter,
+                                remainingSeconds,
+                                1,
+                                goal.getGoalSeconds(),
+                                time_tv,
+                                goal.getGoalEntry(),
+                                (int) goal.getGoalTypeId(),
+                                seekbar));
+                timeGoalieAlarmObject.getCountDownTimer().start();
+            }
             goal.getGoalEntry().setRunning(true);
 
         } else {
-            timeGoalieAlarmObject = new TimeGoalieAlarmObject(goal.getGoalId(),
-                    TimeGoalieDateUtils.getSqlDateString());
-            timeGoalieAlarmObject.setCountDownTimer(
-                    TimeGoalieAlarmManager.makeCountdownTimer(goalCounter,
-                            remainingSeconds,
-                            1,
-                            goal.getGoalSeconds(),
-                            time_tv,
-                            goal.getGoalEntry(),
-                            (int) goal.getGoalTypeId(),
-                            seekbar));
-            timeGoalieAlarmObject.getCountDownTimer().start();
+            if (seekbar != null) {
+                timeGoalieAlarmObject = new TimeGoalieAlarmObject(goal.getGoalId(),
+                        TimeGoalieDateUtils.getSqlDateString());
+                timeGoalieAlarmObject.setCountDownTimer(
+                        TimeGoalieAlarmManager.makeCountdownTimer(goalCounter,
+                                remainingSeconds,
+                                1,
+                                goal.getGoalSeconds(),
+                                time_tv,
+                                goal.getGoalEntry(),
+                                (int) goal.getGoalTypeId(),
+                                seekbar));
+                timeGoalieAlarmObject.getCountDownTimer().start();
+            }
             goal.getGoalEntry().setRunning(true);
 
             BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject);
@@ -234,7 +238,7 @@ public class TimeGoalieAlarmManager {
         // already exists, or if the goal has already finished
 
         // preemptively cancel secondly
-       TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context,goal);
+     //  TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context,goal);
 
         if (timeGoalieAlarmObject != null && timeGoalieAlarmObject.getAlarmDonePendingIntent() == null &&
                 !goal.getGoalEntry().isHasFinished()) {
@@ -279,7 +283,7 @@ public class TimeGoalieAlarmManager {
             TimeGoalieAlarmManager.setTimeGoalAlarm(
                     TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY,
                     context, null,
-                    TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
+                    TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(
                             context,
                             TimeGoalieAlarmReceiver.
                                     createEverySecondDbUpdateAlarmIntent(context,
