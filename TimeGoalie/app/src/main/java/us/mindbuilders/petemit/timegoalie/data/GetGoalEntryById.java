@@ -33,6 +33,9 @@ public class GetGoalEntryById extends AsyncTask<GoalEntry, Void, Void> {
                     TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED)));
         }
 
+        if (cursor != null) {
+            cursor.close();
+        }
         return null;
     }
 }

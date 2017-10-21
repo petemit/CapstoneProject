@@ -5,7 +5,9 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.RotateDrawable;
 
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
@@ -53,7 +55,7 @@ import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieUtils;
  * Data handler for goal recyclerview.  This is turning out to be the brains of this operation
  */
 
-public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerViewAdapter.GoalViewHolder> {
+public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerViewAdapter.GoalViewHolder> implements BaseApplication.GoalActivityListListener {
 
     // private final List<DummyContent.DummyItem> mValues;
 
@@ -63,6 +65,19 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
     private GoalCounter goalCounter;
     private Context context;
     private GoalEntryGoalCounter goalEntryGoalCounter;
+
+    @Override
+    public void notifyChanges(Goal goal) {
+        if (goalArrayList != null) {
+            for (int i = 0; i < goalArrayList.size(); i++) {
+                if (goal.getGoalId() == goalArrayList.get(i).getGoalId()){
+                    if (goal.getGoalEntry() != null) {
+                        goalArrayList.get(i).setGoalEntry(goal.getGoalEntry());
+                    }
+                }
+            }
+        }
+    }
 
 
     public interface GoalCounter {
@@ -77,7 +92,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
         this.onClickListener = onClickListener;
         this.goalCounter = goalCounter;
         this.context = context;
-
+        BaseApplication.setGoalActivityListListener(this);
     }
 
     @Override
@@ -134,31 +149,11 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                 holder.spinningBallAnim.cancel();
             }
 
-            if (true) {
+                if (goal.getGoalTypeId() == 1) { // if this is GoalType Limit goal
                 if (goal.getGoalEntry() != null) {
-                    if (goal.getGoalEntry().getHasSucceeded()) {
-                        new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
-                        new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
+                    
                     }
-                }
-            }
-
-            if (goal.getGoalTypeId() == 1) { // if this is GoalType Limit goal
-                if (goal.getGoalEntry() != null) {
-                    if (!goal.getGoalEntry().isHasFinished() &&
-                            !goal.getGoalEntry().getHasSucceeded()) {
-
-                        goal.getGoalEntry().setHasSucceeded(1);
-                        new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
-                        new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
-                    } else if (goal.getGoalEntry().isHasFinished() &&
-                            goal.getGoalEntry().getHasSucceeded()) {
-                        goal.getGoalEntry().setHasSucceeded(0);
-                        new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
-                        new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
-                    }
-
-                }
+                    
                 if (holder.seekbar != null) {
                     holder.seekbar.setProgressDrawable(holder.seekbar.getResources().
                             getDrawable(R.drawable.seekbar_reverse, null));
@@ -216,15 +211,17 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                             TimeGoalieAlarmObject timeGoalieAlarmObject =
                                     BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
-
-                            if (goal.getGoalEntry() != null) {
-                                goal.getGoalEntry().setDate(TimeGoalieDateUtils.getSqlDateString());
-                                if (goal.getGoalTypeId() == 1 && !goal.getGoalEntry().isHasFinished()) {
-                                    goal.getGoalEntry().setHasSucceeded(1);
-                                }
-                                new InsertNewGoalEntry(
-                                        compoundButton.getContext()).execute(goal.getGoalEntry());
-                            }
+                            
+                            ///don't think I need this
+                            // TODO: 10/20/2017 look at this 
+//                            if (goal.getGoalEntry() != null) {
+//                                goal.getGoalEntry().setDate(TimeGoalieDateUtils.getSqlDateString());
+//                                if (goal.getGoalTypeId() == 1 && !goal.getGoalEntry().isHasFinished()) {
+//                                    goal.getGoalEntry().setHasSucceeded(1);
+//                                }
+//                                new InsertNewGoalEntry(
+//                                        compoundButton.getContext()).execute(goal.getGoalEntry());
+//                            }
 
                             long newtime = goal.getGoalSeconds();
                             if (goal.getGoalEntry() != null) {
@@ -235,6 +232,10 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                 TimeGoalieAlarmManager.startTimer(goalCounter, holder.time_tv, newtime, goal,
                                         compoundButton.getContext(), holder.seekbar);
                                 holder.spinningBallAnim.start();
+                                //Start the Goal!!
+                                goal.getGoalEntry().setRunning(true);
+                                new InsertNewGoalEntry(
+                                        compoundButton.getContext()).execute(goal.getGoalEntry());
                             } else {
                                 if (timeGoalieAlarmObject != null) {
                                     if (timeGoalieAlarmObject.getCountDownTimer() != null) {
@@ -255,9 +256,10 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                         timeGoalieAlarmObject.getOneMinuteWarningPendingIntent().cancel();
                                         timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(null);
                                     }
-                                    TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context, goal);
+                 //                   TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context, goal);
                                     //timeGoalieAlarmObject.setRunning(false);
                                     goal.getGoalEntry().setRunning(false);
+
                                     new InsertNewGoalEntry(
                                             compoundButton.getContext()).execute(goal.getGoalEntry());
                                 }

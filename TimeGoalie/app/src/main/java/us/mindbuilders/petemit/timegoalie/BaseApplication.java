@@ -24,9 +24,22 @@ public class BaseApplication extends Application {
     private static ArrayList<TimeGoalieAlarmObject> timeGoalieAlarmObjects;
     private static Calendar activeCalendarDate = Calendar.getInstance();
     private static Context context;
+    private static GoalActivityListListener goalActivityListListener;
 
     public static ArrayList<TimeGoalieAlarmObject> getTimeGoalieAlarmObjects() {
         return timeGoalieAlarmObjects;
+    }
+
+    public static GoalActivityListListener getGoalActivityListListener() {
+        return goalActivityListListener;
+    }
+
+    public static void setGoalActivityListListener(GoalActivityListListener goalActivityListListener) {
+        BaseApplication.goalActivityListListener = goalActivityListListener;
+    }
+
+    public interface GoalActivityListListener {
+        void notifyChanges(Goal goal);
     }
 
     public static void setTimeGoalieAlarmObjects(ArrayList<TimeGoalieAlarmObject> timeGoalieAlarmObjects) {

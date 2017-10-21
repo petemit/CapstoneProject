@@ -44,6 +44,10 @@ public class GetGoalEntryByDateAndGoal extends AsyncTask<GoalEntry, Void, Void> 
             )));
             goalEntries[0].setSecondsElapsed(newGoalEntry.getSecondsElapsed());
         }
+
+        if (cursor != null) {
+            cursor.close();
+        }
         return null;
     }
 }

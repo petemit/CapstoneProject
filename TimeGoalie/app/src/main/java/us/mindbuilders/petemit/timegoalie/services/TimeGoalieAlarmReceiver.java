@@ -1,5 +1,6 @@
 package us.mindbuilders.petemit.timegoalie.services;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.util.Log;
 
+import java.sql.Time;
 import java.util.ArrayList;
 
 import us.mindbuilders.petemit.timegoalie.BaseApplication;
@@ -14,6 +16,7 @@ import us.mindbuilders.petemit.timegoalie.R;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
+import us.mindbuilders.petemit.timegoalie.data.GetSuccessfulGoalCount;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
@@ -96,7 +99,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
             case GOAL_FINISHED:
 
                 if (goal != null ) {
-                    if (!goal.getGoalEntry().isHasFinished()) {
+                    if (goalEntry.isHasFinished()) {
                         if (goal.getGoalTypeId() == 0) { //goal to encourage
                             TimeGoalieNotifications.createNotification(context, intent, "You're done with your goal!");
                             if (goalEntry != null) {
@@ -126,36 +129,74 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                 id = intent.getIntExtra(context.getString(R.string.goal_id_key), -1);
                 if (id != -1) {
                     //  BaseApplication.getTimeGoalieAlarmObjectById(id).setRunning(false);
-                    BaseApplication.getTimeGoalieAlarmObjectById(id).setHasBeenWarned(true);
+                    if (goalEntry != null && goalEntry.getDate()!= null) {
+                        if (BaseApplication.getTimeGoalieAlarmObjectById(id,
+                                goalEntry.getDate()) != null) {
+                            BaseApplication.getTimeGoalieAlarmObjectById(id).setHasBeenWarned(true);
+                        }
+                    }
                 }
 
                 break;
             case SECONDLY_GOAL_UPDATE_ENTRY:
                 if (goalEntry.isRunning()) {
-//                    goalEntry.addSecondElapsed();
+
+                    goalEntry.addSecondElapsed();
+                //    goalEntry.setNeedsSecondsUpdate(true);
+//
+//                    AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+//
+//                    alarmMgr.setExact(AlarmManager.RTC_WAKEUP, 1000, TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(context,
+//                            TimeGoalieAlarmReceiver.
+//                                    createEverySecondDbUpdateAlarmIntent(context,
+//                                            (int)goal.getGoalId()),(int)goal.getGoalId()));
+
                     TimeGoalieAlarmManager.setTimeGoalAlarm(SECONDLY_FREQUENCY, context, null,
                             TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(context,
                                     TimeGoalieAlarmReceiver.
                                             createEverySecondDbUpdateAlarmIntent(context,
                                                     (int)goal.getGoalId()),(int)goal.getGoalId()));
 
+
                     Intent updateWidgetintent = new Intent(context, TimeGoalieWidgetProvider.class);
                     updateWidgetintent.setAction(TimeGoalieWidgetProvider.ACTION_GET_GOALS_FOR_TODAY);
                     context.sendBroadcast(updateWidgetintent);
+
+                    if (BaseApplication.getGoalActivityListListener() != null){
+                        goal.setGoalEntry(goalEntry);
+                        BaseApplication.getGoalActivityListListener().notifyChanges(goal);
+                    }
                 }
 
         }//end switch
 
+
+        //Do the goal related db actions:
+
+
+        if (goal.getGoalTypeId() == 1) { // if this is GoalType Limit goal
+            if (goal.getGoalEntry() != null) {
+                if (!goal.getGoalEntry().isHasFinished() &&
+                        !goal.getGoalEntry().getHasSucceeded()) {
+                    goal.getGoalEntry().setHasSucceeded(1);
+                } else if (goal.getGoalEntry().isHasFinished() &&
+                        goal.getGoalEntry().getHasSucceeded()) {
+                    goal.getGoalEntry().setHasSucceeded(0);
+                }
+            }
+        }
+
         if (goalEntry != null) {
             new InsertNewGoalEntry(context).execute(goalEntry);
         }
+
     }
 
     public static void cancelSecondlyAlarm(Context context, Goal goal) {
-        PendingIntent secondlyPi = TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(
-                context, TimeGoalieAlarmReceiver.createEverySecondDbUpdateAlarmIntent(context,
-                        (int)goal.getGoalId()),(int)goal.getGoalId());
-        TimeGoalieAlarmManager.cancelTimeGoalAlarm(context, secondlyPi);
+//        PendingIntent secondlyPi = TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(
+//                context, TimeGoalieAlarmReceiver.createEverySecondDbUpdateAlarmIntent(context,
+//                        (int)goal.getGoalId()),(int)goal.getGoalId());
+//        TimeGoalieAlarmManager.cancelTimeGoalAlarm(context, secondlyPi);
     }
     public static Intent createAlarmDoneTimeGoalieAlarmIntent(Context context, String message, int goal_id) {
         Intent intent = new Intent(context, TimeGoalieAlarmReceiver.class);

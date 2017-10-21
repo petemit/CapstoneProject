@@ -80,7 +80,7 @@ public class TimeGoalieAlarmManager {
                 }
                 // TODO: 10/18/2017 am I really going to do this?
               //  goalEntry.addSecondElapsed();
-                new InsertNewGoalEntry(tv.getContext()).execute(goalEntry);
+           //     new InsertNewGoalEntry(tv.getContext()).execute(goalEntry);
 
                 //set Progress bar Progress
                 if (seekbar != null && !goalEntry.isHasFinished()) {
@@ -232,7 +232,7 @@ public class TimeGoalieAlarmManager {
             BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject);
         }
 
-        new InsertNewGoalEntry(time_tv.getContext()).execute(goal.getGoalEntry());
+   //     new InsertNewGoalEntry(time_tv.getContext()).execute(goal.getGoalEntry());
 
         // this will create the system alarm.  :-O !  It will not create it if the pi
         // already exists, or if the goal has already finished
@@ -274,11 +274,12 @@ public class TimeGoalieAlarmManager {
                 goal.getGoalEntry().setTargetTime(targetTime);
             }
 
-
-            TimeGoalieAlarmManager.setTimeGoalAlarm(
-                    targetTime,
-                    context, null,
-                    timeGoalieAlarmObject.getAlarmDonePendingIntent());
+            if (!goal.getGoalEntry().isHasFinished()) {
+                TimeGoalieAlarmManager.setTimeGoalAlarm(
+                        targetTime,
+                        context, null,
+                        timeGoalieAlarmObject.getAlarmDonePendingIntent());
+            }
 
             TimeGoalieAlarmManager.setTimeGoalAlarm(
                     TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY,

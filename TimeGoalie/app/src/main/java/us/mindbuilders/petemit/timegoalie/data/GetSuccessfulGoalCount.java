@@ -70,7 +70,6 @@ public class GetSuccessfulGoalCount extends AsyncTask<GoalEntryGoalCounter, Void
                 null,
                 null);
 
-
         return null;
     }
 
@@ -79,6 +78,9 @@ public class GetSuccessfulGoalCount extends AsyncTask<GoalEntryGoalCounter, Void
         super.onPostExecute(aVoid);
         if (cursor != null && goalCounter != null) {
             goalCounter.updateGoalCounter(cursor.getCount());
+        }
+        if (cursor != null) {
+            cursor.close();
         }
     }
 }

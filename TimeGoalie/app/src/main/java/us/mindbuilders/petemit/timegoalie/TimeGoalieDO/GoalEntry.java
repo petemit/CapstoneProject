@@ -30,6 +30,7 @@ public class GoalEntry implements Parcelable {
     private int isRunning;
     private long targetTime;
     private int isFinished;
+    private boolean needsSecondsUpdate;
 
 
 
@@ -96,7 +97,7 @@ public class GoalEntry implements Parcelable {
 //            );
 //        }
 
-        this.secondsElapsed++;
+        setSecondsElapsed(getSecondsElapsed()+1);
     }
 
     public void setSecondsElapsed(int secondsElapsed) {
@@ -282,5 +283,13 @@ public class GoalEntry implements Parcelable {
 
     public void setTargetTime(long targetTime) {
         this.targetTime = targetTime;
+    }
+
+    public boolean isNeedsSecondsUpdate() {
+        return needsSecondsUpdate;
+    }
+
+    public void setNeedsSecondsUpdate(boolean needsSecondsUpdate) {
+        this.needsSecondsUpdate = needsSecondsUpdate;
     }
 }
