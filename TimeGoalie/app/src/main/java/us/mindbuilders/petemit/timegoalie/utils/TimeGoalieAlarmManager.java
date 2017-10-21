@@ -55,48 +55,32 @@ public class TimeGoalieAlarmManager {
                                                     final Goal goal,
                                                     final int goalType,
                                                     final SeekBar seekbar) {
-        final GoalEntry goalEntry = goal.getGoalEntry();
+
         long milliInFuture = secondsInFuture * 1000;
-        final boolean hasFinished = goalEntry.isHasFinished();
+
         long intervalInSecondsInMilli = intervalInSeconds * 1000;
         final CountDownTimer cdTimer = new CountDownTimer(milliInFuture, intervalInSecondsInMilli) {
             @Override
             public void onTick(long millisuntilfinished) {
+                Log.e("mindbuilders1", goal.getName() + " tick " + goal.getGoalEntry().getSecondsElapsed());
 
-//                switch (goalType) {
-//                    case 0: //Time Goal To Encourage
-//                        if (!goalEntry.isHasFinished()) {
-//                            //tv.setText(makeTimeTextFromMillis(totalSeconds * 1000 - millisuntilfinished));
-//
-//                        } else {
-//                            //tv.setText(makeTimeTextFromMillis(goalEntry.getSecondsElapsed() * 1000 + totalSeconds));
-//                        }
-//                        break;
-//                    case 1: //Time Goal to Limit
-//                        if (!goalEntry.isHasFinished()) {
-//                            tv.setText(makeTimeTextFromMillis(millisuntilfinished));
-//                        } else {
-//                            tv.setText("-" + makeTimeTextFromMillis(-1 * (totalSeconds * 1000 - goalEntry.getSecondsElapsed() * 1000)));
-//                        }
-//                        break;
-//                }
                 TimeGoalieUtils.setTimeTextLabel(goal,tv,null);
                 // TODO: 10/18/2017 am I really going to do this?
               //  goalEntry.addSecondElapsed();
            //     new InsertNewGoalEntry(tv.getContext()).execute(goalEntry);
 
                 //set Progress bar Progress
-                if (seekbar != null && !goalEntry.isHasFinished()) {
+                if (seekbar != null && !goal.getGoalEntry().isHasFinished()) {
 
                     ObjectAnimator animation = ObjectAnimator.ofInt(seekbar, "progress", seekbar.getProgress(), (int) ((1 - ((double) (millisuntilfinished / 1000) / totalSeconds)) * 100 * 100));
                     animation.setDuration(2000);
                     animation.setInterpolator(new LinearInterpolator());
                     animation.start();
                 }
-                if (seekbar != null && goalEntry.isHasFinished()) {
+                if (seekbar != null && goal.getGoalEntry().isHasFinished()) {
                     seekbar.setProgress(10000);
                 }
-
+                Log.e("mindbuilders2", goal.getName() + " tick " + goal.getGoalEntry().getSecondsElapsed());
             }
 
             @Override
@@ -110,14 +94,18 @@ public class TimeGoalieAlarmManager {
 //                        if (!goalEntry.isHasFinished()) {
 //                            new InsertNewGoalEntry(tv.getContext()).execute(goalEntry);
 //                        }
-                        goalEntry.setHasSucceeded(1);
-                        goalEntry.setHasFinished(true);
-                        if (BaseApplication.getTimeGoalieAlarmObjectById(goalEntry.getGoal_id()) != null) {
+                        goal.getGoalEntry().setHasSucceeded(1);
+                        goal.getGoalEntry().setHasFinished(true);
+                        goalEntryGoalCounter.setGoalEntry(goal.getGoalEntry());
+
+                        new GetSuccessfulGoalCount(tv.getContext()).execute(goalEntryGoalCounter);
+
+                        if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalEntry().getGoal_id()) != null) {
                             TimeGoalieAlarmObject timeGoalieAlarmObject =
                                     BaseApplication.getTimeGoalieAlarmObjectById(
-                                            goalEntry.getGoal_id());
+                                            goal.getGoalEntry().getGoal_id());
                             timeGoalieAlarmObject.getCountDownTimer().cancel();
-                            if (goalEntry.getDate().equals(TimeGoalieDateUtils.getSqlDateString())) {
+                            if (goal.getGoalEntry().getDate().equals(TimeGoalieDateUtils.getSqlDateString())) {
                                 timeGoalieAlarmObject.setCountDownTimer(makeCountdownTimer(goalCounter,
                                         1000,
                                         intervalInSeconds,
@@ -138,14 +126,17 @@ public class TimeGoalieAlarmManager {
 //
 //                        }
                         //  tv.setText(makeTimeTextFromMillis(totalSeconds / 1000));
-                        goalEntry.setHasSucceeded(0);
-                        goalEntry.setHasFinished(true);
-                        if (BaseApplication.getTimeGoalieAlarmObjectById(goalEntry.getGoal_id()) != null) {
+                        goal.getGoalEntry().setHasSucceeded(0);
+                        goal.getGoalEntry().setHasFinished(true);
+                        goalEntryGoalCounter.setGoalEntry(goal.getGoalEntry());
+
+                        new GetSuccessfulGoalCount(tv.getContext()).execute(goalEntryGoalCounter);
+                        if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalEntry().getGoal_id()) != null) {
                             TimeGoalieAlarmObject timeGoalieAlarmObject =
                                     BaseApplication.getTimeGoalieAlarmObjectById(
-                                            goalEntry.getGoal_id());
+                                            goal.getGoalEntry().getGoal_id());
                             timeGoalieAlarmObject.getCountDownTimer().cancel();
-                            if (goalEntry.getDate().equals(TimeGoalieDateUtils.getSqlDateString())) {
+                            if (goal.getGoalEntry().getDate().equals(TimeGoalieDateUtils.getSqlDateString())) {
                                 timeGoalieAlarmObject.setCountDownTimer(makeCountdownTimer(goalCounter,
                                         1000,
                                         intervalInSeconds,
@@ -160,9 +151,7 @@ public class TimeGoalieAlarmManager {
                         break;
                 }
 
-                goalEntryGoalCounter.setGoalEntry(goalEntry);
 
-                new GetSuccessfulGoalCount(tv.getContext()).execute(goalEntryGoalCounter);
 
 
               /*  if (seekbar != null) {

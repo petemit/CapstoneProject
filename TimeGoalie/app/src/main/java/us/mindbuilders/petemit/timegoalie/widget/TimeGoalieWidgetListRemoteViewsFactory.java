@@ -82,9 +82,6 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
     public RemoteViews getViewAt(int i) {
         if (goalData != null && goalData.size() > 0) {
             final Goal goal = goalData.get(i);
-            TimeGoalieAlarmObject timeGoalieAlarmObj =
-                    TimeGoalieUtils.getTimeGoalieAlarmObjectByDate(goal);
-
 
             RemoteViews views = null;
 
@@ -129,7 +126,7 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
                                 newtime = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
                             }
 
-                            TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
+//                            TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
 //                           // TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
 //                        }
 //                    });

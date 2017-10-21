@@ -52,7 +52,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
         if (cursor != null) {
             try {
                 ArrayList<Goal> goals = Goal.createGoalListFromCursor(cursor);
-                if (goals != null && goals.size()>0) {
+                if (goals != null && goals.size() > 0) {
                     goal = goals.get(0);
                     Cursor goalEntryCursor = context.getContentResolver().query(
                             TimeGoalieContract.buildGetAGoalEntryByGoalId(goal.getGoalId()),
@@ -89,31 +89,30 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
 
                     }
                 }
-            }
-            finally {
+            } finally {
                 cursor.close();
             }
         }
-
+        if (goal != null && goalEntry != null){
         switch (action) {
             case GOAL_FINISHED:
 
-                if (goal != null ) {
-                    goalEntry.setHasFinished(true);
-                    if (goalEntry.isHasFinished()) {
-                        if (goal.getGoalTypeId() == 0) { //goal to encourage
-                            TimeGoalieNotifications.createNotification(context, intent, "You're done with your goal!");
-                            if (goalEntry != null) {
-                                goalEntry.setHasSucceeded(1);
-                            }
-                        } else if (goal.getGoalTypeId() == 1) {
-                            TimeGoalieNotifications.createNotification(context, intent, "Oops! Ran out of time.  Maybe next time.");
-                            if (goalEntry != null) {
-                                goalEntry.setHasSucceeded(0);
-                            }
+
+                goalEntry.setHasFinished(true);
+                if (goalEntry.isHasFinished()) {
+                    if (goal.getGoalTypeId() == 0) { //goal to encourage
+                        TimeGoalieNotifications.createNotification(context, intent, "You're done with your goal!");
+                        if (goalEntry != null) {
+                            goalEntry.setHasSucceeded(1);
+                        }
+                    } else if (goal.getGoalTypeId() == 1) {
+                        TimeGoalieNotifications.createNotification(context, intent, "Oops! Ran out of time.  Maybe next time.");
+                        if (goalEntry != null) {
+                            goalEntry.setHasSucceeded(0);
                         }
                     }
                 }
+
 //                if (goalEntry != null) {
 //                    goalEntry.setSecondsElapsed((int) goal.getGoalSeconds() + goalEntry.getGoalAugment(), true);
 //                }
@@ -130,7 +129,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                 id = intent.getIntExtra(context.getString(R.string.goal_id_key), -1);
                 if (id != -1) {
                     //  BaseApplication.getTimeGoalieAlarmObjectById(id).setRunning(false);
-                    if (goalEntry != null && goalEntry.getDate()!= null) {
+                    if (goalEntry.getDate() != null) {
                         if (BaseApplication.getTimeGoalieAlarmObjectById(id,
                                 goalEntry.getDate()) != null) {
                             BaseApplication.getTimeGoalieAlarmObjectById(id).setHasBeenWarned(true);
@@ -141,9 +140,10 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                 break;
             case SECONDLY_GOAL_UPDATE_ENTRY:
                 if (goalEntry.isRunning()) {
+                    Log.e("mindbuilders", "tick " + goal.getName());
 
                     goalEntry.addSecondElapsed();
-                //    goalEntry.setNeedsSecondsUpdate(true);
+                    //    goalEntry.setNeedsSecondsUpdate(true);
 //
 //                    AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 //
@@ -156,14 +156,14 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                             TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(context,
                                     TimeGoalieAlarmReceiver.
                                             createEverySecondDbUpdateAlarmIntent(context,
-                                                    (int)goal.getGoalId()),(int)goal.getGoalId()));
+                                                    (int) goal.getGoalId()), (int) goal.getGoalId()));
 
 
                     Intent updateWidgetintent = new Intent(context, TimeGoalieWidgetProvider.class);
                     updateWidgetintent.setAction(TimeGoalieWidgetProvider.ACTION_GET_GOALS_FOR_TODAY);
                     context.sendBroadcast(updateWidgetintent);
 
-                    if (BaseApplication.getGoalActivityListListener() != null){
+                    if (BaseApplication.getGoalActivityListListener() != null) {
                         goal.setGoalEntry(goalEntry);
                         BaseApplication.getGoalActivityListListener().notifyChanges(goal);
                     }
@@ -176,16 +176,18 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
 
 
         if (goal.getGoalTypeId() == 1) { // if this is GoalType Limit goal
-            if (goal.getGoalEntry() != null) {
-                if (!goal.getGoalEntry().isHasFinished() &&
-                        !goal.getGoalEntry().getHasSucceeded()) {
-                    goal.getGoalEntry().setHasSucceeded(1);
-                } else if (goal.getGoalEntry().isHasFinished() &&
-                        goal.getGoalEntry().getHasSucceeded()) {
-                    goal.getGoalEntry().setHasSucceeded(0);
+            if (goalEntry != null) {
+                if (!goalEntry.isHasFinished() &&
+                        !goalEntry.getHasSucceeded()) {
+                    goalEntry.setHasSucceeded(1);
+                } else if (goalEntry.isHasFinished() &&
+                        goalEntry.getHasSucceeded()) {
+                    goalEntry.setHasSucceeded(0);
                 }
             }
         }
+
+    }
 
         if (goalEntry != null) {
             new InsertNewGoalEntry(context).execute(goalEntry);

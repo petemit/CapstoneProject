@@ -15,6 +15,8 @@ import us.mindbuilders.petemit.timegoalie.R;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
+import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 
 /**
  * Created by Peter on 10/11/2017.
@@ -57,6 +59,16 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
                     else {
                         goalEntry.setRunning(!goalEntry.isRunning());
 
+                        //start the secondly alarm
+                        TimeGoalieAlarmManager.setTimeGoalAlarm(
+                                TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY,
+                                context, null,
+                                TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(
+                                        context,
+                                        TimeGoalieAlarmReceiver.
+                                                createEverySecondDbUpdateAlarmIntent(context,
+                                                        (int)goalEntry.getGoal_id()),
+                                        (int)goalEntry.getGoal_id()));
                     }
                     handleActionUpdateGoalEntry(context, goalEntry);
                     break;

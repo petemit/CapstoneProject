@@ -36,17 +36,17 @@ public class TimeGoalieUtils {
     public static long getRemainingSeconds(Goal goal) {
         long onBindElapsedSeconds = 0;
         if (goal.getGoalEntry() != null) {
-
-            if (goal.getGoalEntry().getTargetTime() != 0 && goal.getGoalEntry().isRunning()) {
-
-
-                goal.getGoalEntry().setSecondsElapsed((TimeGoalieDateUtils.calculateSecondsElapsed(
-                       goal.getGoalEntry().getTargetTime(),
-                        TimeGoalieDateUtils.getCurrentTimeInMillis(),
-                        goal.getHours(),
-                        goal.getMinutes(),
-                        goal.getGoalEntry().getGoalAugment())), true);
-            }
+//
+//            if (goal.getGoalEntry().getTargetTime() != 0 && goal.getGoalEntry().isRunning()) {
+//
+//
+//                goal.getGoalEntry().setSecondsElapsed((TimeGoalieDateUtils.calculateSecondsElapsed(
+//                       goal.getGoalEntry().getTargetTime(),
+//                        TimeGoalieDateUtils.getCurrentTimeInMillis(),
+//                        goal.getHours(),
+//                        goal.getMinutes(),
+//                        goal.getGoalEntry().getGoalAugment())), true);
+//            }
             onBindElapsedSeconds = (goal.getGoalEntry().getSecondsElapsed());
         }
         long remainingSeconds = (goal.getGoalSeconds() -
@@ -58,6 +58,7 @@ public class TimeGoalieUtils {
 
         if (goal.getGoalEntry() != null) {
             long remainingSeconds = getRemainingSeconds(goal);
+          //  long remainingSeconds = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
 
             switch ((int)goal.getGoalTypeId()) {
                 case 0: //Time Goal To Encourage

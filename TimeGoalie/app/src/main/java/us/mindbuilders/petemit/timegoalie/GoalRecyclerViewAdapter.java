@@ -139,6 +139,11 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
         if (getItemCount() > 0) {
             final Goal goal = goalArrayList.get(position);
 
+            TimeGoalieAlarmObject tj = new TimeGoalieAlarmObject(goal.getGoalId(),
+                    TimeGoalieDateUtils.getSqlDateString());
+            BaseApplication.getTimeGoalieAlarmObjects().add(tj);
+
+
             goalEntryGoalCounter = new GoalEntryGoalCounter(goalCounter,
                     TimeGoalieDateUtils.getSqlDateString(BaseApplication.getActiveCalendarDate()));
 
@@ -205,17 +210,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                             TimeGoalieAlarmObject timeGoalieAlarmObject =
                                     BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
-                            
-                            ///don't think I need this
-                            // TODO: 10/20/2017 look at this 
-//                            if (goal.getGoalEntry() != null) {
-//                                goal.getGoalEntry().setDate(TimeGoalieDateUtils.getSqlDateString());
-//                                if (goal.getGoalTypeId() == 1 && !goal.getGoalEntry().isHasFinished()) {
-//                                    goal.getGoalEntry().setHasSucceeded(1);
-//                                }
-//                                new InsertNewGoalEntry(
-//                                        compoundButton.getContext()).execute(goal.getGoalEntry());
-//                            }
+
+                            Log.e("mindbuilders3", goal.getName() + " tick " + goal.getGoalEntry().getSecondsElapsed());
 
                             long newtime = goal.getGoalSeconds();
                             if (goal.getGoalEntry() != null) {
@@ -228,6 +224,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                 holder.spinningBallAnim.start();
                                 //Start the Goal!!
                                 goal.getGoalEntry().setRunning(true);
+                                Log.e("mindbuilders4", goal.getName() + " tick " + goal.getGoalEntry().getSecondsElapsed());
                                 new InsertNewGoalEntry(
                                         compoundButton.getContext()).execute(goal.getGoalEntry());
                             } else {
@@ -253,7 +250,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                  //                   TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context, goal);
                                     //timeGoalieAlarmObject.setRunning(false);
                                     goal.getGoalEntry().setRunning(false);
-
+                                    Log.e("mindbuilders5", goal.getName() + " tick " + goal.getGoalEntry().getSecondsElapsed());
                                     new InsertNewGoalEntry(
                                             compoundButton.getContext()).execute(goal.getGoalEntry());
                                 }
@@ -268,8 +265,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                         if (goal.getGoalEntry().isRunning()
                                 && goal.getGoalEntry().getDate()
                                 .equals(TimeGoalieDateUtils.getSqlDateString())) {
-                            holder.startStopTimer.setChecked(!holder.startStopTimer.isChecked());
-                            holder.startStopTimer.setChecked(!holder.startStopTimer.isChecked());
+                            holder.startStopTimer.setChecked(false);
+                            holder.startStopTimer.setChecked(true);
                         }
                     }
 

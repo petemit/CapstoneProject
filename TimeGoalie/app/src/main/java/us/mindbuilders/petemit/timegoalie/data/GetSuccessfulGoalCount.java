@@ -74,7 +74,7 @@ public class GetSuccessfulGoalCount extends AsyncTask<GoalEntryGoalCounter, Void
                     (goalEntry.isHasFinished()) ? 1 : 0);
             goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_TARGETTIME,
                     goalEntry.getTargetTime());
-//            if (goalEntries[0].isNeedsSecondsUpdate()){
+
             goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED,
                     goalEntry.getSecondsElapsed());
 
