@@ -49,16 +49,34 @@ public class GetSuccessfulGoalCount extends AsyncTask<GoalEntryGoalCounter, Void
         }
         if (goalEntry != null) {
             ContentValues goalEntries_cv = new ContentValues();
+//            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID,
+//                    goalEntry.getGoal_id());
+//            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME,
+//                    goalEntry.getDate());
+//            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED,
+//                    goalEntry.getSecondsElapsed());
+//            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT,
+//                    goalEntry.getGoalAugment());
+//            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED,
+//                    goalEntry.getHasSucceeded());
+
             goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID,
                     goalEntry.getGoal_id());
             goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME,
                     goalEntry.getDate());
-            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED,
-                    goalEntry.getSecondsElapsed());
             goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT,
                     goalEntry.getGoalAugment());
             goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED,
                     goalEntry.getHasSucceeded());
+            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISRUNNING,
+                    (goalEntry.isRunning()) ? 1 : 0);
+            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISFINISHED,
+                    (goalEntry.isHasFinished()) ? 1 : 0);
+            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_TARGETTIME,
+                    goalEntry.getTargetTime());
+//            if (goalEntries[0].isNeedsSecondsUpdate()){
+            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED,
+                    goalEntry.getSecondsElapsed());
 
             context.getContentResolver().insert(TimeGoalieContract.GoalEntries.CONTENT_URI, goalEntries_cv);
         }

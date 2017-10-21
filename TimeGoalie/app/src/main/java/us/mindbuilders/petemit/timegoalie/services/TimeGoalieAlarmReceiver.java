@@ -52,7 +52,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
         if (cursor != null) {
             try {
                 ArrayList<Goal> goals = Goal.createGoalListFromCursor(cursor);
-                if (goals.get(0) != null) {
+                if (goals != null && goals.size()>0) {
                     goal = goals.get(0);
                     Cursor goalEntryCursor = context.getContentResolver().query(
                             TimeGoalieContract.buildGetAGoalEntryByGoalId(goal.getGoalId()),
@@ -99,6 +99,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
             case GOAL_FINISHED:
 
                 if (goal != null ) {
+                    goalEntry.setHasFinished(true);
                     if (goalEntry.isHasFinished()) {
                         if (goal.getGoalTypeId() == 0) { //goal to encourage
                             TimeGoalieNotifications.createNotification(context, intent, "You're done with your goal!");
@@ -119,7 +120,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                 if (id != -1) {
                     //  BaseApplication.getTimeGoalieAlarmObjectById(id).setRunning(false);
                     //BaseApplication.getTimeGoalieAlarmObjectById(id).setHasFinished(true);
-                    goalEntry.setHasFinished(true);
+
                 }
 
                 break;

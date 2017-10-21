@@ -177,12 +177,6 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
             //if statement checks to see if this is a time goal by the existence of a start/stop button
             if (holder.startStopTimer != null) {
 
-                //setup initial timer text
-                long onBindElapsedSeconds = 0;
-
-                TimeGoalieAlarmObject timeGoalieAlarmObject =
-                        TimeGoalieUtils.getTimeGoalieAlarmObjectByDate(goal);
-
                 long remainingSeconds = TimeGoalieUtils.getRemainingSeconds(goal);
 
                 //Set initial Time Text labels:
@@ -274,8 +268,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                         if (goal.getGoalEntry().isRunning()
                                 && goal.getGoalEntry().getDate()
                                 .equals(TimeGoalieDateUtils.getSqlDateString())) {
-                            holder.startStopTimer.setChecked(false);
-                            holder.startStopTimer.setChecked(true);
+                            holder.startStopTimer.setChecked(!holder.startStopTimer.isChecked());
+                            holder.startStopTimer.setChecked(!holder.startStopTimer.isChecked());
                         }
                     }
 

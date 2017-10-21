@@ -57,37 +57,54 @@ public class TimeGoalieUtils {
     public static void setTimeTextLabel(Goal goal, TextView tv_timeText, TextView tv_timeOutOf) {
 
         if (goal.getGoalEntry() != null) {
-            //Recalculate Elapsed Seconds
             long remainingSeconds = getRemainingSeconds(goal);
+
+            switch ((int)goal.getGoalTypeId()) {
+                case 0: //Time Goal To Encourage
+                    if (tv_timeOutOf != null) {
+                        tv_timeOutOf.setText(" / " + TimeGoalieAlarmManager.makeTimeTextFromMillis(
+                                goal.getGoalSeconds() * 1000
+                        ));
+                        tv_timeOutOf.setVisibility(View.VISIBLE);
+                    }
+
+
+                    //  holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
+                    if (goal.getGoalEntry() != null) {
+                        tv_timeText.setText(TimeGoalieAlarmManager.
+                                makeTimeTextFromMillis(goal.getGoalEntry().getSecondsElapsed() * 1000));
+                    } else {
+                        tv_timeText.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
+                    }
+                    break;
+                case 1: //Time Goal to Limit
+
+                    if (tv_timeOutOf != null) {
+                        tv_timeOutOf.setText(tv_timeText.getContext().getString(R.string.less_left_thing));
+                    }
+
+                    if (remainingSeconds < 0) {
+                        tv_timeText.setText("-" + TimeGoalieAlarmManager.makeTimeTextFromMillis(-1 *
+                                (goal.getGoalSeconds() * 1000 - goal.getGoalEntry().getSecondsElapsed() * 1000)));
+
+                    } else {
+                        tv_timeText.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(remainingSeconds * 1000));
+                        }
+
+                    break;
+            }
+            //Recalculate Elapsed Seconds
+
 
             //Set initial Time Text labels:
 
             // if this is a more goal
             if (goal.getGoalTypeId() == 0) {
-                tv_timeOutOf.setText(" / " + TimeGoalieAlarmManager.makeTimeTextFromMillis(
-                        goal.getGoalSeconds() * 1000
-                ));
-                tv_timeOutOf.setVisibility(View.VISIBLE);
 
-                //  holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
-                if (goal.getGoalEntry() != null) {
-                    tv_timeText.setText(TimeGoalieAlarmManager.
-                            makeTimeTextFromMillis(goal.getGoalEntry().getSecondsElapsed() * 1000));
-                } else {
-                    tv_timeText.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
-                }
 
             } else {
 
-                if (tv_timeOutOf != null) {
-                    tv_timeOutOf.setText(tv_timeText.getContext().getString(R.string.less_left_thing));
-                }
 
-                if (remainingSeconds < 0) {
-
-                } else {
-                    tv_timeText.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(remainingSeconds * 1000));
-                }
             }
         }
     }

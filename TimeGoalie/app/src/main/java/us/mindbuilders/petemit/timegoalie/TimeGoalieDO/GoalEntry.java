@@ -24,7 +24,6 @@ public class GoalEntry implements Parcelable {
     private String date = "";
     private int goalAugment;
     private long goal_id;
-    private int hasFinished;
     private int secondsElapsed;
     private int hasSucceeded;
     private int isRunning;
@@ -217,7 +216,7 @@ public class GoalEntry implements Parcelable {
         date = in.readString();
         goalAugment = in.readInt();
         goal_id = in.readLong();
-        hasFinished = in.readInt();
+        isFinished = in.readInt();
         secondsElapsed = in.readInt();
         hasSucceeded = in.readInt();
         isRunning = in.readInt();
@@ -236,7 +235,7 @@ public class GoalEntry implements Parcelable {
         dest.writeString(date);
         dest.writeInt(goalAugment);
         dest.writeLong(goal_id);
-        dest.writeInt(hasFinished);
+        dest.writeInt(isFinished);
         dest.writeInt(secondsElapsed);
         dest.writeInt(hasSucceeded);
         dest.writeInt(isRunning);

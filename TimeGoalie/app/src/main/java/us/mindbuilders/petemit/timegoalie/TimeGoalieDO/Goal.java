@@ -159,6 +159,10 @@ public class Goal {
                         cursor.getColumnIndex(TimeGoalieContract.
                                 GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED)
                 ));
+                goalEntry.setHasFinished(
+                        cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
+                        .GoalEntries.GOALENTRIES_COLUMN_ISFINISHED))
+                );
                 goalEntry.setRunning(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.
                         GoalEntries.GOALENTRIES_COLUMN_ISRUNNING)));
 

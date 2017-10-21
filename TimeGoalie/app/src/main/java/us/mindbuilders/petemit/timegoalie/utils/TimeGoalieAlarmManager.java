@@ -52,9 +52,10 @@ public class TimeGoalieAlarmManager {
                                                     final long intervalInSeconds,
                                                     final long totalSeconds,
                                                     final TextView tv,
-                                                    final GoalEntry goalEntry,
+                                                    final Goal goal,
                                                     final int goalType,
                                                     final SeekBar seekbar) {
+        final GoalEntry goalEntry = goal.getGoalEntry();
         long milliInFuture = secondsInFuture * 1000;
         final boolean hasFinished = goalEntry.isHasFinished();
         long intervalInSecondsInMilli = intervalInSeconds * 1000;
@@ -62,22 +63,24 @@ public class TimeGoalieAlarmManager {
             @Override
             public void onTick(long millisuntilfinished) {
 
-                switch (goalType) {
-                    case 0: //Time Goal To Encourage
-                        if (!goalEntry.isHasFinished()) {
-                            tv.setText(makeTimeTextFromMillis(totalSeconds * 1000 - millisuntilfinished));
-                        } else {
-                            tv.setText(makeTimeTextFromMillis(goalEntry.getSecondsElapsed() * 1000 + totalSeconds));
-                        }
-                        break;
-                    case 1: //Time Goal to Limit
-                        if (!goalEntry.isHasFinished()) {
-                            tv.setText(makeTimeTextFromMillis(millisuntilfinished));
-                        } else {
-                            tv.setText("-" + makeTimeTextFromMillis(-1 * (totalSeconds * 1000 - goalEntry.getSecondsElapsed() * 1000)));
-                        }
-                        break;
-                }
+//                switch (goalType) {
+//                    case 0: //Time Goal To Encourage
+//                        if (!goalEntry.isHasFinished()) {
+//                            //tv.setText(makeTimeTextFromMillis(totalSeconds * 1000 - millisuntilfinished));
+//
+//                        } else {
+//                            //tv.setText(makeTimeTextFromMillis(goalEntry.getSecondsElapsed() * 1000 + totalSeconds));
+//                        }
+//                        break;
+//                    case 1: //Time Goal to Limit
+//                        if (!goalEntry.isHasFinished()) {
+//                            tv.setText(makeTimeTextFromMillis(millisuntilfinished));
+//                        } else {
+//                            tv.setText("-" + makeTimeTextFromMillis(-1 * (totalSeconds * 1000 - goalEntry.getSecondsElapsed() * 1000)));
+//                        }
+//                        break;
+//                }
+                TimeGoalieUtils.setTimeTextLabel(goal,tv,null);
                 // TODO: 10/18/2017 am I really going to do this?
               //  goalEntry.addSecondElapsed();
            //     new InsertNewGoalEntry(tv.getContext()).execute(goalEntry);
@@ -89,7 +92,8 @@ public class TimeGoalieAlarmManager {
                     animation.setDuration(2000);
                     animation.setInterpolator(new LinearInterpolator());
                     animation.start();
-                } else if (seekbar != null) {
+                }
+                if (seekbar != null && goalEntry.isHasFinished()) {
                     seekbar.setProgress(10000);
                 }
 
@@ -119,7 +123,7 @@ public class TimeGoalieAlarmManager {
                                         intervalInSeconds,
                                         totalSeconds,
                                         tv,
-                                        goalEntry,
+                                        goal,
                                         goalType,
                                         seekbar).start());
                             }
@@ -147,7 +151,7 @@ public class TimeGoalieAlarmManager {
                                         intervalInSeconds,
                                         totalSeconds,
                                         tv,
-                                        goalEntry,
+                                        goal,
                                         goalType,
                                         seekbar).start());
                             }
@@ -205,7 +209,7 @@ public class TimeGoalieAlarmManager {
                                 1,
                                 goal.getGoalSeconds(),
                                 time_tv,
-                                goal.getGoalEntry(),
+                                goal,
                                 (int) goal.getGoalTypeId(),
                                 seekbar));
                 timeGoalieAlarmObject.getCountDownTimer().start();
@@ -222,7 +226,7 @@ public class TimeGoalieAlarmManager {
                                 1,
                                 goal.getGoalSeconds(),
                                 time_tv,
-                                goal.getGoalEntry(),
+                                goal,
                                 (int) goal.getGoalTypeId(),
                                 seekbar));
                 timeGoalieAlarmObject.getCountDownTimer().start();
