@@ -1,33 +1,42 @@
 package us.mindbuilders.petemit.timegoalie;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.LineChart;
+
+import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.dummy.DummyContent;
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
 /**
- * A fragment representing a single Goal detail screen.
- * This fragment is either contained in a {@link GoalListActivity}
- * in two-pane mode (on tablets) or a {@link GoalReportActivity}
- * on handsets.
+ * The report fragment
  */
-public class GoalReportFragment extends Fragment {
-    /**
-     * The fragment argument representing the item ID that this fragment
-     * represents.
-     */
-    public static final String ARG_ITEM_ID = "item_id";
+public class GoalReportFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final int GOAL_REPORT_LOADER_ID = 44;
+    private static final int GOAL_ENTRY_LOADER_ID = 44;
+    private static final int MONTHLY_ALL_GOALS = 100;
+    private static final int MONTHLY_ONE_GOAL = 101;
+    private static final int WEEKLY_ALL_GOALS = 102;
+    private static final int WEEKLY_ONE_GOAL = 103;
 
-    /**
-     * The dummy content this fragment is presenting.
-     */
-    private DummyContent.DummyItem mItem;
+    private Spinner goalSpinner;
+    private RadioGroup monthlyWeeklyRadioGroup;
+
+    private static final int DEFAULTWEEKS = 4;
+    private static final int DEFAULTMONTHS = 4;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -39,16 +48,7 @@ public class GoalReportFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
-
-            Activity activity = this.getActivity();
-
-        }
+        Activity activity = this.getActivity();
     }
 
     @Override
@@ -57,10 +57,57 @@ public class GoalReportFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.goal_report_fragment, container, false);
 
         // Show the dummy content as text in a TextView.
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.goal_detail)).setText(mItem.details);
-        }
+        LineChart Chart = (LineChart) rootView.findViewById(R.id.report_chart);
+      //  goalSpinner = rootView.findViewById
+
+        Bundle bundle = new Bundle();
+
+        //for testing
+        bundle.putInt(getString(R.string.goal_scope),WEEKLY_ALL_GOALS);
+
+        getActivity().getSupportLoaderManager().initLoader(GOAL_REPORT_LOADER_ID,bundle,this);
+        getActivity().getSupportLoaderManager().initLoader(GOAL_ENTRY_LOADER_ID,null,this);
 
         return rootView;
+    }
+
+    @Override
+    public Loader onCreateLoader(int id, Bundle args) {
+        if (id == GOAL_REPORT_LOADER_ID) {
+            int selectedQuery = args.getInt(getString(R.string.goal_scope));
+
+            switch (selectedQuery) {
+                case MONTHLY_ALL_GOALS:
+
+                   break;
+                case MONTHLY_ONE_GOAL:
+                    break;
+                case WEEKLY_ALL_GOALS:
+                    CursorLoader cl = new CursorLoader(this.getContext(),
+                            TimeGoalieContract.getWeekSuccessfulGoals(DEFAULTWEEKS),
+                            null,
+                            null,
+                            null,
+                            null
+                    );
+                    return cl;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader loader, Cursor cursor) {
+        if (loader.getId() == GOAL_REPORT_LOADER_ID) {
+            if (cursor != null) {
+                cursor.moveToFirst();
+            }
+        }
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+
     }
 }

@@ -47,7 +47,8 @@ public class TimeGoalieDateUtils {
     }
 
     public static String getNicelyFormattedDate(Calendar cal) {
-       DateFormat df = new SimpleDateFormat("EEE, MMM d, yyyy");
+     //  DateFormat df = new SimpleDateFormat("EEE, MMM d, yyyy");//  I like this one better
+        DateFormat df = new SimpleDateFormat("MMM d, yyyy");
         String date = df.format(cal.getTime());
         return date;
     }

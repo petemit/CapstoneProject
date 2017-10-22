@@ -151,6 +151,11 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
         //DUMMY DATA
         // TODO: 10/6/2017 remove when done
         db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (1, '2017-10-05',3000,0)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-10-05',3000,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-10-04',3000,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-10-03',0,0)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-22',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-23',501,1)");
 
     }
 

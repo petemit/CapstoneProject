@@ -100,7 +100,6 @@ public class BaseApplication extends Application {
         goal4.setHours(0);
         goal4.setMinutes(1);
 
-
         new InsertNewGoal(getBaseContext()).execute(goal);
         new InsertNewGoal(getBaseContext()).execute(goal2);
         new InsertNewGoal(getBaseContext()).execute(goal3);

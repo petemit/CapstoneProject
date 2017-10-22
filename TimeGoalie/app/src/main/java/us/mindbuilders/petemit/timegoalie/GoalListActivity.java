@@ -161,6 +161,10 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
             startActivity(new Intent(this, PreferenceActivity.class));
             return true;
         }
+        if (item.getItemId() == R.id.reports_key) {
+            startActivity(new Intent(this, GoalReportActivity.class));
+            return true;
+        }
 
 
         return true;

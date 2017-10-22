@@ -458,6 +458,24 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                 });
             }
 
+            //update goal counter to reflect time goals to limit
+
+
+            if (goal.getGoalTypeId() == 1) { // if this is GoalType Limit goal
+                if (goal.getGoalEntry() != null) {
+                    if (!goal.getGoalEntry().isHasFinished() &&
+                            !goal.getGoalEntry().getHasSucceeded()) {
+                        goal.getGoalEntry().setHasSucceeded(1);
+                    } else if (goal.getGoalEntry().isHasFinished() &&
+                            goal.getGoalEntry().getHasSucceeded()) {
+                        goal.getGoalEntry().setHasSucceeded(0);
+                    }
+                }
+                new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
+            }
+
+
+
 
         } //end if itemviewcount
     }//end BindViewHolder

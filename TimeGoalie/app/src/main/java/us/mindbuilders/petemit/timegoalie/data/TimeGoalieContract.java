@@ -145,15 +145,31 @@ public class TimeGoalieContract {
     }
 
     //get a count of dates accomplished for a goal for a week
-    public static Uri getSummedWeeksForGoalsAccomplishedUri(long goalid) {
-        return ContentUris.withAppendedId(GoalsDatesAccomplished.CONTENT_URI.buildUpon()
-                .appendPath("weeks").appendPath("goal").build(), goalid);
+    public static Uri getMonthSuccessfulGoalsByGoal(long goalid, int numOfMonths) {
+        return ContentUris.withAppendedId(GoalEntries.CONTENT_URI.buildUpon()
+                .appendPath("months").appendPath("goal").appendQueryParameter(
+                        "numOfMonths", Integer.toString(numOfMonths)).build(), goalid);
     }
 
-    //get a count of dates accomplished for a goal for a month
-    public static Uri getSummedMonthsForGoalsAccomplishedUri(long goalid, long dayid) {
-        return ContentUris.withAppendedId(GoalsDatesAccomplished.CONTENT_URI.buildUpon()
-                .appendPath("months").appendPath("goal").build(), goalid);
+    //get a count of dates accomplished for a goal for a week
+    public static Uri getMonthSuccessfulGoals(int numOfMonths) {
+        return (GoalEntries.CONTENT_URI.buildUpon()
+                .appendPath("months").appendQueryParameter(
+                        "numOfMonths", Integer.toString(numOfMonths)).build());
+    }
+
+    //get a count of dates accomplished for a goal for a week
+    public static Uri getWeekSuccessfulGoalsByGoal(long goalid, int numOfWeeks) {
+        return ContentUris.withAppendedId(GoalEntries.CONTENT_URI.buildUpon()
+                .appendPath("weeks").appendPath("goal").appendQueryParameter(
+                        "numOfWeeks", Integer.toString(numOfWeeks)).build(), goalid);
+    }
+
+    //get a count of dates accomplished for a goal for a week
+    public static Uri getWeekSuccessfulGoals(int numOfWeeks) {
+        return (GoalEntries.CONTENT_URI.buildUpon()
+                .appendPath("weeks").appendQueryParameter(
+                        "numOfWeeks", Integer.toString(numOfWeeks)).build());
     }
 
 

@@ -12,7 +12,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.TextView;
 
+import java.util.Calendar;
+
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieUtils;
 
 /**
  * ContentProvider for TimeGoalieDb
@@ -33,10 +37,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
     private static final int DAY_BY_ID = 301;
     private static final int DAY_BY_DATE_SEQUENCE = 302;
 
-    private static final int GOALS_ACCOMPLISHED_BY_WEEK = 401;
-    private static final int GOALS_ACCOMPLISHED_BY_MONTH = 402;
-    private static final int GOALS_ACCOMPLISHED_BY_WEEK_BY_GOAL_ID = 403;
-    private static final int GOALS_ACCOMPLISHED_BY_MONTH_BY_GOAL_ID = 404;
+
     private static final int GOALS_ACCOMPLISHED_BY_GOAL_ID_BY_DATE = 405;
 
     private static final int GOALS_DAYS = 500;
@@ -47,6 +48,12 @@ public class TimeGoalieContentProvider extends ContentProvider {
     private static final int GOAL_ENTRIES_BY_DATE = 602;
     private static final int SUCCESSFUL_GOAL_ENTRIES_BY_DATE = 603;
     private static final int GOAL_ENTRY_BY_GOAL_ENTRY_ID = 604;
+    private static final int GOALS_ENTRIES_ACCOMPLISHED_BY_WEEK = 605;
+    private static final int GOALS_ENTRIES_ACCOMPLISHED_BY_MONTH = 606;
+    private static final int GOALS_ENTRIES_ACCOMPLISHED_BY_WEEK_BY_GOAL_ID = 607;
+    private static final int GOALS_ENTRIES_ACCOMPLISHED_BY_MONTH_BY_GOAL_ID = 608;
+
+
 
 
     private static final String PARAMETER = "=? ";
@@ -73,18 +80,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.Days.DAYS_TABLE_NAME + "/date/#", DAY_BY_DATE_SEQUENCE);
         //goaldatesaccomplished
-        matcher.addURI(TimeGoalieContract.AUTHORITY,
-                TimeGoalieContract.GoalsDatesAccomplished.GOALS_DATES_ACCOMPLISHED_TABLE_NAME +
-                        "/weeks", GOALS_ACCOMPLISHED_BY_WEEK);
-        matcher.addURI(TimeGoalieContract.AUTHORITY,
-                TimeGoalieContract.GoalsDatesAccomplished.GOALS_DATES_ACCOMPLISHED_TABLE_NAME +
-                        "/months", GOALS_ACCOMPLISHED_BY_MONTH);
-        matcher.addURI(TimeGoalieContract.AUTHORITY,
-                TimeGoalieContract.GoalsDatesAccomplished.GOALS_DATES_ACCOMPLISHED_TABLE_NAME +
-                        "/weeks/goal/#", GOALS_ACCOMPLISHED_BY_WEEK_BY_GOAL_ID);
-        matcher.addURI(TimeGoalieContract.AUTHORITY,
-                TimeGoalieContract.GoalsDatesAccomplished.GOALS_DATES_ACCOMPLISHED_TABLE_NAME +
-                        "/months/goal/#", GOALS_ACCOMPLISHED_BY_MONTH_BY_GOAL_ID);
+
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.GoalsDatesAccomplished.GOALS_DATES_ACCOMPLISHED_TABLE_NAME +
                         "/goal/*", GOALS_ACCOMPLISHED_BY_GOAL_ID_BY_DATE);
@@ -108,6 +104,20 @@ public class TimeGoalieContentProvider extends ContentProvider {
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME + "/#", GOAL_ENTRY_BY_GOAL_ENTRY_ID);
 
+        //goalentries report queries
+        matcher.addURI(TimeGoalieContract.AUTHORITY,
+                TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME +
+                        "/weeks", GOALS_ENTRIES_ACCOMPLISHED_BY_WEEK);
+        matcher.addURI(TimeGoalieContract.AUTHORITY,
+                TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME +
+                        "/months", GOALS_ENTRIES_ACCOMPLISHED_BY_MONTH);
+        matcher.addURI(TimeGoalieContract.AUTHORITY,
+                TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME +
+                        "/weeks/goal/#", GOALS_ENTRIES_ACCOMPLISHED_BY_WEEK_BY_GOAL_ID);
+        matcher.addURI(TimeGoalieContract.AUTHORITY,
+                TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME +
+                        "/months/goal/#", GOALS_ENTRIES_ACCOMPLISHED_BY_MONTH_BY_GOAL_ID);
+
         return matcher;
 
     }
@@ -122,13 +132,15 @@ public class TimeGoalieContentProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] strings, @Nullable String suppliedDate, @Nullable String[] suppliedSelectionArgs, @Nullable String s1) {
         String date = TimeGoalieDateUtils.getSqlDateString();
-        if (suppliedDate!=null) {
-            date=suppliedDate;
+        if (suppliedDate != null) {
+            date = suppliedDate;
         }
         Cursor cursor = null;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         String selection = "";
         String[] selectionArgs = null;
+        Calendar today = null;
+        String dateString = "";
         switch (uriMatcher.match(uri)) {
 
             //goals
@@ -245,12 +257,12 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         null);
                 break;
             case SUCCESSFUL_GOAL_ENTRIES_BY_DATE:
-                selectionArgs = new String[]{String.valueOf(uri.getQueryParameter("date")),"1"};
+                selectionArgs = new String[]{String.valueOf(uri.getQueryParameter("date")), "1"};
                 selection = TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME
                         .concat(PARAMETER)
                         .concat(" AND ")
-                .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED)
-                .concat(PARAMETER);
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED)
+                        .concat(PARAMETER);
                 cursor = db.query(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,
                         null,
                         selection,
@@ -259,7 +271,51 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         null,
                         null);
                 break;
-            //goaldays
+
+            case GOALS_ENTRIES_ACCOMPLISHED_BY_WEEK:
+                today = Calendar.getInstance();
+                today.add(Calendar.WEEK_OF_YEAR,
+                        -Integer.parseInt(uri.getQueryParameter("numOfWeeks")));
+                dateString = TimeGoalieDateUtils.getSqlDateString(today);
+                selectionArgs = new String[]{dateString};
+                selection = TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED
+                        .concat("=")
+                        .concat("'1'")
+                        .concat(" AND ")
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME)
+                        .concat(">=?");
+
+                cursor = db.query(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,
+                        null,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        null);
+                break;
+
+            case GOALS_ENTRIES_ACCOMPLISHED_BY_MONTH:
+                today = Calendar.getInstance();
+                today.add(Calendar.MONTH,
+                        -Integer.parseInt(uri.getQueryParameter("numOfMonths")));
+                dateString = TimeGoalieDateUtils.getSqlDateString(today);
+                selectionArgs = new String[]{dateString};
+                selection = TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED
+                        .concat("=")
+                        .concat("'1'")
+                        .concat(" AND ")
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME)
+                        .concat(">=?");
+
+                cursor = db.query(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,
+                        null,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        null);
+                break;
+                //goaldays
             case GOALS_BY_DAY_ID:
 
 
@@ -404,8 +460,8 @@ public class TimeGoalieContentProvider extends ContentProvider {
             case GOAL_ENTRIES:
                 String selection = TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID +
                         PARAMETER;
-                String[] selectionArgs = new String[] {contentValues.getAsLong(
-                        TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID)+""};
+                String[] selectionArgs = new String[]{contentValues.getAsLong(
+                        TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID) + ""};
 //
 //                db.update(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,contentValues,
 //                        selection,selectionArgs);
@@ -417,7 +473,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         SQLiteDatabase.CONFLICT_REPLACE);
                 if (goal_entry_id > -1) {
                     Uri returnUri = TimeGoalieContract.buildGetAGoalEntryByGoalId(goal_entry_id);
-                    getContext().getContentResolver().notifyChange(returnUri,null);
+                    getContext().getContentResolver().notifyChange(returnUri, null);
                     return returnUri;
                 }
             default:

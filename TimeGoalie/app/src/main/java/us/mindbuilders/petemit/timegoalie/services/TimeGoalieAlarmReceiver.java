@@ -175,17 +175,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
         //Do the goal related db actions:
 
 
-        if (goal.getGoalTypeId() == 1) { // if this is GoalType Limit goal
-            if (goalEntry != null) {
-                if (!goalEntry.isHasFinished() &&
-                        !goalEntry.getHasSucceeded()) {
-                    goalEntry.setHasSucceeded(1);
-                } else if (goalEntry.isHasFinished() &&
-                        goalEntry.getHasSucceeded()) {
-                    goalEntry.setHasSucceeded(0);
-                }
-            }
-        }
+
 
     }
 
