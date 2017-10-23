@@ -14,13 +14,13 @@ import java.util.GregorianCalendar;
 public class TimeGoalieDateUtils {
 
     private static GregorianCalendar gcal = new GregorianCalendar();
+    public static SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
     public static long getDayIdFromToday() {
         return gcal.get(Calendar.DAY_OF_WEEK) - 1;
     }
 
     public static String getSqlDateString() {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String date = df.format(new java.util.Date());
         return date;
     }
@@ -54,7 +54,6 @@ public class TimeGoalieDateUtils {
     }
 
     public static String getSqlDateString(Calendar cal) {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String date = df.format(cal.getTime());
         return date;
     }

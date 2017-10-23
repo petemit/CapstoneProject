@@ -7,6 +7,7 @@ import android.os.Parcelable;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.ArrayList;
 
 import us.mindbuilders.petemit.timegoalie.BaseApplication;
 import us.mindbuilders.petemit.timegoalie.GoalListActivity;
@@ -14,6 +15,7 @@ import us.mindbuilders.petemit.timegoalie.data.GetGoalEntryByDateAndGoal;
 import us.mindbuilders.petemit.timegoalie.data.GetGoalEntryById;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
 /**
  * Created by Peter on 9/23/2017.
@@ -30,7 +32,6 @@ public class GoalEntry implements Parcelable {
     private long targetTime;
     private int isFinished;
     private boolean needsSecondsUpdate;
-
 
 
     public GoalEntry(long id, long goal_id, String date) {
@@ -87,7 +88,7 @@ public class GoalEntry implements Parcelable {
 
         return secondsElapsed;
 
-}
+    }
 
     public void addSecondElapsed() {
 //        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
@@ -96,7 +97,7 @@ public class GoalEntry implements Parcelable {
 //            );
 //        }
 
-        setSecondsElapsed(getSecondsElapsed()+1);
+        setSecondsElapsed(getSecondsElapsed() + 1);
     }
 
     public void setSecondsElapsed(int secondsElapsed) {
@@ -159,10 +160,9 @@ public class GoalEntry implements Parcelable {
 //    }
 
     public boolean isHasFinished() {
-        if (isFinished==1) {
+        if (isFinished == 1) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -170,8 +170,7 @@ public class GoalEntry implements Parcelable {
     public void setHasFinished(boolean running) {
         if (running) {
             isFinished = 1;
-        }
-        else {
+        } else {
             isFinished = 0;
         }
     }
@@ -181,18 +180,17 @@ public class GoalEntry implements Parcelable {
     }
 
     public int getGoalAugment() {
-       return goalAugment;
+        return goalAugment;
     }
 
     public void setGoalAugment(int goalAugment) {
-       this.goalAugment = goalAugment;
+        this.goalAugment = goalAugment;
     }
 
     public boolean getHasSucceeded() {
-        if (hasSucceeded==1){
+        if (hasSucceeded == 1) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -200,8 +198,7 @@ public class GoalEntry implements Parcelable {
     public void setHasSucceeded(boolean hasSucceeded) {
         if (hasSucceeded) {
             this.hasSucceeded = 1;
-        }
-        else {
+        } else {
             this.hasSucceeded = 0;
         }
     }
@@ -221,7 +218,6 @@ public class GoalEntry implements Parcelable {
         hasSucceeded = in.readInt();
         isRunning = in.readInt();
         targetTime = in.readLong();
-        isFinished = in.readInt();
     }
 
     @Override
@@ -240,7 +236,6 @@ public class GoalEntry implements Parcelable {
         dest.writeInt(hasSucceeded);
         dest.writeInt(isRunning);
         dest.writeLong(targetTime);
-        dest.writeInt(isFinished);
     }
 
     public static final Parcelable.Creator<GoalEntry> CREATOR = new Parcelable.Creator<GoalEntry>() {
@@ -256,10 +251,9 @@ public class GoalEntry implements Parcelable {
     };
 
     public boolean isRunning() {
-        if (isRunning==1) {
+        if (isRunning == 1) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -267,11 +261,11 @@ public class GoalEntry implements Parcelable {
     public void setRunning(boolean running) {
         if (running) {
             isRunning = 1;
-        }
-        else {
+        } else {
             isRunning = 0;
         }
     }
+
     public void setRunning(int running) {
         isRunning = running;
     }
@@ -290,5 +284,40 @@ public class GoalEntry implements Parcelable {
 
     public void setNeedsSecondsUpdate(boolean needsSecondsUpdate) {
         this.needsSecondsUpdate = needsSecondsUpdate;
+    }
+
+    public static ArrayList<GoalEntry> makeGoalEntryListFromCursor(Cursor cursor) {
+
+        ArrayList<GoalEntry> goalEntries = new ArrayList<GoalEntry>();
+        if (cursor != null && cursor.getCount() > 0) {
+
+            GoalEntry goalEntry = new GoalEntry(cursor.getLong(cursor.
+                    getColumnIndex(TimeGoalieContract.GoalEntries._ID))
+                    , cursor.getColumnIndex(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID)
+                    , cursor.getString(
+                    cursor.getColumnIndex(TimeGoalieContract
+                            .GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
+            goalEntry.setSecondsElapsed(
+                    cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
+                            .GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED)),true);
+            goalEntry.setGoalAugment(cursor.getInt(
+                    cursor.getColumnIndex(TimeGoalieContract
+                            .GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT)));
+            goalEntry.setHasSucceeded(cursor.getInt(
+                    cursor.getColumnIndex(TimeGoalieContract.
+                            GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED)
+            ));
+            goalEntry.setHasFinished(
+                    cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
+                            .GoalEntries.GOALENTRIES_COLUMN_ISFINISHED))
+            );
+            goalEntry.setRunning(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.
+                    GoalEntries.GOALENTRIES_COLUMN_ISRUNNING)));
+
+            goalEntry.setTargetTime((cursor.getLong(cursor.getColumnIndex(TimeGoalieContract.
+                    GoalEntries.GOALENTRIES_COLUMN_TARGETTIME))));
+            goalEntries.add(goalEntry);
+        }
+        return goalEntries;
     }
 }
