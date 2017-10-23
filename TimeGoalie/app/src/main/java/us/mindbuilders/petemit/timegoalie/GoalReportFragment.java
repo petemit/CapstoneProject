@@ -16,10 +16,13 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
@@ -53,6 +56,7 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
     private RadioGroup monthlyWeeklyRadioGroup;
     private ArrayList<GoalEntry> goalEntries;
     private ArrayList<Entry> entries = new ArrayList<Entry>();
+    private Chart chart;
 
     private static final int DEFAULTWEEKS = 4;
     private static final int DEFAULTMONTHS = 4;
@@ -103,7 +107,7 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setGranularity(1f); // only intervals of 1 day
-        xAxis.setLabelCount(7);
+        xAxis.setLabelCount(numOfWeeks);
         xAxis.setValueFormatter(xAxisFormatter);
 
         return rootView;
@@ -130,6 +134,8 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
 
         ArrayList<WeekInterval> weekIntervals = getWeekIntervals(numOfWeeks);
         HashMap<String, ArrayList<String>> weekMap = new HashMap<String, ArrayList<String>>();
+        ArrayList<Entry> entries = new ArrayList<Entry>();
+
         for (WeekInterval interval : weekIntervals) {
             weekMap.put(interval.getBeginningOfWeek(), new ArrayList<String>());
         }
@@ -137,7 +143,9 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
         if (goalEntries != null) {
             for (int i = 0; i < goalEntries.size(); i++) {
                 GoalEntry goalEntry = goalEntries.get(i);
-
+                if(!goalEntry.getHasSucceeded()){
+                    continue;
+                }
                 for (WeekInterval interval : weekIntervals) {
                     String goalDate = goalEntry.getDate();
                     Date goalTime = null;
@@ -155,11 +163,18 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
                         ArrayList<String> list = weekMap.get(interval.getBeginningOfWeek());
                         list.add(goalDate);
                     }
-
-
                 }
             }
+            for (int i = 0; i < weekIntervals.size(); i++) {
+                Entry entry = new Entry(i,weekMap.get(weekIntervals.get(i).getBeginningOfWeek()).size());
+            }
         }
+
+        LineDataSet dataSet = new LineDataSet(entries, "Time");
+        LineData lineData = new LineData(dataSet);
+        chart.setData(lineData);
+        chart.invalidate();
+
 
         //Next, make Entries out of all this mess
     }
