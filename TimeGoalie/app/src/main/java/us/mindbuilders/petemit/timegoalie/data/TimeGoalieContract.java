@@ -172,5 +172,7 @@ public class TimeGoalieContract {
                         "numOfWeeks", Integer.toString(numOfWeeks)).build());
     }
 
+    //get a count of dates accomplished for a goal for a week
+
 
 }

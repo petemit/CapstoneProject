@@ -19,10 +19,12 @@
         app:popupTheme="@style/TimeGoalTheme.PopupOverlay"/>
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <FrameLayout
         android:id="@+id/goal_detail_container"
         android:layout_width="match_parent"
+        android:layout_margin="@dimen/top_margin"
+        android:layout_gravity="center"
         android:layout_height="match_parent">
-    </android.support.v4.widget.NestedScrollView>
+    </FrameLayout>
 
 </LinearLayout>

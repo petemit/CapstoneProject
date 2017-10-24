@@ -290,33 +290,34 @@ public class GoalEntry implements Parcelable {
 
         ArrayList<GoalEntry> goalEntries = new ArrayList<GoalEntry>();
         if (cursor != null && cursor.getCount() > 0) {
+            while(cursor.moveToNext()) {
+                GoalEntry goalEntry = new GoalEntry(cursor.getLong(cursor.
+                        getColumnIndex(TimeGoalieContract.GoalEntries._ID))
+                        , cursor.getColumnIndex(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID)
+                        , cursor.getString(
+                        cursor.getColumnIndex(TimeGoalieContract
+                                .GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
+                goalEntry.setSecondsElapsed(
+                        cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
+                                .GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED)), true);
+                goalEntry.setGoalAugment(cursor.getInt(
+                        cursor.getColumnIndex(TimeGoalieContract
+                                .GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT)));
+                goalEntry.setHasSucceeded(cursor.getInt(
+                        cursor.getColumnIndex(TimeGoalieContract.
+                                GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED)
+                ));
+                goalEntry.setHasFinished(
+                        cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
+                                .GoalEntries.GOALENTRIES_COLUMN_ISFINISHED))
+                );
+                goalEntry.setRunning(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.
+                        GoalEntries.GOALENTRIES_COLUMN_ISRUNNING)));
 
-            GoalEntry goalEntry = new GoalEntry(cursor.getLong(cursor.
-                    getColumnIndex(TimeGoalieContract.GoalEntries._ID))
-                    , cursor.getColumnIndex(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID)
-                    , cursor.getString(
-                    cursor.getColumnIndex(TimeGoalieContract
-                            .GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
-            goalEntry.setSecondsElapsed(
-                    cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
-                            .GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED)),true);
-            goalEntry.setGoalAugment(cursor.getInt(
-                    cursor.getColumnIndex(TimeGoalieContract
-                            .GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT)));
-            goalEntry.setHasSucceeded(cursor.getInt(
-                    cursor.getColumnIndex(TimeGoalieContract.
-                            GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED)
-            ));
-            goalEntry.setHasFinished(
-                    cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
-                            .GoalEntries.GOALENTRIES_COLUMN_ISFINISHED))
-            );
-            goalEntry.setRunning(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.
-                    GoalEntries.GOALENTRIES_COLUMN_ISRUNNING)));
-
-            goalEntry.setTargetTime((cursor.getLong(cursor.getColumnIndex(TimeGoalieContract.
-                    GoalEntries.GOALENTRIES_COLUMN_TARGETTIME))));
-            goalEntries.add(goalEntry);
+                goalEntry.setTargetTime((cursor.getLong(cursor.getColumnIndex(TimeGoalieContract.
+                        GoalEntries.GOALENTRIES_COLUMN_TARGETTIME))));
+                goalEntries.add(goalEntry);
+            }
         }
         return goalEntries;
     }

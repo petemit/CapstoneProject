@@ -144,6 +144,16 @@ public class TimeGoalieContentProvider extends ContentProvider {
         switch (uriMatcher.match(uri)) {
 
             //goals
+
+            case GOAL:
+                db.query(TimeGoalieContract.Goals.GOALS_TABLE_NAME,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null);
+                break;
             case GOAL_BY_ID:
                 selection = TimeGoalieContract.Goals._ID.concat(PARAMETER);
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
