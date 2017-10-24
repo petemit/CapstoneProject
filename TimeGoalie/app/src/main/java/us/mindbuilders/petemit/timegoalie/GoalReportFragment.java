@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -44,6 +45,7 @@ import java.util.List;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.MonthInterval;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.WeekInterval;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.dummy.DummyContent;
@@ -54,11 +56,12 @@ import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
  */
 public class GoalReportFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int GOAL_REPORT_LOADER_ID = 44;
-    private static final int GOAL_ENTRY_LOADER_ID = 44;
+    private static final int GOAL_ENTRY_LOADER_ID = 88;
     private static final int MONTHLY_ALL_GOALS = 100;
     private static final int MONTHLY_ONE_GOAL = 101;
     private static final int WEEKLY_ALL_GOALS = 102;
     private static final int WEEKLY_ONE_GOAL = 103;
+    private static final int ALL_GOALS_ID = -999;
 
     private Spinner goalSpinner;
     private RadioGroup monthlyWeeklyRadioGroup;
@@ -69,6 +72,8 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
     private LineChart chart;
     private String selectedScope;
     private ArrayAdapter spinnerAdapter;
+    private Goal selectedGoal;
+    private GoalReportFragment mySelf;
 
     public enum scopeEnum {
         WEEKLY, MONTHLY
@@ -97,6 +102,7 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
         Activity activity = this.getActivity();
         numOfWeeks = DEFAULTWEEKS;
         numOfMonths = DEFAULTMONTHS;
+        mySelf = this;
     }
 
     @Override
@@ -117,7 +123,6 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
         //    bundle.putInt(getString(R.string.goal_scope), WEEKLY_ALL_GOALS);
 
 
-
         IAxisValueFormatter xAxisFormatter = new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float v, AxisBase axisBase) {
@@ -128,13 +133,52 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
         monthlyWeeklyRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-                    if (i == R.id.radio_button_weeks) {
-                        loaderBundle.putString(getString(R.string.goal_scope), scopeEnum.WEEKLY.name());
-                    } else {
-                        loaderBundle.putString(getString(R.string.goal_scope), scopeEnum.MONTHLY.name());
+                if (i == R.id.radio_button_weeks) {
+                    loaderBundle.putString(getString(R.string.goal_scope), scopeEnum.WEEKLY.name());
+                    selectedScope = scopeEnum.WEEKLY.name();
+                } else {
+                    loaderBundle.putString(getString(R.string.goal_scope), scopeEnum.MONTHLY.name());
+                }
+
+                if (getActivity().getSupportLoaderManager().getLoader(GOAL_REPORT_LOADER_ID) != null){
+                    getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID, loaderBundle, mySelf);
+                    selectedScope = scopeEnum.MONTHLY.name();
+                }
+            }
+        });
+
+        goalSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                selectedGoal = (Goal)(adapterView.getItemAtPosition(i));
+                if(selectedGoal != null) {
+                    if (selectedGoal.getGoalId() != ALL_GOALS_ID) {
+                        loaderBundle.putString(getString(R.string.report_goal_selection_key),
+                                goalSelectionEnum.SINGLEGOAL.name());
+                    }
+                    else {
+                        loaderBundle.putString(getString(R.string.report_goal_selection_key),
+                                goalSelectionEnum.ALLGOALS.name());
+                    }
+                    if (getActivity().getSupportLoaderManager().getLoader(GOAL_REPORT_LOADER_ID) != null){
+                        getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID,loaderBundle, mySelf);
                     }
                 }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
         });
+
+        if (goals == null){
+            goals = new ArrayList<Goal>();
+            Goal goal = new Goal();
+            goal.setName(getString(R.string.all_goals));
+            goal.setGoalId(ALL_GOALS_ID);
+            goals.add(goal);
+        }
 
         if (savedInstanceState != null) {
 
@@ -142,9 +186,13 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
         } else {
             //set the default to weeks selected
             weeksRb.setChecked(true);
-            loaderBundle.putString(getString(R.string.goal_scope),scopeEnum.WEEKLY.name());
-            loaderBundle.putString(getString(R.string.report_goal_selection_key),
-                    goalSelectionEnum.ALLGOALS.name());
+            loaderBundle.putString(getString(R.string.goal_scope), scopeEnum.WEEKLY.name());
+            selectedScope = scopeEnum.WEEKLY.name();
+            if (selectedGoal == null) {
+                loaderBundle.putString(getString(R.string.report_goal_selection_key),
+                        goalSelectionEnum.ALLGOALS.name());
+            }
+
         }
 
 
@@ -192,44 +240,106 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
         return weekIntervals;
     }
 
-    public void initChart(ArrayList<GoalEntry> goalEntries) {
+    public ArrayList<MonthInterval> getMonthIntervals(int numOfMonths) {
+        ArrayList<MonthInterval> monthIntervals = new ArrayList<MonthInterval>();
+        for (int i = 0; i < numOfWeeks; i++) {
 
-        ArrayList<WeekInterval> weekIntervals = getWeekIntervals(numOfWeeks);
-        HashMap<String, ArrayList<String>> weekMap = new HashMap<String, ArrayList<String>>();
+            Calendar c = new GregorianCalendar().getInstance();
+            //get the first day of the month
+            c.set(Calendar.DAY_OF_MONTH, c.getActualMinimum(Calendar.DAY_OF_MONTH));
+            c.add(Calendar.MONTH, -i);
+            String beg = TimeGoalieDateUtils.getSqlDateString(c);
+            //get last day of week
+            c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
+            String end = TimeGoalieDateUtils.getSqlDateString(c);
+            MonthInterval month = new MonthInterval(beg, end);
+            monthIntervals.add(month);
+        }
+        return monthIntervals;
+    }
+
+    public void initChart(ArrayList<GoalEntry> goalEntries) {
+        chart.invalidate();
+
         ArrayList<Entry> entries = new ArrayList<Entry>();
 
-        for (WeekInterval interval : weekIntervals) {
-            weekMap.put(interval.getBeginningOfWeek(), new ArrayList<String>());
-        }
+        if (selectedScope.equals(scopeEnum.WEEKLY.name())) {
+            ArrayList<WeekInterval> weekIntervals = getWeekIntervals(numOfWeeks);
+            HashMap<String, ArrayList<String>> weekMap = new HashMap<String, ArrayList<String>>();
 
-        if (goalEntries != null) {
-            for (int i = 0; i < goalEntries.size(); i++) {
-                GoalEntry goalEntry = goalEntries.get(i);
-                if (!goalEntry.getHasSucceeded()) {
-                    continue;
+            for (WeekInterval interval : weekIntervals) {
+                weekMap.put(interval.getBeginningOfWeek(), new ArrayList<String>());
+            }
+
+            if (goalEntries != null) {
+                for (int i = 0; i < goalEntries.size(); i++) {
+                    GoalEntry goalEntry = goalEntries.get(i);
+                    if (!goalEntry.getHasSucceeded()) {
+                        continue;
+                    }
+                    for (WeekInterval interval : weekIntervals) {
+                        String goalDate = goalEntry.getDate();
+                        Date goalTime = null;
+                        Date begTime = null;
+                        Date endTime = null;
+                        try {
+                            goalTime = TimeGoalieDateUtils.df.parse(goalDate);
+                            begTime = TimeGoalieDateUtils.df.parse(interval.getBeginningOfWeek());
+                            endTime = TimeGoalieDateUtils.df.parse(interval.getEndOfWeek());
+                        } catch (ParseException p) {
+                            Log.e("GoalReportFragment", p.toString());
+                        }
+
+                        if ((goalTime.compareTo(begTime)) > 0 && (goalTime.compareTo(endTime) < 0)) {
+                            ArrayList<String> list = weekMap.get(interval.getBeginningOfWeek());
+                            list.add(goalDate);
+                        }
+                    }
                 }
-                for (WeekInterval interval : weekIntervals) {
-                    String goalDate = goalEntry.getDate();
-                    Date goalTime = null;
-                    Date begTime = null;
-                    Date endTime = null;
-                    try {
-                        goalTime = TimeGoalieDateUtils.df.parse(goalDate);
-                        begTime = TimeGoalieDateUtils.df.parse(interval.getBeginningOfWeek());
-                        endTime = TimeGoalieDateUtils.df.parse(interval.getEndOfWeek());
-                    } catch (ParseException p) {
-                        Log.e("GoalReportFragment", p.toString());
-                    }
-
-                    if ((goalTime.compareTo(begTime)) > 0 && (goalTime.compareTo(endTime) < 0)) {
-                        ArrayList<String> list = weekMap.get(interval.getBeginningOfWeek());
-                        list.add(goalDate);
-                    }
+                for (int i = 0; i < weekIntervals.size(); i++) {
+                    Entry entry = new Entry(i, weekMap.get(weekIntervals.get(i).getBeginningOfWeek()).size());
+                    entries.add(entry);
                 }
             }
-            for (int i = 0; i < weekIntervals.size(); i++) {
-                Entry entry = new Entry(i, weekMap.get(weekIntervals.get(i).getBeginningOfWeek()).size());
-                entries.add(entry);
+        }
+        else if (selectedScope.equals(scopeEnum.MONTHLY.name())) {
+            ArrayList<MonthInterval> monthIntervals = getMonthIntervals(numOfMonths);
+            HashMap<String, ArrayList<String>> monthMap = new HashMap<String, ArrayList<String>>();
+
+
+            for (MonthInterval interval : monthIntervals) {
+                monthMap.put(interval.getBegOfMonth(), new ArrayList<String>());
+            }
+
+            if (goalEntries != null) {
+                for (int i = 0; i < goalEntries.size(); i++) {
+                    GoalEntry goalEntry = goalEntries.get(i);
+                    if (!goalEntry.getHasSucceeded()) {
+                        continue;
+                    }
+                    for (MonthInterval interval : monthIntervals) {
+                        String goalDate = goalEntry.getDate();
+                        Date goalTime = null;
+                        Date begTime = null;
+                        Date endTime = null;
+                        try {
+                            goalTime = TimeGoalieDateUtils.df.parse(goalDate);
+                            begTime = TimeGoalieDateUtils.df.parse(interval.getBegOfMonth());
+                            endTime = TimeGoalieDateUtils.df.parse(interval.getEndOfMonth());
+                        } catch (ParseException p) {
+                            Log.e("GoalReportFragment", p.toString());
+                        }
+
+                        if ((goalTime.compareTo(begTime)) > 0 && (goalTime.compareTo(endTime) < 0)) {
+                            ArrayList<String> list = monthMap.get(interval.getBegOfMonth());
+                            list.add(goalDate);
+                        }
+                    }
+                }
+                for (int i = 0; i < monthIntervals.size(); i++) {
+                    Entry entry = new Entry(i, monthMap.get(monthIntervals.get(i).getBegOfMonth()).size());
+                    entries.add(entry);
+                }
             }
         }
 
@@ -248,9 +358,11 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
+        CursorLoader cl;
         if (id == GOAL_REPORT_LOADER_ID) {
             String scope = args.getString(getString(R.string.goal_scope));
             String goalSelection = args.getString(getString(R.string.report_goal_selection_key));
+            long goalId = 0;
             int selectedQuery = 0;
             if (scope.equals(scopeEnum.WEEKLY.name())) {
                 if (goalSelection.equals(goalSelectionEnum.ALLGOALS.name())) {
@@ -258,7 +370,7 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
                 }
                 if (goalSelection.equals(goalSelectionEnum.SINGLEGOAL.name())) {
                     selectedQuery = WEEKLY_ONE_GOAL;
-                    //put goal id here probs
+                  goalId = selectedGoal.getGoalId();
                 }
             }
 
@@ -268,18 +380,42 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
                 }
                 if (goalSelection.equals(goalSelectionEnum.SINGLEGOAL.name())) {
                     selectedQuery = MONTHLY_ONE_GOAL;
-                    //put goal id here probs
+                    goalId = selectedGoal.getGoalId();
                 }
             }
 
             switch (selectedQuery) {
+
                 case MONTHLY_ALL_GOALS:
-                    break;
+                    cl = new CursorLoader(this.getContext(),
+                            TimeGoalieContract.getMonthSuccessfulGoals(DEFAULTMONTHS),
+                            null,
+                            null,
+                            null,
+                            null
+                    );
+                    return cl;
                 case MONTHLY_ONE_GOAL:
-                    break;
+                    cl = new CursorLoader(this.getContext(),
+                            TimeGoalieContract.getMonthSuccessfulGoalsByGoal(goalId,DEFAULTMONTHS),
+                            null,
+                            null,
+                            null,
+                            null
+                    );
+                    return cl;
                 case WEEKLY_ALL_GOALS:
-                    CursorLoader cl = new CursorLoader(this.getContext(),
+                    cl = new CursorLoader(this.getContext(),
                             TimeGoalieContract.getWeekSuccessfulGoals(DEFAULTWEEKS),
+                            null,
+                            null,
+                            null,
+                            null
+                    );
+                    return cl;
+                case WEEKLY_ONE_GOAL:
+                    cl = new CursorLoader(this.getContext(),
+                            TimeGoalieContract.getWeekSuccessfulGoalsByGoal(goalId,DEFAULTWEEKS),
                             null,
                             null,
                             null,
@@ -289,12 +425,14 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
             }
         }
         if (id == GOAL_ENTRY_LOADER_ID) {
-            CursorLoader cl = new CursorLoader(this.getContext(),
+            cl = new CursorLoader(this.getContext(),
                     TimeGoalieContract.Goals.CONTENT_URI,
                     null,
                     null,
                     null,
                     null);
+
+            return cl;
 
         }
         return null;
@@ -307,19 +445,18 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
             initChart(goalEntries);
         }
         if (loader.getId() == GOAL_ENTRY_LOADER_ID) {
-            goals = Goal.createGoalListFromCursor(cursor);
+            goals.addAll(Goal.createGoalListFromCursor(cursor));
 
-            ArrayList<String> list = new ArrayList<String>();
-            if(goals != null) {
-                for (Goal goal : goals) {
-                    list.add(goal.getName());
-                }
-            }
-            spinnerAdapter = new ArrayAdapter<String>(this.getContext(),
-                    R.layout.spinner_text_layout, list);
+//            ArrayList<String> list = new ArrayList<String>();
+//            if (goals != null) {
+//                for (Goal goal : goals) {
+//                    list.add(goal.getName());
+//                }
+//            }
+            spinnerAdapter = new ArrayAdapter<Goal>(this.getContext(),
+                    R.layout.spinner_text_layout, goals);
             goalSpinner.setAdapter(spinnerAdapter);
         }
-
 
 
     }
@@ -332,7 +469,6 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
         if (loader.getId() == GOAL_ENTRY_LOADER_ID) {
             goals = null;
         }
-
 
 
     }

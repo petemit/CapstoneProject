@@ -206,4 +206,8 @@ public class Goal {
         return ((getHours() * 60 * 60) + (getMinutes() * 60) + goalAugment);
     }
 
+    @Override
+    public String toString() {
+        return this.getName();
+    }
 }

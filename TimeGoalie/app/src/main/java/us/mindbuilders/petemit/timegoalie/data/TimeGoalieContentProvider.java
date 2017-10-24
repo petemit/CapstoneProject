@@ -146,7 +146,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
             //goals
 
             case GOAL:
-                db.query(TimeGoalieContract.Goals.GOALS_TABLE_NAME,
+                cursor = db.query(TimeGoalieContract.Goals.GOALS_TABLE_NAME,
                         null,
                         null,
                         null,
@@ -286,6 +286,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
                 today = Calendar.getInstance();
                 today.add(Calendar.WEEK_OF_YEAR,
                         -Integer.parseInt(uri.getQueryParameter("numOfWeeks")));
+
                 dateString = TimeGoalieDateUtils.getSqlDateString(today);
                 selectionArgs = new String[]{dateString};
                 selection = TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED
@@ -294,6 +295,32 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         .concat(" AND ")
                         .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME)
                         .concat(">=?");
+
+                cursor = db.query(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,
+                        null,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        null);
+                break;
+
+            case GOALS_ENTRIES_ACCOMPLISHED_BY_WEEK_BY_GOAL_ID:
+                today = Calendar.getInstance();
+                today.add(Calendar.WEEK_OF_YEAR,
+                        -Integer.parseInt(uri.getQueryParameter("numOfWeeks")));
+                dateString = TimeGoalieDateUtils.getSqlDateString(today);
+                //make the date and the goalid the arguments;
+                selectionArgs = new String[]{dateString,String.valueOf(ContentUris.parseId(uri))};
+                selection = TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED
+                        .concat("=")
+                        .concat("'1'")
+                        .concat(" AND ")
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME)
+                        .concat(">=?")
+                        .concat(" AND ")
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID)
+                        .concat(PARAMETER);
 
                 cursor = db.query(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,
                         null,
@@ -316,6 +343,31 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         .concat(" AND ")
                         .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME)
                         .concat(">=?");
+
+                cursor = db.query(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,
+                        null,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        null);
+                break;
+
+            case GOALS_ENTRIES_ACCOMPLISHED_BY_MONTH_BY_GOAL_ID:
+                today = Calendar.getInstance();
+                today.add(Calendar.MONTH,
+                        -Integer.parseInt(uri.getQueryParameter("numOfMonths")));
+                dateString = TimeGoalieDateUtils.getSqlDateString(today);
+                selectionArgs = new String[]{dateString,String.valueOf(ContentUris.parseId(uri))};
+                selection = TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED
+                        .concat("=")
+                        .concat("'1'")
+                        .concat(" AND ")
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME)
+                        .concat(">=?")
+                        .concat(" AND ")
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID)
+                        .concat(PARAMETER);
 
                 cursor = db.query(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,
                         null,

@@ -45,4 +45,5 @@
     <string name="months">Months</string>
     <string name="weeks">Weeks</string>
     <string name="report_goal_selection_key">report_goal_selection_key</string>
+    <string name="all_goals">All Goals</string>
 </resources>
