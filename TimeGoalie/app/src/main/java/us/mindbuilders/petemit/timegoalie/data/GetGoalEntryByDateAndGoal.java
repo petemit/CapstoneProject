@@ -1,12 +1,10 @@
 package us.mindbuilders.petemit.timegoalie.data;
 
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
-import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
 /**
  * Created by Peter on 10/16/2017.
@@ -31,7 +29,7 @@ public class GetGoalEntryByDateAndGoal extends AsyncTask<GoalEntry, Void, Void> 
                     null);
         }
 
-        if (cursor != null && cursor.getCount()>0) {
+        if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
 
             GoalEntry newGoalEntry = new GoalEntry(cursor.getLong(

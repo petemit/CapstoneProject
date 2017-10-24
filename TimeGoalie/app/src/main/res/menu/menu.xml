@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:title="@string/settings"
-        app:showAsAction="never"
-        android:id="@+id/settings_key"/>
-    <item android:title="@string/reports"
-        app:showAsAction="never"
-        android:id="@+id/reports_key"/>
-    <item android:title="date_spinner"
+    <item
+        android:id="@+id/settings_key"
+        android:title="@string/settings"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/reports_key"
+        android:title="@string/reports"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/date_spinner"
+        android:title="@string/date_spinner"
         app:actionViewClass="android.widget.Spinner"
-        app:showAsAction="always"></item>
+        app:showAsAction="always" />
 
 </menu>

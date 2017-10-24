@@ -4,9 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="us.mindbuilders.petemit.timegoalie.NewGoalActivity">
-    <FrameLayout
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/new_goal_container"></FrameLayout>
+        android:layout_height="60dp"
+        android:theme="@style/TimeGoalTheme.AppBarOverlay"
+        android:title="@string/time_goalie">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/report_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+
+            android:title="@string/time_goalie"
+            app:popupTheme="@style/TimeGoalTheme.PopupOverlay" />
+    </android.support.design.widget.AppBarLayout>
+
+    <FrameLayout
+        android:id="@+id/new_goal_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

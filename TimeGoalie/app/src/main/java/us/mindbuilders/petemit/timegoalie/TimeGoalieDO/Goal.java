@@ -1,11 +1,10 @@
 package us.mindbuilders.petemit.timegoalie.TimeGoalieDO;
 
+import android.animation.ObjectAnimator;
 import android.database.Cursor;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
+import android.view.animation.Animation;
 
 import java.sql.Date;
-import java.sql.Time;
 import java.util.ArrayList;
 
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
@@ -28,6 +27,84 @@ public class Goal {
     private ArrayList<Date> datesAccomplished;
     private GoalEntry goalEntry;
     private ArrayList<Day> goalDays;
+    private ObjectAnimator seekbarAnimation;
+    private boolean changingSeekbar;
+
+    public static ArrayList<Goal> createGoalListWithGoalEntriesFromCursor(Cursor cursor) {
+        ArrayList<Goal> goalList = new ArrayList<Goal>();
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                Goal goal = new Goal();
+                goal.setGoalId(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.Goals._ID)));
+                if (goal.getGoalId() != 0) {
+                    goal.setName(cursor.getString(cursor.
+                            getColumnIndex(TimeGoalieContract.Goals.GOALS_COLUMN_NAME)));
+                    goal.setHours((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
+                            TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS))));
+                    goal.setMinutes((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
+                            TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES))));
+                    goal.setGoalTypeId(
+                            cursor.getInt(
+                                    cursor.getColumnIndex(
+                                            TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID)));
+                    GoalEntry goalEntry = new GoalEntry(cursor.getLong(cursor.
+                            getColumnIndex(TimeGoalieContract.GoalEntries._ID))
+                            , goal.getGoalId(), cursor.getString(
+                            cursor.getColumnIndex(TimeGoalieContract
+                                    .GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
+                    if (goalEntry.getDate() == null) {
+                        goalEntry.setDate(TimeGoalieDateUtils.getSqlDateString());
+                    }
+                    goalEntry.setSecondsElapsed(
+                            cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
+                                    .GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED)), true);
+                    goalEntry.setGoalAugment(cursor.getInt(
+                            cursor.getColumnIndex(TimeGoalieContract
+                                    .GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT)));
+                    goalEntry.setHasSucceeded(cursor.getInt(
+                            cursor.getColumnIndex(TimeGoalieContract.
+                                    GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED)
+                    ));
+                    goalEntry.setHasFinished(
+                            cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
+                                    .GoalEntries.GOALENTRIES_COLUMN_ISFINISHED))
+                    );
+                    goalEntry.setRunning(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.
+                            GoalEntries.GOALENTRIES_COLUMN_ISRUNNING)));
+
+                    goalEntry.setTargetTime((cursor.getLong(cursor.getColumnIndex(TimeGoalieContract.
+                            GoalEntries.GOALENTRIES_COLUMN_TARGETTIME))));
+                    goalEntry.setStartedTime((cursor.getLong(cursor.getColumnIndex(TimeGoalieContract.
+                            GoalEntries.GOALENTRIES_COLUMN_STARTEDTIME))));
+                    goal.goalEntry = goalEntry;
+                    goalList.add(goal);
+                }
+            }
+        }
+        return goalList;
+    }
+
+    public static ArrayList<Goal> createGoalListFromCursor(Cursor cursor) {
+        ArrayList<Goal> goalList = new ArrayList<Goal>();
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                Goal goal = new Goal();
+                goal.setGoalId(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.Goals._ID)));
+                goal.setName(cursor.getString(cursor.
+                        getColumnIndex(TimeGoalieContract.Goals.GOALS_COLUMN_NAME)));
+                goal.setHours((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
+                        TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS))));
+                goal.setMinutes((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
+                        TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES))));
+                goal.setGoalTypeId(
+                        cursor.getInt(
+                                cursor.getColumnIndex(
+                                        TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID)));
+                goalList.add(goal);
+            }
+        }
+        return goalList;
+    }
 
     public long getGoalId() {
         return goalId;
@@ -125,78 +202,6 @@ public class Goal {
         this.goalDays = goalDays;
     }
 
-    public static ArrayList<Goal> createGoalListWithGoalEntriesFromCursor(Cursor cursor) {
-        ArrayList<Goal> goalList = new ArrayList<Goal>();
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                Goal goal = new Goal();
-                goal.setGoalId(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.Goals._ID)));
-                goal.setName(cursor.getString(cursor.
-                        getColumnIndex(TimeGoalieContract.Goals.GOALS_COLUMN_NAME)));
-                goal.setHours((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
-                        TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS))));
-                goal.setMinutes((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
-                        TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES))));
-                goal.setGoalTypeId(
-                        cursor.getInt(
-                                cursor.getColumnIndex(
-                                        TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID)));
-                GoalEntry goalEntry = new GoalEntry(cursor.getLong(cursor.
-                        getColumnIndex(TimeGoalieContract.GoalEntries._ID))
-                        ,goal.getGoalId(), cursor.getString(
-                        cursor.getColumnIndex(TimeGoalieContract
-                                .GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
-                if (goalEntry.getDate() == null) {
-                    goalEntry.setDate(TimeGoalieDateUtils.getSqlDateString());
-                }
-                goalEntry.setSecondsElapsed(
-                        cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
-                                .GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED)), true);
-                goalEntry.setGoalAugment(cursor.getInt(
-                        cursor.getColumnIndex(TimeGoalieContract
-                                .GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT)));
-                goalEntry.setHasSucceeded(cursor.getInt(
-                        cursor.getColumnIndex(TimeGoalieContract.
-                                GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED)
-                ));
-                goalEntry.setHasFinished(
-                        cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
-                        .GoalEntries.GOALENTRIES_COLUMN_ISFINISHED))
-                );
-                goalEntry.setRunning(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.
-                        GoalEntries.GOALENTRIES_COLUMN_ISRUNNING)));
-
-                goalEntry.setTargetTime((cursor.getLong(cursor.getColumnIndex(TimeGoalieContract.
-                        GoalEntries.GOALENTRIES_COLUMN_TARGETTIME))));
-                goal.goalEntry = goalEntry;
-                goalList.add(goal);
-            }
-        }
-        return goalList;
-    }
-
-    public static ArrayList<Goal> createGoalListFromCursor(Cursor cursor) {
-        ArrayList<Goal> goalList = new ArrayList<Goal>();
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                Goal goal = new Goal();
-                goal.setGoalId(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.Goals._ID)));
-                goal.setName(cursor.getString(cursor.
-                        getColumnIndex(TimeGoalieContract.Goals.GOALS_COLUMN_NAME)));
-                goal.setHours((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
-                        TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS))));
-                goal.setMinutes((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
-                        TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES))));
-                goal.setGoalTypeId(
-                        cursor.getInt(
-                                cursor.getColumnIndex(
-                                        TimeGoalieContract.Goals.GOALS_COLUMN_GOALTYPEID)));
-                goalList.add(goal);
-            }
-        }
-        return goalList;
-    }
-
     public long getGoalSeconds() {
         int goalAugment = 0;
         if (this.goalEntry != null) {
@@ -209,5 +214,21 @@ public class Goal {
     @Override
     public String toString() {
         return this.getName();
+    }
+
+    public ObjectAnimator getSeekbarAnimation() {
+        return seekbarAnimation;
+    }
+
+    public void setSeekbarAnimation(ObjectAnimator seekbarAnimation) {
+        this.seekbarAnimation = seekbarAnimation;
+    }
+
+    public boolean isChangingSeekbar() {
+        return changingSeekbar;
+    }
+
+    public void setChangingSeekbar(boolean changingSeekbar) {
+        this.changingSeekbar = changingSeekbar;
     }
 }

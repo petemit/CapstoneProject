@@ -11,9 +11,10 @@
     <string name="plus_large_text">+15m</string>
     <string name="default_audio_value">2</string>
     <string name="settings">Settings</string>
+    <string name="silent_mode">Silent Mode</string>
+    <string name="daily_reminder">Daily Reminder</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
     <string name="daily">Daily</string>
     <string name="weekly">Weekly</string>
     <string name="hours">Hours</string>
@@ -44,6 +45,66 @@
     <string name="goal_scope">goal_scope</string>
     <string name="months">Months</string>
     <string name="weeks">Weeks</string>
+    <string name="disable_app_notifications">Disable App Notifications</string>
+    <string name="disable_app_notifications_summary">Disable All Timer Notifications</string>
     <string name="report_goal_selection_key">report_goal_selection_key</string>
     <string name="all_goals">All Goals</string>
+    <string name="selected_scope_key">selected_scope</string>
+    <string name="delete_button_content_description">Delete Goal</string>
+    <string name="goal_length">goal_length</string>
+    <string name="add_time_to_goal_msg">Please add some time to your Time Goal</string>
+    <string name="goal_days_string">goal_days</string>
+    <string name="is_daily_goal_string">is_daily_goal</string>
+    <string name="time_goalie">Time Goalie</string>
+    <string name="pref_daily_notification_key">pref_daily_notification</string>
+    <string name="goal_finished">Goal finished</string>
+    <string name="edit_goal_button_description">Edit Goal Button</string>
+    <string name="start_stop_goal_timer_description">Start/Stop Goal Timer</string>
+    <string name="date_selection_description">Date Selection</string>
+    <string name="yes_no_goal_checkbox_description">Yes/No Goal Checkbox</string>
+    <string name="goal_title_description">Goal Title</string>
+    <string name="select_scope_description">Select Scope</string>
+    <string name="months_description">Months</string>
+    <string name="weeks_description">Weeks</string>
+    <string name="select_a_goal_or_all_goals_description">Select a Goal or All Goals</string>
+    <string name="select_a_goal_type_description">Select a Goal Type</string>
+    <string name="is_repeated_daily_description">Is repeated daily</string>
+    <string name="repeat_mondays_description">Repeat on Mondays</string>
+    <string name="repeat_tuesdays_description">Repeat on Tuesdays</string>
+    <string name="repeat_wednesdays_description">Repeat on Wednesdays</string>
+    <string name="repeat_thursdays_description">Repeat on Thursdays</string>
+    <string name="repeat_fridays_description">Repeat on Fridays</string>
+    <string name="repeat_saturdays_description">Repeat on Saturdays</string>
+    <string name="repeat_sundays_description">Repeat on Sundays</string>
+    <string name="select_hours_description">Select hours</string>
+    <string name="select_minutes_description">Select Minutes</string>
+    <string name="create_goal_description">Create Goal</string>
+    <string name="subtract_large_description">Subtract 15 minutes from today\'s goal</string>
+    <string name="subtract_medium_description">Subtract 10 minutes from today\'s goal</string>
+    <string name="subtract_small_description">Subtract 5 minutes from today\'s goal</string>
+    <string name="plus_small_description">add 5 minutes for today\'s goal</string>
+    <string name="plus_medium_description">add 10 minutes for today\'s goal</string>
+    <string name="plus_large_description">add 15 minutes for today\'s goal</string>
+    <string name="add_new_goal_description">Add New Goal</string>
+    <string name="image_of_soccer_goal_desc">Image of Soccer Goal</string>
+    <string name="image_of_soccer_ball_desc">Image of Soccer Ball</string>
+    <string name="goals_saved">Goals Saved</string>
+    <string name="zero">0</string>
+    <string name="time_goal">Time Goal</string>
+    <string name="date_spinner">date_spinner</string>
+    <string name="done_with_goal">You\'re done with your goal!</string>
+    <string name="add_a_goal_to_get_started">Add a goal to get started.</string>
+    <string name="goal_name_key">goal_name_key</string>
+    <string name="goal_seconds_key">goal_seconds_key</string>
+    <string name="goal_type_id_key">goal_type_id_key</string>
+    <string name="goalentry_key">goalentry</string>
+    <string name="goalentrybundle_key">goalentrybundle</string>
+    <string name="goal_type_key">goal_type</string>
+    <string name="one_minute_warning">You have only one minute left</string>
+    <string name="hurry_up">Hurry up!</string>
+    <string name="stopping_inactive_goal">Stopping goal due to inactivity</string>
+    <string name="ran_out_of_time">Oops! Ran out of time.  Maybe next time.</string>
+    <string name="created">created</string>
+
+
 </resources>

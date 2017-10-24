@@ -3,20 +3,27 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:animateLayoutChanges="true"
-    android:layout_marginLeft="@dimen/left_margin"
     android:layout_marginBottom="@dimen/tiny_margin"
-    android:layout_marginRight="@dimen/right_margin"
-    android:layout_marginTop="@dimen/top_margin">
+    android:layout_marginEnd="@dimen/right_margin"
+    android:layout_marginStart="@dimen/left_margin"
+    android:layout_marginTop="@dimen/top_margin"
+    android:animateLayoutChanges="true">
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:animateLayoutChanges="true"
-        android:paddingBottom="8dp"
-        android:layout_height="wrap_content">
+
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dp">
+
+        <include
+            layout="@layout/delete_button"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:visibility="invisible" />
 
         <include
             layout="@layout/goal_title_layout"
@@ -31,10 +38,10 @@
             layout="@layout/start_stop_button_layout"
             android:layout_width="60dp"
             android:layout_height="26dp"
-            android:layout_marginEnd="@dimen/right_margin"
             android:layout_marginBottom="@dimen/half_margin"
-            app:layout_constraintRight_toRightOf="@+id/goalProgressBar"
+            android:layout_marginEnd="@dimen/right_margin"
             app:layout_constraintBottom_toTopOf="@+id/goalProgressBar"
+            app:layout_constraintRight_toRightOf="@+id/goalProgressBar"
 
             />
 
@@ -52,8 +59,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/half_margin"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginStart="0dp"
             android:layout_marginTop="@dimen/half_margin"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -65,10 +72,10 @@
             android:layout_width="@dimen/goal_image_width"
             android:layout_height="@dimen/goal_image_height"
             android:layout_marginBottom="@dimen/half_margin"
-
             android:layout_marginStart="@dimen/left_margin"
             android:layout_marginTop="@dimen/half_margin"
             android:background="@drawable/soccergoal_left"
+            android:contentDescription="@string/image_of_soccer_goal_desc"
             app:layout_constraintBottom_toBottomOf="@+id/goalProgressBar"
             app:layout_constraintLeft_toLeftOf="@+id/goalProgressBar"
             app:layout_constraintTop_toTopOf="@+id/goalProgressBar" />
@@ -80,7 +87,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/feedback_frame"/>
+            app:layout_constraintTop_toBottomOf="@+id/feedback_frame" />
 
         <include
             layout="@layout/feedback_frame"
@@ -89,7 +96,7 @@
             android:layout_marginTop="@dimen/half_margin"
             app:layout_constraintLeft_toLeftOf="@+id/goalProgressBar"
             app:layout_constraintRight_toRightOf="@+id/goalProgressBar"
-            app:layout_constraintTop_toBottomOf="@+id/goalProgressBar"/>
+            app:layout_constraintTop_toBottomOf="@+id/goalProgressBar" />
 
         <TextView
             android:id="@+id/timeTextView"
@@ -108,10 +115,10 @@
             android:layout_height="wrap_content"
 
             android:layout_marginTop="@dimen/half_margin"
-            tools:text=" / 9:33:01"
             android:textAppearance="@style/TimeGoalTheme.title"
             app:layout_constraintLeft_toRightOf="@+id/timeTextView"
-            app:layout_constraintTop_toBottomOf="@+id/tv_goal_title" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_goal_title"
+            tools:text=" / 9:33:01" />
 
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>

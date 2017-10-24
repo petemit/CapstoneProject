@@ -40,13 +40,16 @@
 
     </style>
 
-    <style name="TimeGoalTheme.Toast" >
+    <style name="TimeGoalTheme.Toast">
 
 
     </style>
 
     <style name="TimeGoalTheme.ButtonStyle">
         <item name="android:background">@drawable/rounded_button</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Widget.Button
+        </item>
     </style>
 
     <style name="TimeGoalTheme.EditButton" parent="TimeGoalTheme.ButtonStyle">
@@ -55,11 +58,13 @@
         <item name="android:layout_margin">2dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">10sp</item>
+        <item name="android:hapticFeedbackEnabled">true</item>
     </style>
 
     <style name="TimeGoalTheme.WidgetText" parent="TextAppearance.AppCompat">
         <item name="android:textColor">@color/primaryTextColor</item>
     </style>
+
     <style name="TimeGoalTheme.WidgetTextTitle" parent="TextAppearance.AppCompat.Medium">
         <item name="android:textColor">@color/primaryTextColor</item>
     </style>

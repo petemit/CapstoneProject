@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,61 +12,48 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="@dimen/action_bar_height_list"
         android:theme="@style/TimeGoalTheme.AppBarOverlay">
-
-        <!--<android.support.design.widget.CollapsingToolbarLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--app:title="@string/defend_the_goals"-->
-            <!--app:layout_scrollFlags="scroll|exitUntilCollapsed"-->
-            <!--&gt;-->
-
-
 
 
         <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:title="@string/app_name"
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
 
-                android:layout_height="?attr/actionBarSize"
-                app:popupTheme="@style/TimeGoalTheme.PopupOverlay">
-
+            android:title="@string/app_name"
+            app:popupTheme="@style/TimeGoalTheme.PopupOverlay">
 
 
         </android.support.v7.widget.Toolbar>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_marginTop="@dimen/half_margin"
-            android:layout_height="wrap_content">
-
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="10"
             android:layout_height="wrap_content"
-            android:id="@+id/tv_numberOfGoalsCleared"
-            android:text="0"
+            android:layout_marginStart="@dimen/left_margin"
+            android:layout_marginTop="@dimen/half_margin">
 
-            android:textAlignment="textEnd"
-            android:layout_marginEnd="@dimen/half_margin"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
 
-   />
+            <TextView
+                android:id="@+id/tv_numberOfGoalsCleared"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/half_margin"
+                android:text="@string/zero"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="5"
+                />
 
-            android:layout_height="wrap_content"
-            android:textAlignment="textEnd"
-            android:text="Goals Saved"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:id="@+id/textView"
-            android:layout_marginEnd="@dimen/right_margin"
-            />
+            <TextView
+                android:id="@+id/textView"
+
+
+                android:layout_width="wrap_content"
+
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/right_margin"
+                android:text="@string/goals_saved"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
         </LinearLayout>
         <!--</android.support.design.widget.CollapsingToolbarLayout>-->
 
@@ -74,12 +63,10 @@
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/top_margin"
         android:orientation="vertical"
+        android:paddingBottom="@dimen/top_margin"
 
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-
 
         <include layout="@layout/goal_list" />
     </android.support.v4.widget.NestedScrollView>
@@ -91,6 +78,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"
+        android:contentDescription="@string/add_new_goal_description"
+        android:focusable="true"
+        android:hapticFeedbackEnabled="true"
         app:srcCompat="@drawable/ic_add_24dp" />
 
 

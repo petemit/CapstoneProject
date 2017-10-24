@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import us.mindbuilders.petemit.timegoalie.BuildConfig;
 import us.mindbuilders.petemit.timegoalie.R;
 
 /**
@@ -11,13 +12,13 @@ import us.mindbuilders.petemit.timegoalie.R;
  */
 
 public class TimeGoalieDbHelper extends SQLiteOpenHelper {
-    public static final int DB_VERSION = 1;
+    public static final int DB_VERSION = 2;
     public static String DB_NAME = "timeGoalie.db";
     private Context context;
 
     public TimeGoalieDbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
-        this.context=context;
+        this.context = context;
     }
 
     @Override
@@ -43,18 +44,19 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME +
                 "(" + TimeGoalieContract.GoalEntries._ID +
                 " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED + " INTEGER, "+
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT + " INTEGER, "+
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED + " INTEGER, "+
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISRUNNING + " INTEGER, "+
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISFINISHED + " INTEGER, "+
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_TARGETTIME + " INTEGER, "+
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID + " INTEGER NOT NULL, "+
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME + " TEXT NOT NULL, "+
-        " UNIQUE("+
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED + " INTEGER, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT + " INTEGER, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED + " INTEGER, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISRUNNING + " INTEGER, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISFINISHED + " INTEGER, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_TARGETTIME + " INTEGER, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_STARTEDTIME + " INTEGER, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID + " INTEGER NOT NULL, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME + " TEXT NOT NULL, " +
+                " UNIQUE(" +
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID + "," +
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME +
-                ") "+
+                ") " +
                 " ON CONFLICT REPLACE )";
         db.execSQL(createGoalEntriesTable);
 
@@ -78,13 +80,12 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 ", " + TimeGoalieContract.GoalTypes._ID +
                 ") " + "VALUES ";
         for (int i = 0; i < goalTypes.length; i++) {
-            populateGoalTypesSql= populateGoalTypesSql.concat(" (");
-            populateGoalTypesSql =  populateGoalTypesSql.concat(buildInsertSqlfromStringArray
-                    (new String[]{'"'+goalTypes[i]+'"', goalTypeValues[i]}));
-            if (i!=goalTypes.length-1) {
+            populateGoalTypesSql = populateGoalTypesSql.concat(" (");
+            populateGoalTypesSql = populateGoalTypesSql.concat(buildInsertSqlfromStringArray
+                    (new String[]{'"' + goalTypes[i] + '"', goalTypeValues[i]}));
+            if (i != goalTypes.length - 1) {
                 populateGoalTypesSql = populateGoalTypesSql.concat("), ");
-            }
-            else{
+            } else {
                 populateGoalTypesSql = populateGoalTypesSql.concat(")");
             }
         }
@@ -112,13 +113,12 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 ", " + TimeGoalieContract.Days.DAYS_COLUMN_SEQUENCE +
                 ") " + "VALUES ";
         for (int i = 0; i < dayNames.length; i++) {
-           populateDaysSql = populateDaysSql.concat(" (");
-          populateDaysSql =  populateDaysSql.concat(buildInsertSqlfromStringArray
-                    (new String[]{'"'+dayNames[i]+'"', daySeqValues[i]}));
-            if (i!=dayNames.length-1) {
+            populateDaysSql = populateDaysSql.concat(" (");
+            populateDaysSql = populateDaysSql.concat(buildInsertSqlfromStringArray
+                    (new String[]{'"' + dayNames[i] + '"', daySeqValues[i]}));
+            if (i != dayNames.length - 1) {
                 populateDaysSql = populateDaysSql.concat("), ");
-            }
-            else{
+            } else {
                 populateDaysSql = populateDaysSql.concat(")");
             }
         }
@@ -147,39 +147,107 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
         db.execSQL(createGoalsDatesAccomplishedSQL);
 
 
+        if (BuildConfig.DEBUG) {
+            //DUMMY DATA
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (1, '2017-10-05',3000,0)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-10-05',3000,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-10-04',3000,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-10-03',0,0)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-30',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-29',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-28',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-27',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-26',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-25',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-24',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-23',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-22',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-21',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-20',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-19',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-18',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-17',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-16',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-15',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-14',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-13',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-12',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-11',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-10',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-09',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-08',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-07',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-06',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-05',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-04',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-03',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-02',501,1)");
+            db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded)" +
+                    " VALUES (4, '2017-09-01',501,1)");
+        }
 
-        //DUMMY DATA
-        // TODO: 10/6/2017 remove when done
-        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (1, '2017-10-05',3000,0)");
-        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-10-05',3000,1)");
-        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-10-04',3000,1)");
-        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-10-03',0,0)");
-        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-22',501,1)");
-        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-23',501,1)");
 
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
+    public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
+        if (BuildConfig.DEBUG) {
+            //todo implement upgrade logic
+            db.execSQL("DROP TABLE IF EXISTS " + TimeGoalieContract.Goals.GOALS_TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " + TimeGoalieContract.Days.DAYS_TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " + TimeGoalieContract.GoalTypes.GOALTYPES_TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " + TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " +
+                    TimeGoalieContract.GoalsDatesAccomplished.GOALS_DATES_ACCOMPLISHED_TABLE_NAME);
+            onCreate(db);
+        }
 
-        //todo implement upgrade logic
-        db.execSQL("DROP TABLE IF EXISTS " + TimeGoalieContract.Goals.GOALS_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + TimeGoalieContract.Days.DAYS_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + TimeGoalieContract.GoalTypes.GOALTYPES_TABLE_NAME );
-        db.execSQL("DROP TABLE IF EXISTS " + TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + TimeGoalieContract.GoalsDatesAccomplished.GOALS_DATES_ACCOMPLISHED_TABLE_NAME);
-        onCreate(db);
+        if (newV > oldV) {
+            db.execSQL("ALTER TABLE " + TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME + " ADD COLUMN " + TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_STARTEDTIME + " INTEGER");
+        }
 
     }
 
-    public String buildInsertSqlfromStringArray(String[] array){
-        String returnString="";
+    public String buildInsertSqlfromStringArray(String[] array) {
+        String returnString = "";
         for (int i = 0; i < array.length; i++) {
-            if (i!=array.length-1){
-              returnString = returnString.concat(array[i])
+            if (i != array.length - 1) {
+                returnString = returnString.concat(array[i])
                         .concat(",");
-            }
-            else{
+            } else {
                 returnString = returnString.concat(array[i]);
             }
         }

@@ -3,9 +3,8 @@ package us.mindbuilders.petemit.timegoalie;
 import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.support.annotation.IdRes;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -19,42 +18,38 @@ import android.widget.ArrayAdapter;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.MonthInterval;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.WeekInterval;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
-import us.mindbuilders.petemit.timegoalie.dummy.DummyContent;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
 /**
  * The report fragment
  */
-public class GoalReportFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class GoalReportFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, GoalListActivity.TimeGoalieReportUpdater {
     private static final int GOAL_REPORT_LOADER_ID = 44;
     private static final int GOAL_ENTRY_LOADER_ID = 88;
     private static final int MONTHLY_ALL_GOALS = 100;
@@ -62,7 +57,12 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
     private static final int WEEKLY_ALL_GOALS = 102;
     private static final int WEEKLY_ONE_GOAL = 103;
     private static final int ALL_GOALS_ID = -999;
-
+    private static final float CHART_TEXT_SIZE = 14f;
+    private static final float CHART_OFFSET = 8f;
+    private static final float RIGHT_CHART_OFFSET = 36f;
+    private static final int DEFAULTWEEKS = 4;
+    private static final int DEFAULTMONTHS = 4;
+    private static final int DEFAULTMAX = 20;
     private Spinner goalSpinner;
     private RadioGroup monthlyWeeklyRadioGroup;
     private RadioButton weeksRb;
@@ -71,29 +71,22 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
     private ArrayList<Goal> goals;
     private LineChart chart;
     private String selectedScope;
+    private String goalSelection;
     private ArrayAdapter spinnerAdapter;
     private Goal selectedGoal;
     private GoalReportFragment mySelf;
-
-    public enum scopeEnum {
-        WEEKLY, MONTHLY
-    }
-
-    public enum goalSelectionEnum {
-        ALLGOALS, SINGLEGOAL
-    }
-
-    private static final int DEFAULTWEEKS = 4;
-    private static final int DEFAULTMONTHS = 4;
-    private static final int DEFAULTMAX = 20;
     private int numOfWeeks;
     private int numOfMonths;
-
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
     public GoalReportFragment() {
+    }
+
+    @Override
+    public void updateReport() {
+        getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID, null, this);
     }
 
     @Override
@@ -106,9 +99,17 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(getString(R.string.selected_scope_key), selectedScope);
+        outState.putString(getString(R.string.report_goal_selection_key), goalSelection);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.goal_report_fragment, container, false);
+
 
         // Show the dummy content as text in a TextView.
         chart = rootView.findViewById(R.id.report_chart);
@@ -119,16 +120,6 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
 
         final Bundle loaderBundle = new Bundle();
 
-        //for testing
-        //    bundle.putInt(getString(R.string.goal_scope), WEEKLY_ALL_GOALS);
-
-
-        IAxisValueFormatter xAxisFormatter = new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float v, AxisBase axisBase) {
-                return v + "";
-            }
-        };
 
         monthlyWeeklyRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -138,11 +129,13 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
                     selectedScope = scopeEnum.WEEKLY.name();
                 } else {
                     loaderBundle.putString(getString(R.string.goal_scope), scopeEnum.MONTHLY.name());
+                    selectedScope = scopeEnum.MONTHLY.name();
                 }
 
-                if (getActivity().getSupportLoaderManager().getLoader(GOAL_REPORT_LOADER_ID) != null){
-                    getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID, loaderBundle, mySelf);
-                    selectedScope = scopeEnum.MONTHLY.name();
+                if (getActivity().getSupportLoaderManager().getLoader(GOAL_REPORT_LOADER_ID) != null) {
+                    getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID,
+                            loaderBundle, mySelf);
+
                 }
             }
         });
@@ -150,18 +143,20 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
         goalSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                selectedGoal = (Goal)(adapterView.getItemAtPosition(i));
-                if(selectedGoal != null) {
+                selectedGoal = (Goal) (adapterView.getItemAtPosition(i));
+                if (selectedGoal != null) {
                     if (selectedGoal.getGoalId() != ALL_GOALS_ID) {
                         loaderBundle.putString(getString(R.string.report_goal_selection_key),
                                 goalSelectionEnum.SINGLEGOAL.name());
-                    }
-                    else {
+                        goalSelection = goalSelectionEnum.SINGLEGOAL.name();
+                    } else {
                         loaderBundle.putString(getString(R.string.report_goal_selection_key),
                                 goalSelectionEnum.ALLGOALS.name());
+                        goalSelection = goalSelectionEnum.ALLGOALS.name();
                     }
-                    if (getActivity().getSupportLoaderManager().getLoader(GOAL_REPORT_LOADER_ID) != null){
-                        getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID,loaderBundle, mySelf);
+                    if (getActivity().getSupportLoaderManager().getLoader(GOAL_REPORT_LOADER_ID) != null) {
+                        getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID,
+                                loaderBundle, mySelf);
                     }
                 }
             }
@@ -172,7 +167,7 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
             }
         });
 
-        if (goals == null){
+        if (goals == null) {
             goals = new ArrayList<Goal>();
             Goal goal = new Goal();
             goal.setName(getString(R.string.all_goals));
@@ -181,6 +176,8 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
         }
 
         if (savedInstanceState != null) {
+            selectedScope = savedInstanceState.getString(getString(R.string.selected_scope_key));
+            goalSelection = savedInstanceState.getString(getString(R.string.report_goal_selection_key));
 
 
         } else {
@@ -191,33 +188,42 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
             if (selectedGoal == null) {
                 loaderBundle.putString(getString(R.string.report_goal_selection_key),
                         goalSelectionEnum.ALLGOALS.name());
+                goalSelection = goalSelectionEnum.ALLGOALS.name();
             }
 
         }
 
 
         chart.getDescription().setEnabled(false);
+        chart.setExtraLeftOffset(CHART_OFFSET);
+        chart.setExtraRightOffset(RIGHT_CHART_OFFSET);
 
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setGranularity(1f); // only intervals of 1 day
         xAxis.setLabelCount(numOfWeeks);
-        xAxis.setValueFormatter(xAxisFormatter);
-
+        xAxis.setTextSize(CHART_TEXT_SIZE);
 
         YAxis yAxis = chart.getAxisLeft();
-        yAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        yAxis.setLabelCount(1);
+        yAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+        yAxis.setTextSize(CHART_TEXT_SIZE);
+        yAxis.setLabelCount(8, false);
         yAxis.setAxisMaximum(DEFAULTMAX);
         yAxis.setAxisMinimum(0f);
+
         yAxis.setDrawGridLines(true);
+
+        Legend legend = chart.getLegend();
+        legend.setTextSize(CHART_TEXT_SIZE);
 
         chart.getAxisRight().setEnabled(false);
 
 
-        getActivity().getSupportLoaderManager().initLoader(GOAL_REPORT_LOADER_ID, loaderBundle, this);
-        getActivity().getSupportLoaderManager().initLoader(GOAL_ENTRY_LOADER_ID, loaderBundle, this);
+        getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID, loaderBundle,
+                this);
+        getActivity().getSupportLoaderManager().restartLoader(GOAL_ENTRY_LOADER_ID, loaderBundle,
+                this);
 
 
         return rootView;
@@ -264,7 +270,7 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
         ArrayList<Entry> entries = new ArrayList<Entry>();
 
         if (selectedScope.equals(scopeEnum.WEEKLY.name())) {
-            ArrayList<WeekInterval> weekIntervals = getWeekIntervals(numOfWeeks);
+            final ArrayList<WeekInterval> weekIntervals = getWeekIntervals(numOfWeeks);
             HashMap<String, ArrayList<String>> weekMap = new HashMap<String, ArrayList<String>>();
 
             for (WeekInterval interval : weekIntervals) {
@@ -297,13 +303,23 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
                     }
                 }
                 for (int i = 0; i < weekIntervals.size(); i++) {
-                    Entry entry = new Entry(i, weekMap.get(weekIntervals.get(i).getBeginningOfWeek()).size());
+                    int i2 = weekIntervals.size() - i - 1;
+                    Entry entry = new Entry(i, weekMap.get(weekIntervals.get(i2).getBeginningOfWeek()).size());
                     entries.add(entry);
                 }
             }
-        }
-        else if (selectedScope.equals(scopeEnum.MONTHLY.name())) {
-            ArrayList<MonthInterval> monthIntervals = getMonthIntervals(numOfMonths);
+            //need to format the xAxis
+            XAxis xAxis = chart.getXAxis();
+            xAxis.setValueFormatter(new IAxisValueFormatter() {
+                @Override
+                public String getFormattedValue(float v, AxisBase axisBase) {
+                    int inverse = weekIntervals.size() - 1 - (int) v;
+                    return weekIntervals.get(inverse).getBeginningOfWeek();
+                }
+            });
+
+        } else if (selectedScope.equals(scopeEnum.MONTHLY.name())) {
+            final ArrayList<MonthInterval> monthIntervals = getMonthIntervals(numOfMonths);
             HashMap<String, ArrayList<String>> monthMap = new HashMap<String, ArrayList<String>>();
 
 
@@ -337,17 +353,63 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
                     }
                 }
                 for (int i = 0; i < monthIntervals.size(); i++) {
-                    Entry entry = new Entry(i, monthMap.get(monthIntervals.get(i).getBegOfMonth()).size());
+                    int i2 = monthIntervals.size() - i - 1;
+                    Entry entry = new Entry(i, monthMap.get(monthIntervals.get(i2).getBegOfMonth()).size());
                     entries.add(entry);
                 }
             }
+
+
+            //need to format the xAxis
+            XAxis xAxis = chart.getXAxis();
+            xAxis.setValueFormatter(new IAxisValueFormatter() {
+                @Override
+                public String getFormattedValue(float v, AxisBase axisBase) {
+                    int inverse = monthIntervals.size() - 1 - (int) v;
+                    String month = monthIntervals.get(inverse).getBegOfMonth();
+                    return TimeGoalieDateUtils.getMonthFromStringDate(month);
+                }
+            });
+        }//end if monthly scope
+        //format the axes again
+        int max = DEFAULTMAX;
+        YAxis yAxis = chart.getAxisLeft();
+
+        if (entries.size() > 0) {
+            for (Entry ent : entries
+                    ) {
+                if (max < ent.getY()) {
+                    //give it a slight buffer
+                    max = (int) ent.getY() + 5;
+                }
+            }
+        }
+        yAxis.setAxisMaximum(max);
+
+
+        LineDataSet dataSet;
+        if (selectedGoal != null) {
+            if (selectedGoal.getGoalId() != ALL_GOALS_ID) {
+                dataSet = new LineDataSet(entries, selectedGoal.getName());
+            } else {
+                dataSet = new LineDataSet(entries, "Total Goals Saved");
+            }
+        } else {
+            dataSet = new LineDataSet(entries, "Total Goals Saved");
         }
 
-        LineDataSet dataSet = new LineDataSet(entries, "Total Goals Saved");
+
         dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
         dataSet.setColor(ColorTemplate.getHoloBlue());
         dataSet.setCircleColor(Color.WHITE);
         dataSet.setLineWidth(5f);
+        dataSet.setValueTextSize(CHART_TEXT_SIZE);
+        dataSet.setValueFormatter(new IValueFormatter() {
+            @Override
+            public String getFormattedValue(float v, Entry entry, int i, ViewPortHandler viewPortHandler) {
+                return (String.valueOf((int) (v)));
+            }
+        });
 
         LineData lineData = new LineData(dataSet);
         chart.setData(lineData);
@@ -360,25 +422,46 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
     public Loader onCreateLoader(int id, Bundle args) {
         CursorLoader cl;
         if (id == GOAL_REPORT_LOADER_ID) {
-            String scope = args.getString(getString(R.string.goal_scope));
-            String goalSelection = args.getString(getString(R.string.report_goal_selection_key));
+
+            String scope = null;
+            String goalSelect = null;
+            if (args != null) {
+                scope = args.getString(getString(R.string.goal_scope));
+                goalSelect = args.getString(getString(R.string.report_goal_selection_key));
+            }
+
+            if (scope == null && selectedScope != null) {
+                scope = selectedScope;
+//                if (scope == null) {
+//                    scope = scopeEnum.WEEKLY.name();
+//                }
+            }
+
+
+            if (goalSelect == null && goalSelection != null) {
+                goalSelect = goalSelection;
+//                if (goalSelect == null) {
+//                    goalSelect = goalSelectionEnum.ALLGOALS.name();
+//                }
+            }
+
             long goalId = 0;
             int selectedQuery = 0;
             if (scope.equals(scopeEnum.WEEKLY.name())) {
-                if (goalSelection.equals(goalSelectionEnum.ALLGOALS.name())) {
+                if (goalSelect.equals(goalSelectionEnum.ALLGOALS.name())) {
                     selectedQuery = WEEKLY_ALL_GOALS;
                 }
-                if (goalSelection.equals(goalSelectionEnum.SINGLEGOAL.name())) {
+                if (goalSelect.equals(goalSelectionEnum.SINGLEGOAL.name())) {
                     selectedQuery = WEEKLY_ONE_GOAL;
-                  goalId = selectedGoal.getGoalId();
+                    goalId = selectedGoal.getGoalId();
                 }
             }
 
             if (scope.equals(scopeEnum.MONTHLY.name())) {
-                if (goalSelection.equals(goalSelectionEnum.ALLGOALS.name())) {
+                if (goalSelect.equals(goalSelectionEnum.ALLGOALS.name())) {
                     selectedQuery = MONTHLY_ALL_GOALS;
                 }
-                if (goalSelection.equals(goalSelectionEnum.SINGLEGOAL.name())) {
+                if (goalSelect.equals(goalSelectionEnum.SINGLEGOAL.name())) {
                     selectedQuery = MONTHLY_ONE_GOAL;
                     goalId = selectedGoal.getGoalId();
                 }
@@ -397,7 +480,7 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
                     return cl;
                 case MONTHLY_ONE_GOAL:
                     cl = new CursorLoader(this.getContext(),
-                            TimeGoalieContract.getMonthSuccessfulGoalsByGoal(goalId,DEFAULTMONTHS),
+                            TimeGoalieContract.getMonthSuccessfulGoalsByGoal(goalId, DEFAULTMONTHS),
                             null,
                             null,
                             null,
@@ -415,7 +498,7 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
                     return cl;
                 case WEEKLY_ONE_GOAL:
                     cl = new CursorLoader(this.getContext(),
-                            TimeGoalieContract.getWeekSuccessfulGoalsByGoal(goalId,DEFAULTWEEKS),
+                            TimeGoalieContract.getWeekSuccessfulGoalsByGoal(goalId, DEFAULTWEEKS),
                             null,
                             null,
                             null,
@@ -465,11 +548,21 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
     public void onLoaderReset(Loader loader) {
         if (loader.getId() == GOAL_REPORT_LOADER_ID) {
             goalEntries = null;
+            loader.reset();
         }
         if (loader.getId() == GOAL_ENTRY_LOADER_ID) {
             goals = null;
+            loader.reset();
         }
 
 
+    }
+
+    public enum scopeEnum {
+        WEEKLY, MONTHLY
+    }
+
+    public enum goalSelectionEnum {
+        ALLGOALS, SINGLEGOAL
     }
 }

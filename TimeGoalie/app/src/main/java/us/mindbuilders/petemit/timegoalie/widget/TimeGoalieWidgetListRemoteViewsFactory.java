@@ -2,9 +2,6 @@ package us.mindbuilders.petemit.timegoalie.widget;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.os.CountDownTimer;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -15,10 +12,8 @@ import java.util.ArrayList;
 import us.mindbuilders.petemit.timegoalie.BaseApplication;
 import us.mindbuilders.petemit.timegoalie.R;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.utils.CustomTextView;
-import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieUtils;
 
@@ -27,34 +22,42 @@ import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieUtils;
  */
 
 public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
+    private static int counter = 0;
     private Context context;
     private ArrayList<Goal> goalData;
+    private RemoteViews lastView;
 
     public TimeGoalieWidgetListRemoteViewsFactory(Context context) {
         this.context = context;
-        Log.e("findme", "I got here now");
     }
 
     @Override
     public void onCreate() {
-        Log.e("findme", "I got here again");
 
     }
 
     @Override
     public void onDataSetChanged() {
-        Log.e("findme", "I got here");
+        counter++;
         if (goalData != null) {
             goalData = null;
         }
         Cursor cursor = context.getContentResolver().query(
-                TimeGoalieContract.getGoalsThatHaveGoalEntryForToday(),
+                TimeGoalieContract.buildGetAllGoalsForCurrentDayOfWeekQueryUri(
+                        TimeGoalieDateUtils.getDayIdFromToday()),
                 null,
                 null,
-                new String[]{TimeGoalieDateUtils.
-                        getSqlDateString(BaseApplication.getActiveCalendarDate())},
+                null,
                 null
         );
+//        Cursor cursor = context.getContentResolver().query(
+//                TimeGoalieContract.getGoalsThatHaveGoalEntryForToday(),
+//                null,
+//                null,
+//                new String[]{TimeGoalieDateUtils.
+//                        getSqlDateString(BaseApplication.getActiveCalendarDate())},
+//                null
+//        );
         if (cursor != null) {
             goalData = Goal.createGoalListWithGoalEntriesFromCursor(cursor);
             cursor.close();
@@ -80,6 +83,8 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
 
     @Override
     public RemoteViews getViewAt(int i) {
+        context.getSharedPreferences("timeGoalieWidget",Context.MODE_PRIVATE).edit().putBoolean("hasWidget",true).apply();
+
         if (goalData != null && goalData.size() > 0) {
             final Goal goal = goalData.get(i);
 
@@ -98,10 +103,9 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
                     views.setViewVisibility(R.id.widget_yes_no_checkbox_on, View.VISIBLE);
                 }
 
-                Log.e("myMindbuilders-before", goal.getName() + " " + goal.getGoalId() + " " + Boolean.toString(goal.getGoalEntry().getHasSucceeded()));
+
                 views.setOnClickFillInIntent(R.id.widget_yes_no_checkbox,
                         TimeGoalieWidgetProvider.getUpdateYesNoGoalFillInIntent(goal));
-                Log.e("myMindbuilders-after", goal.getName() + " " + goal.getGoalId() + " " + Boolean.toString(goal.getGoalEntry().getHasSucceeded()));
 
             } else { //Time limit Goal
                 views = new RemoteViews(context.getPackageName(),
@@ -113,37 +117,14 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
 
                 //Set up the time goal if goals are running
                 if (goal.getGoalEntry().isRunning()) {
-                    Log.e("myMindbuilders-after", goal.getName() + " " + goal.getGoalId() + " " + Boolean.toString(goal.getGoalEntry().isRunning()));
+
                     views.setTextViewText(R.id.start_stop, context.getString(R.string.stop));
-
-
-                    //not sure if I can do this
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            long newtime = goal.getGoalSeconds();
-                            if (goal.getGoalEntry() != null) {
-                                newtime = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
-                            }
-
-//                            TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
-//                           // TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
-//                        }
-//                    });
-//                    TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
-
-                        }
-                    });
-
-
 
                 } else {
                     views.setTextViewText(R.id.start_stop, context.getString(R.string.start));
                 }
-
-                Log.e("myMindbuilders-before", goal.getName() + " " + goal.getGoalId() + " " + Boolean.toString(goal.getGoalEntry().isRunning()));
                 views.setOnClickFillInIntent(R.id.start_stop, TimeGoalieWidgetProvider.
-                        getUpdateTimeGoalFillInIntent(goal));
+                        getUpdateTimeGoalFillInIntent(goal, context));
                 TimeGoalieUtils.setTimeTextLabel(goal, timeText, timeOutOfText);
 
 
@@ -151,8 +132,13 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
 //
             }
 
-            if (views != null) {
-                views.setTextViewText(R.id.widget_goal_tv, goal.getName());
+            //  if (views != null) {
+            views.setTextViewText(R.id.widget_goal_tv, goal.getName());
+            //   }
+            if (goalData.size() == 1) {
+                lastView = views;
+            } else {
+                lastView = null;
             }
             return views;
         } else
@@ -166,7 +152,7 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
 
     @Override
     public RemoteViews getLoadingView() {
-        return null;
+        return lastView;
     }
 
     @Override

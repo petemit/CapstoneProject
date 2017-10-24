@@ -4,13 +4,15 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
 import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,33 +23,43 @@ import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
-import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
-import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
-import us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
+import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
+import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
+import us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider;
+/*
+adb shell setprop debug.firebase.analytics.app us.mindbuilders.petemit.timegoalie
+
+adb shell setprop debug.firebase.analytics.app .none.
+ */
 
 /**
  * List of Goals.  In multi-pane, shows reports as well {@link GoalReportActivity}
  */
 public class GoalListActivity extends AppCompatActivity implements View.OnClickListener,
         LoaderManager.LoaderCallbacks<Cursor>, DatePickerDialog.OnDateSetListener,
-        GoalRecyclerViewAdapter.GoalCounter {
+        GoalRecyclerViewAdapter.GoalCounter, GoalListViewCallback {
     private static final int GOAL_LOADER_ID = 4;
     private static final String noDateString = "NODATE";
-    private GoalRecyclerViewAdapter rvAdapter;
     Spinner datespinner;
+    GoalReportFragment fragment;
+    RecyclerView recyclerView;
+    private GoalRecyclerViewAdapter rvAdapter;
     private TextView dateSpinnerTextView;
     private ArrayAdapter<String> spinnerAdapter;
     private boolean isToday;
     private ArrayList<Goal> goalArrayList;
     private int successfulGoalCount = 0;
     private TextView tv_successfulGoalCount;
+    private View noGoalsView;
+    private FirebaseAnalytics firebaseAnalytics;
 
+    private TimeGoalieReportUpdater timeGoalieReportUpdater;
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
@@ -57,8 +69,20 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     private boolean mTwoPane;
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (fragment != null) {
+            getSupportFragmentManager().putFragment(outState, "report_fragment", fragment);
+        }
+
+    }
+
+
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_goal_list);
         getSupportLoaderManager().initLoader(GOAL_LOADER_ID, null, this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -66,18 +90,31 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         rvAdapter = new GoalRecyclerViewAdapter(this, this, this);
         toolbar.setTitle(getTitle());
         tv_successfulGoalCount = findViewById(R.id.tv_numberOfGoalsCleared);
+        noGoalsView = findViewById(R.id.no_goals_frame);
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Bundle firebaseBundle = new Bundle();
+                firebaseBundle.putString(FirebaseAnalytics.Param.ITEM_ID, String.valueOf(R.id.fab));
+                firebaseBundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "Add New Goal FAB Click");
+                firebaseBundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "fab");
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, firebaseBundle);
+
                 startActivity(new Intent(getBaseContext(), NewGoalActivity.class));
             }
         });
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.goal_list);
+        recyclerView = findViewById(R.id.goal_list);
+        recyclerView.setItemAnimator(new RvItemAnimator());
         if (recyclerView != null) {
+            //Todo is this going to break animations?
+            recyclerView.getItemAnimator().setChangeDuration(0);
             recyclerView.setAdapter(rvAdapter);
+        //    recyclerView.getRecycledViewPool().setMaxRecycledViews(2,0);
         }
 
         if (findViewById(R.id.goal_detail_container) != null) {
@@ -88,23 +125,42 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
             mTwoPane = true;
         }
 
+        if (savedInstanceState != null) {
+            fragment = (GoalReportFragment) getSupportFragmentManager().
+                    getFragment(savedInstanceState, "report_fragment");
+        }
 
+        if (mTwoPane) {
+            if (savedInstanceState == null || getSupportFragmentManager().getFragments().size() == 0) {
+                // Create the detail fragment and add it to the activity
+                // using a fragment transaction.
+                Bundle arguments = new Bundle();
+                fragment = new GoalReportFragment();
+                timeGoalieReportUpdater = fragment;
+                fragment.setArguments(arguments);
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.goal_detail_container, fragment)
+                        .commit();
+
+            }
+            if (fragment != null) {
+                timeGoalieReportUpdater = fragment;
+            }
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        BaseApplication.getGoalEntryController().setGoalListViewCallback(this);
         getSupportLoaderManager().restartLoader(GOAL_LOADER_ID, null, this);
         rvAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onPause() {
+        BaseApplication.getGoalEntryController().setGoalListViewCallback(null);
         super.onPause();
-        for (TimeGoalieAlarmObject tgoal : BaseApplication.getTimeGoalieAlarmObjects()) {
-            if (tgoal.getCountDownTimer() != null)
-                tgoal.getCountDownTimer().cancel();
-        }
     }
 
     @Override
@@ -122,7 +178,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    android.support.v4.app.DialogFragment dateFrag = new myDatePickerFragment();
+                    android.support.v4.app.DialogFragment dateFrag = new MyDatePickerFragment();
                     dateFrag.show(getSupportFragmentManager(), "datepicker");
                     return true;
                 } else {
@@ -154,7 +210,6 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.settings_key) {
@@ -170,33 +225,9 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         return true;
     }
 
-    /**
-     * The Goal List Activity will handle onClicks
-     *
-     * @param v
-     */
     @Override
     public void onClick(View v) {
-
-        // TODO: 9/15/2017 implement logic to support editing pencil
-//        if (mTwoPane) {
-//            Bundle arguments = new Bundle();
-//       //     arguments.putString(GoalReportFragment.ARG_ITEM_ID, holder.mItem.id);
-//            GoalReportFragment fragment = new GoalReportFragment();
-//            fragment.setArguments(arguments);
-//            getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.goal_detail_container, fragment)
-//                    .commit();
-//        } else {
-//            Context context = v.getContext();
-//            Intent intent = new Intent(context, GoalReportActivity.class);
-//       //     intent.putExtra(GoalReportFragment.ARG_ITEM_ID, holder.mItem.id);
-//
-//            context.startActivity(intent);
-//        }
-
     }
-
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -243,25 +274,44 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
             }
 
         }
-        tv_successfulGoalCount.setText(successfulGoalCount+"");
+        tv_successfulGoalCount.setText(String.valueOf(successfulGoalCount));
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        successfulGoalCount=0;
+        successfulGoalCount = 0;
         tv_successfulGoalCount.setText(String.valueOf(successfulGoalCount));
         //creates arraylist of goals
         goalArrayList = (Goal.createGoalListWithGoalEntriesFromCursor(data));
+        boolean startEngine = false;
+        for (int i = 0; i < goalArrayList.size(); i++) {
+            if (goalArrayList.get(i).getGoalEntry() != null) {
+                if (goalArrayList.get(i).getGoalEntry().isRunning()){
+                    startEngine = true;
+                    break;
+                }
+            }
+        }
+        if (startEngine) {
+            BaseApplication.getGoalEntryController().setGoalListViewCallback(this);
+            BaseApplication.getGoalEntryController().startEngine(goalArrayList);
+        }
         rvAdapter.swapCursor(goalArrayList, isToday);
         rvAdapter.notifyDataSetChanged();
+        if (goalArrayList.size() > 0) {
+            if (recyclerView != null) {
+                recyclerView.setVisibility(View.VISIBLE);
+                noGoalsView.setVisibility(View.GONE);
+            }
+
+        } else {
+            recyclerView.setVisibility(View.GONE);
+            noGoalsView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        for (TimeGoalieAlarmObject tgoal : BaseApplication.getTimeGoalieAlarmObjects()) {
-            if (tgoal.getCountDownTimer() != null)
-                tgoal.getCountDownTimer().cancel();
-        }
         rvAdapter.swapCursor(null);
     }
 
@@ -270,16 +320,13 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         super.onStop();
         Intent intent = new Intent(getBaseContext(), TimeGoalieWidgetProvider.class);
         intent.setAction(TimeGoalieWidgetProvider.ACTION_GET_GOALS_FOR_TODAY);
-       this.sendBroadcast(intent);
+        this.sendBroadcast(intent);
     }
 
     @Override
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
         Calendar cal = Calendar.getInstance();
         cal.clear();
-        int er = i;
-        int ere = i1;
-        int eree = i2;
         cal.set(i, i1, i2);
         //very important to set date first
         BaseApplication.setActiveCalendarDate(cal);
@@ -292,9 +339,34 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void updateGoalCounter(int successfulGoalCount) {
-        //You know... I should just read from the database.  That'd be better.
-     //   this.successfulGoalCount=successfulGoalCount;
 
         tv_successfulGoalCount.setText(String.valueOf(successfulGoalCount));
+        if (timeGoalieReportUpdater != null) {
+            timeGoalieReportUpdater.updateReport();
+        }
+    }
+
+    @Override
+    public void update(final int position) {
+//        //todo find out why position isn't working
+//        if (!recyclerView.isComputingLayout()) {
+//            recyclerView.getAdapter().notifyDataSetChanged();
+//        }
+//        else {
+//            Handler handler = new Handler();
+//            Runnable runnable = new Runnable() {
+//                @Override
+//                public void run() {
+//                    SystemClock.sleep(200);
+//                    update(position);
+//                }
+//            };
+//            handler.post(runnable);
+//        }
+        recyclerView.getAdapter().notifyItemChanged(position);
+    }
+
+    public interface TimeGoalieReportUpdater {
+        void updateReport();
     }
 }

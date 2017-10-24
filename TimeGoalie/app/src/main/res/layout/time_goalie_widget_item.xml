@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/top_margin"
+    android:orientation="vertical"
 
-    android:orientation="vertical">
+    android:paddingTop="@dimen/top_margin">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,8 +14,8 @@
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
@@ -23,7 +23,7 @@
                 style="@style/TimeGoalTheme.WidgetTextTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left"
+                android:layout_gravity="start"
                 android:layout_marginStart="@dimen/half_margin"
                 tools:text="@string/dummy_goal_title" />
 
@@ -35,7 +35,7 @@
                 <TextView
                     android:id="@+id/widget_time_tv"
                     style="@style/TimeGoalTheme.WidgetText"
-                    android:layout_width="@dimen/time_tv"
+                    android:layout_width="@dimen/widget_time_width"
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/half_margin"
                     android:gravity="center_vertical"
@@ -48,7 +48,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight=".5"
-                    android:gravity="center|left"
+                    android:gravity="center|start"
                     android:visibility="visible"
                     tools:text=" / 00:00:00" />
 
@@ -70,9 +70,10 @@
                 style="@style/TimeGoalTheme.ButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
-
                 android:layout_gravity="center"
+
                 android:layout_marginEnd="@dimen/right_margin"
+                android:contentDescription="@string/start_stop_goal_timer_description"
                 android:text="@string/start" />
         </FrameLayout>
     </LinearLayout>
@@ -82,6 +83,6 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="@dimen/top_margin"
-        android:background="@android:color/darker_gray"></LinearLayout>
+        android:background="@android:color/darker_gray" />
 
 </LinearLayout>
