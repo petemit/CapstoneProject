@@ -33,11 +33,13 @@ import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.EntryXComparator;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -138,11 +140,12 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
                     selectedScope = scopeEnum.WEEKLY.name();
                 } else {
                     loaderBundle.putString(getString(R.string.goal_scope), scopeEnum.MONTHLY.name());
+                    selectedScope = scopeEnum.MONTHLY.name();
                 }
 
                 if (getActivity().getSupportLoaderManager().getLoader(GOAL_REPORT_LOADER_ID) != null){
                     getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID, loaderBundle, mySelf);
-                    selectedScope = scopeEnum.MONTHLY.name();
+
                 }
             }
         });
@@ -297,7 +300,8 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
                     }
                 }
                 for (int i = 0; i < weekIntervals.size(); i++) {
-                    Entry entry = new Entry(i, weekMap.get(weekIntervals.get(i).getBeginningOfWeek()).size());
+                    int i2 = weekIntervals.size()-i-1;
+                    Entry entry = new Entry(i, weekMap.get(weekIntervals.get(i2).getBeginningOfWeek()).size());
                     entries.add(entry);
                 }
             }
@@ -337,12 +341,13 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
                     }
                 }
                 for (int i = 0; i < monthIntervals.size(); i++) {
-                    Entry entry = new Entry(i, monthMap.get(monthIntervals.get(i).getBegOfMonth()).size());
+                    int i2 = monthIntervals.size()-i-1;
+                    Entry entry = new Entry(i, monthMap.get(monthIntervals.get(i2).getBegOfMonth()).size());
                     entries.add(entry);
                 }
             }
         }
-
+        Collections.sort(entries, new EntryXComparator());
         LineDataSet dataSet = new LineDataSet(entries, "Total Goals Saved");
         dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
         dataSet.setColor(ColorTemplate.getHoloBlue());
