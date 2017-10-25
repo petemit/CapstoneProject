@@ -14,7 +14,15 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:paddingBottom="@dimen/top_margin"
+        android:animateLayoutChanges="true"
         android:layout_height="match_parent">
+
+        <include
+            layout="@layout/delete_button"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:visibility="invisible"
+            />
 
         <include
             layout="@layout/goal_title_layout"
@@ -24,6 +32,17 @@
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginStart="@dimen/left_margin"
             android:layout_marginTop="@dimen/half_margin" />
+
+        <ToggleButton xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/yes_no_pencil_button"
+            android:layout_width="@dimen/pencil_size"
+            android:layout_height="@dimen/pencil_size"
+            android:background="@drawable/ic_edit"
+            app:layout_constraintRight_toRightOf="@+id/yes_no_checkbox"
+            app:layout_constraintTop_toTopOf="@id/tv_goal_title"
+            android:textOff=""
+            android:textOn="" />
+
 
         <ImageView
             android:id="@+id/goal_image"

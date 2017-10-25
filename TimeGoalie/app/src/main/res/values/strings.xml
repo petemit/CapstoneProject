@@ -47,4 +47,5 @@
     <string name="report_goal_selection_key">report_goal_selection_key</string>
     <string name="all_goals">All Goals</string>
     <string name="selected_scope_key">selected_scope</string>
+    <string name="delete_button_content_description">Delete Button</string>
 </resources>

@@ -30,6 +30,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.CompoundButton;
 
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -44,6 +45,7 @@ import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntryGoalCounter;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
+import us.mindbuilders.petemit.timegoalie.data.DeleteGoal;
 import us.mindbuilders.petemit.timegoalie.data.GetSuccessfulGoalCount;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
@@ -135,7 +137,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
     }
 
     @Override
-    public void onBindViewHolder(final GoalViewHolder holder, int position) {
+    public void onBindViewHolder(final GoalViewHolder holder, final int position) {
         if (getItemCount() > 0) {
             final Goal goal = goalArrayList.get(position);
 
@@ -474,7 +476,21 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                 new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
             }
 
+            //Let's do the delete button
 
+            if (holder.deleteButton != null) {
+                holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        goalArrayList.remove(position);
+                        notifyItemRangeChanged(position, getItemCount());
+                        notifyItemRemoved(position);
+
+                        new DeleteGoal(context).execute(goal);
+
+                    }
+                });
+            }
 
 
         } //end if itemviewcount
@@ -518,6 +534,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
         private AppCompatCheckBox goalCheckBox;
         private TranslateAnimation moveSoccerBallAnim;
         private ImageView soccerBallImage;
+        private ToggleButton yes_no_pencil;
+        private ImageButton deleteButton;
 
 
         public GoalViewHolder(View view) {
@@ -525,9 +543,11 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
             mView = view;
             tv_goaltitle = view.findViewById(R.id.tv_goal_title);
             pencil = view.findViewById(R.id.pencil_button);
+            yes_no_pencil = view.findViewById(R.id.yes_no_pencil_button);
             editButtons = view.findViewById(R.id.edit_button_ll);
             startStopTimer = view.findViewById(R.id.start_stop);
             time_tv = view.findViewById(R.id.timeTextView);
+            deleteButton = view.findViewById(R.id.delete_button);
 
             smallAdd = view.findViewById(R.id.plus_small);
             mediumAdd = view.findViewById(R.id.plus_medium);
@@ -551,9 +571,29 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                         } else {
                             editButtons.setVisibility(View.GONE);
                         }
+
+                        if (deleteButton.getVisibility() != View.VISIBLE) {
+                            deleteButton.setVisibility(View.VISIBLE);
+                        } else {
+                            deleteButton.setVisibility(View.INVISIBLE);
+                        }
                     }
                 });
             }
+
+            if (yes_no_pencil != null) {
+                yes_no_pencil.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (deleteButton.getVisibility() != View.VISIBLE) {
+                            deleteButton.setVisibility(View.VISIBLE);
+                        } else {
+                            deleteButton.setVisibility(View.INVISIBLE);
+                        }
+                    }
+                });
+            }
+
             if (seekbar != null) {
                 seekbar.setOnTouchListener(new View.OnTouchListener() {
                     @Override
