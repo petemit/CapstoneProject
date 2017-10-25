@@ -21,7 +21,8 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/goal_list"
         android:name="us.mindbuilders.petemit.timegoalie.GoalListFragment"
-        android:layout_width="@dimen/item_width"
+        android:layout_width="0dp"
+        android:layout_weight="4"
         android:layout_height="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
@@ -33,6 +34,6 @@
         android:id="@+id/goal_detail_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="3" />
+        android:layout_weight="5" />
 
 </LinearLayout>

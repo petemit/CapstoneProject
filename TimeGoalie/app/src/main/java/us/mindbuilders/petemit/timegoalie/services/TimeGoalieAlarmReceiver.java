@@ -61,7 +61,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                             new String[]{TimeGoalieDateUtils.getSqlDateString()},
                             null);
 
-                    if (goalEntryCursor != null) {
+                    if (goalEntryCursor != null && goalEntryCursor.getCount() > 0) {
                         goalEntryCursor.moveToFirst();
                         goalEntry = new GoalEntry(goalEntryCursor.getLong(
                                 goalEntryCursor.getColumnIndex(TimeGoalieContract.GoalEntries._ID)

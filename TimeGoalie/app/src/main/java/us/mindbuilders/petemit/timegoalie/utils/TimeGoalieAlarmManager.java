@@ -43,7 +43,6 @@ public class TimeGoalieAlarmManager {
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         alarmMgr.cancel(alarmPendingIntent);
-        Log.e("Mindbuilders", alarmMgr.getNextAlarmClock().getShowIntent().getCreatorPackage());
     }
 
 

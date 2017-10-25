@@ -154,8 +154,39 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
         db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-10-05',3000,1)");
         db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-10-04',3000,1)");
         db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-10-03',0,0)");
-        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-22',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-30',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-29',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-28',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-27',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-26',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-25',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-24',501,1)");
         db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-23',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-22',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-21',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-20',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-19',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-18',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-17',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-16',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-15',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-14',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-13',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-12',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-11',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-10',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-09',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-08',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-07',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-06',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-05',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-04',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-03',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-02',501,1)");
+        db.execSQL("insert into goalentries (goal_id,timestamp,seconds_elapsed, succeeded) VALUES (4, '2017-09-01',501,1)");
+
+
+
 
     }
 

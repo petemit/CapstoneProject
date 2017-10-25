@@ -1,7 +1,10 @@
 package us.mindbuilders.petemit.timegoalie.utils;
 
+import android.util.Log;
+
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,6 +18,7 @@ public class TimeGoalieDateUtils {
 
     private static GregorianCalendar gcal = new GregorianCalendar();
     public static SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    public static SimpleDateFormat monthFormat = new SimpleDateFormat("MMM");
 
     public static long getDayIdFromToday() {
         return gcal.get(Calendar.DAY_OF_WEEK) - 1;
@@ -56,6 +60,17 @@ public class TimeGoalieDateUtils {
     public static String getSqlDateString(Calendar cal) {
         String date = df.format(cal.getTime());
         return date;
+    }
+
+    public static String getMonthFromStringDate(String s){
+        String returnString="";
+        try {
+            returnString = monthFormat.format(df.parse(s));
+        }
+        catch (ParseException p){
+            Log.e("TimeGoalieDateUtils", p.toString());
+        }
+        return returnString;
     }
 
 }
