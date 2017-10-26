@@ -11,9 +11,10 @@
     <string name="plus_large_text">+15m</string>
     <string name="default_audio_value">2</string>
     <string name="settings">Settings</string>
+    <string name="silent_mode">Silent Mode</string>
+    <string name="daily_reminder">Daily Reminder</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
     <string name="daily">Daily</string>
     <string name="weekly">Weekly</string>
     <string name="hours">Hours</string>
