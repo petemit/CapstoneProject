@@ -23,6 +23,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
+import org.w3c.dom.Text;
+
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -54,6 +58,7 @@ public class NewGoalFragment extends Fragment {
     private LinearLayout weeklyCheckboxLinearLayout;
     private LinearLayout timeGoalPickersLinearLayout;
     private ArrayList<Day> selectedDays=new ArrayList<Day>();
+    private TextView timeGoalLabel;
     private CheckBox monCb;
     private CheckBox tueCb;
     private CheckBox wedCb;
@@ -63,6 +68,8 @@ public class NewGoalFragment extends Fragment {
     private CheckBox sunCb;
     private String[] day_array;
     private String[] day_array_values;
+
+    private FirebaseAnalytics firebaseAnalytics;
 
 
     public NewGoalFragment() {
@@ -83,6 +90,9 @@ public class NewGoalFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_new_goal, container, false);
 
+        //firebase analytic
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this.getContext());
+
         //Set up the Spinner
         goalTypeSpinner = (Spinner) view.findViewById(R.id.goal_type_spinner);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(getContext(),
@@ -102,6 +112,8 @@ public class NewGoalFragment extends Fragment {
         weeklyCb = view.findViewById(R.id.weekly_checkbox);
         weeklyCheckboxLinearLayout = view.findViewById(R.id.weekly_checkbox_list_ll);
         timeGoalPickersLinearLayout = view.findViewById(R.id.ll_time_goal_pickers);
+
+        timeGoalLabel = view.findViewById(R.id.time_goal_label);
 
         day_array = getResources().getStringArray(R.array.days_of_the_week);
         day_array_values = getResources().getStringArray(R.array.days_of_the_week_values);
@@ -194,11 +206,24 @@ public class NewGoalFragment extends Fragment {
                 }
 
 
+
                 Goal goal = new Goal();
                 goal.setName((newGoalEditText).getText().toString());
                 goal.setGoalTypeId(goalTypeSpinner.getSelectedItemId());
+
+                //if you AREN'T A YES NO GOAL
+                if (goal.getGoalTypeId()!=2) {
+                    if (npHour.getValue()==0 && npMinute.getValue()==0){
+                        Toast.makeText(getContext(),
+                                R.string.add_time_to_goal_msg, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
                 goal.setHours(npHour.getValue());
                 goal.setMinutes(npMinute.getValue());
+
+
+
 
                 goal.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
 
@@ -260,6 +285,35 @@ public class NewGoalFragment extends Fragment {
                 else {
                     goal.setIsWeekly(0);
                 }
+
+                if (firebaseAnalytics != null) {
+                    Bundle firebaseBundle = new Bundle();
+                    firebaseBundle.putString(FirebaseAnalytics.Param.ITEM_ID,
+                            String.valueOf(goal.getGoalTypeId()));
+                    firebaseBundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "new_goal");
+                    firebaseBundle.putString(FirebaseAnalytics.Param.ITEM_NAME, goal.getName());
+                    String goaldaysCommaSeparated="";
+                    if (goal.getGoalDays() != null && goal.getGoalDays().size() > 0 ) {
+
+                        for (int i = 0; i < goal.getGoalDays().size(); i++) {
+                            if (i == 0) {
+                                goaldaysCommaSeparated.concat(goal.getGoalDays().get(i).getName());
+                            }
+                            else {
+                                goaldaysCommaSeparated.concat(",");
+                                goaldaysCommaSeparated.concat(goal.getGoalDays().get(i).getName());
+                            }
+                        }
+                    }
+                    firebaseBundle.putString(getString(R.string.goal_days_string),goaldaysCommaSeparated);
+                    firebaseBundle.putString(getString(R.string.goal_length),
+                            String.valueOf(goal.getGoalSeconds()));
+                    firebaseBundle.putString(getString(R.string.is_daily_goal_string)
+                            ,String.valueOf(goal.getIsDaily()));
+                    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT,
+                            firebaseBundle);
+                }
+
                 new InsertNewGoal(getContext()).execute(goal);
                 getContext().startActivity(new Intent(getContext(), GoalListActivity.class));
             }
@@ -271,10 +325,12 @@ public class NewGoalFragment extends Fragment {
 
     private void hideTimeGoalPickers() {
         timeGoalPickersLinearLayout.setVisibility(View.GONE);
+        timeGoalLabel.setVisibility(View.GONE);
     }
 
     private void showTimeGoalPickers() {
         timeGoalPickersLinearLayout.setVisibility(View.VISIBLE);
+        timeGoalLabel.setVisibility(View.VISIBLE);
     }
 
     private void hideWeeklyCheckboxes() {

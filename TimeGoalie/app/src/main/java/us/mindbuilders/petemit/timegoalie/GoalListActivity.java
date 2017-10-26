@@ -23,6 +23,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
@@ -32,6 +34,13 @@ import us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+
+/*
+adb shell setprop debug.firebase.analytics.app us.mindbuilders.petemit.timegoalie
+
+adb shell setprop debug.firebase.analytics.app .none.
+
+ */
 /**
  * List of Goals.  In multi-pane, shows reports as well {@link GoalReportActivity}
  */
@@ -49,6 +58,8 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     GoalReportFragment fragment;
     private int successfulGoalCount = 0;
     private TextView tv_successfulGoalCount;
+
+    private FirebaseAnalytics firebaseAnalytics;
 
     private TimeGoalieReportUpdater timeGoalieReportUpdater;
 
@@ -92,10 +103,18 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         toolbar.setTitle(getTitle());
         tv_successfulGoalCount = findViewById(R.id.tv_numberOfGoalsCleared);
 
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Bundle firebaseBundle = new Bundle();
+                firebaseBundle.putString(FirebaseAnalytics.Param.ITEM_ID, String.valueOf(R.id.fab));
+                firebaseBundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "Add New Goal FAB Click");
+                firebaseBundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "fab");
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, firebaseBundle);
+
                 startActivity(new Intent(getBaseContext(), NewGoalActivity.class));
             }
         });
