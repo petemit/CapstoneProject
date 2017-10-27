@@ -34,11 +34,13 @@ import us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-
+// TODO: 10/26/2017 delete this
 /*
 adb shell setprop debug.firebase.analytics.app us.mindbuilders.petemit.timegoalie
 
 adb shell setprop debug.firebase.analytics.app .none.
+
+//eioYARk9P3o:APA91bFu4YOZNHHWXVUF7fm1_XAW80B5qIQHD4QVcCMY7fB3Rq0RnS2FmOQOBbp3RELIOAZyzbbASDmSftgf2LwQK65vZO6eJKWVmjLlEb43sEusJy_Cov9XvV-g2Fy39RpoOe--L0Y-
 
  */
 /**

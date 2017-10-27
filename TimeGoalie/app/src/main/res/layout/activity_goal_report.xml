@@ -8,6 +8,7 @@
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:title="@string/time_goalie_reports"
         android:theme="@style/TimeGoalTheme.AppBarOverlay">
 
     <android.support.v7.widget.Toolbar

@@ -53,4 +53,5 @@
     <string name="add_time_to_goal_msg">Please add some time to your Time Goal</string>
     <string name="goal_days_string">goal_days</string>
     <string name="is_daily_goal_string">is_daily_goal</string>
+    <string name="time_goalie">Time Goalie</string>
 </resources>

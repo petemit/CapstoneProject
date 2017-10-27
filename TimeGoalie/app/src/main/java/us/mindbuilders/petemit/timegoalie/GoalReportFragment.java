@@ -132,6 +132,7 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.goal_report_fragment, container, false);
 
+
         // Show the dummy content as text in a TextView.
         chart = rootView.findViewById(R.id.report_chart);
         goalSpinner = rootView.findViewById(R.id.report_goal_spinner);

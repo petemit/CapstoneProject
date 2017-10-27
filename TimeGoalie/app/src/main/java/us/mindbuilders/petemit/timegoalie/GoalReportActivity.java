@@ -23,6 +23,7 @@ public class GoalReportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_goal_report);
         Toolbar toolbar = (Toolbar) findViewById(R.id.report_toolbar);
+        toolbar.setTitle(getString(R.string.reports));
         setSupportActionBar(toolbar);
 
         // Show the Up button in the action bar.
