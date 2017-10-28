@@ -43,12 +43,30 @@ admin.initializeApp(functions.config().firebase);
 //
 // });
 
+
 exports.cronEndpoint = functions.https.onRequest((req, res) => {
   console.log("woohoo");
-  res.send('made it back');
-});
 
+const options = {
+  priority: "high",
+  timeToLive: 100
+}
 
-exports.helloPubSub = functions.pubsub.topic('dailyNote').onPublish(event => {
-  console.log("I got it");
+  var topic = 'dailyNotification' // required fill with device token or topics
+  var payload = {
+      notification: {
+          title: 'Time Goalie',
+          body: 'Don\'t forget to save some goals today!'
+      }
+  };
+  //promise style
+  admin.messaging().sendToTopic(topic, payload, options)
+      .then(function(response){
+          console.log("Successfully sent with response: ", response);
+      })
+      .catch(function(err){
+          console.log("Something has gone wrong!");
+          console.error(err);
+      });
+  res.send('sent');
 });
