@@ -11,6 +11,7 @@ import java.util.Calendar;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Day;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoal;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
@@ -25,6 +26,7 @@ public class BaseApplication extends Application {
     private static Calendar activeCalendarDate = Calendar.getInstance();
     private static Context context;
     private static GoalActivityListListener goalActivityListListener;
+    private static long lastTimeSecondUpdated;
 
     public static ArrayList<TimeGoalieAlarmObject> getTimeGoalieAlarmObjects() {
         return timeGoalieAlarmObjects;
@@ -38,8 +40,16 @@ public class BaseApplication extends Application {
         BaseApplication.goalActivityListListener = goalActivityListListener;
     }
 
+    public static long getLastTimeSecondUpdated() {
+        return lastTimeSecondUpdated;
+    }
+
+    public static void setLastTimeSecondUpdated(long lastTimeSecondUpdated) {
+        BaseApplication.lastTimeSecondUpdated = lastTimeSecondUpdated;
+    }
+
     public interface GoalActivityListListener {
-        void notifyChanges(Goal goal);
+        void notifyChanges(GoalEntry goalEntry);
     }
 
     public static void setTimeGoalieAlarmObjects(ArrayList<TimeGoalieAlarmObject> timeGoalieAlarmObjects) {
@@ -47,11 +57,15 @@ public class BaseApplication extends Application {
     }
 
     public static Calendar getActiveCalendarDate() {
+        if (activeCalendarDate == null) {
+            return Calendar.getInstance();
+        }
         return activeCalendarDate;
     }
 
     public static void setActiveCalendarDate(Calendar activeCalendarDate) {
         BaseApplication.activeCalendarDate = activeCalendarDate;
+
     }
 
     @Override

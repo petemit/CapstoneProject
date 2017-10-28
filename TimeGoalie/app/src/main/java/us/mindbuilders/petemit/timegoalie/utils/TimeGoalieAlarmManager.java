@@ -273,6 +273,7 @@ public class TimeGoalieAlarmManager {
                         timeGoalieAlarmObject.getAlarmDonePendingIntent());
             }
 
+
             TimeGoalieAlarmManager.setTimeGoalAlarm(
                     TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY,
                     context, null,
@@ -280,7 +281,7 @@ public class TimeGoalieAlarmManager {
                             context,
                             TimeGoalieAlarmReceiver.
                                     createEverySecondDbUpdateAlarmIntent(context,
-                                            (int)goal.getGoalId()),(int)goal.getGoalId()));;
+                                            (int)goal.getGoalId()),(int)goal.getGoalId()));
 
 
             //Sets up the running out of time alert

@@ -59,6 +59,7 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
                     else {
                         goalEntry.setRunning(!goalEntry.isRunning());
 
+                        //culprit
                         //start the secondly alarm
                         TimeGoalieAlarmManager.setTimeGoalAlarm(
                                 TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY,

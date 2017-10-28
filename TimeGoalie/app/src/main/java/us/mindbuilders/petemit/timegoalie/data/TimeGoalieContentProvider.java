@@ -52,9 +52,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
     private static final int GOALS_ENTRIES_ACCOMPLISHED_BY_MONTH = 606;
     private static final int GOALS_ENTRIES_ACCOMPLISHED_BY_WEEK_BY_GOAL_ID = 607;
     private static final int GOALS_ENTRIES_ACCOMPLISHED_BY_MONTH_BY_GOAL_ID = 608;
-
-
-
+    private static final int GOAL_ENTRIES_RUNNING = 609;
 
     private static final String PARAMETER = "=? ";
 
@@ -117,6 +115,9 @@ public class TimeGoalieContentProvider extends ContentProvider {
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME +
                         "/months/goal/#", GOALS_ENTRIES_ACCOMPLISHED_BY_MONTH_BY_GOAL_ID);
+        matcher.addURI(TimeGoalieContract.AUTHORITY,
+                TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME + "/running/date",
+                GOAL_ENTRIES_RUNNING);
 
         return matcher;
 
@@ -377,6 +378,24 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         null,
                         null);
                 break;
+
+
+            case GOAL_ENTRIES_RUNNING:
+                selection = TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME
+                        .concat(PARAMETER)
+                        .concat(" AND ")
+                .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISRUNNING)
+                .concat(" = 1 ");
+
+                cursor = db.query(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,
+                        null,
+                        selection,
+                        suppliedSelectionArgs,
+                        null,
+                        null,
+                        TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID);
+                break;
+
                 //goaldays
             case GOALS_BY_DAY_ID:
 

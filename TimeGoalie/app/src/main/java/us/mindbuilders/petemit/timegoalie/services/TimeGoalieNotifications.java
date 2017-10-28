@@ -5,10 +5,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v7.preference.PreferenceManager;
+
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import us.mindbuilders.petemit.timegoalie.GoalListActivity;
 import us.mindbuilders.petemit.timegoalie.R;
@@ -50,5 +54,15 @@ public class TimeGoalieNotifications {
         builder.setContentIntent(pendingIntent);
 
         notifyMgr.notify(1,builder.build());
+    }
+
+    public static void subscribeFromPref(boolean isSubscribed) {
+
+        if (isSubscribed) {
+            FirebaseMessaging.getInstance().subscribeToTopic("dailyNotification");
+        }
+        else {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("dailyNotification");
+        }
     }
 }

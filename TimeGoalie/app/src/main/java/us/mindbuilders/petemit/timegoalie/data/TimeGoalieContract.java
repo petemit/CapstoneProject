@@ -133,6 +133,11 @@ public class TimeGoalieContract {
                 .appendPath("date").build());
     }
 
+    public static Uri getRunningGoalEntriesThatHaveGoalEntryForToday() {
+        return (GoalEntries.CONTENT_URI.buildUpon()
+                .appendPath("running").appendPath("date").build());
+    }
+
     public static Uri getSuccessfulGoalsForToday(String date) {
         return (GoalEntries.CONTENT_URI.buildUpon()
         .appendPath("successfulGoals").appendQueryParameter("date",date).build());

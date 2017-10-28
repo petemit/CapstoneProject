@@ -293,7 +293,9 @@ public class GoalEntry implements Parcelable {
             while(cursor.moveToNext()) {
                 GoalEntry goalEntry = new GoalEntry(cursor.getLong(cursor.
                         getColumnIndex(TimeGoalieContract.GoalEntries._ID))
-                        , cursor.getColumnIndex(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID)
+                        , cursor.getLong(
+                                cursor.getColumnIndex(
+                                        TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID))
                         , cursor.getString(
                         cursor.getColumnIndex(TimeGoalieContract
                                 .GoalEntries.GOALENTRIES_COLUMN_DATETIME)));

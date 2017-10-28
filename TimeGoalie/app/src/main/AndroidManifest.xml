@@ -5,6 +5,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+    <meta-data
+        android:name="com.google.firebase.messaging.default_notification_icon"
+        android:resource="@drawable/ic_goalie_with_ball" />
+
     <application
         android:name=".BaseApplication"
         android:allowBackup="true"
@@ -46,6 +50,8 @@
                 <action android:name="us.mindbuilders.petemit.timegoalie.GOAL_ONE_MINUTE_WARNING" />
                 <action android:name="us.mindbuilders.petemit.timegoalie.SECONDLY_GOAL_UPDATE_ENTRY" />
             </intent-filter>
+
+
         </receiver>
 
 

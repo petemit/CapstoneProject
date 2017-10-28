@@ -2,13 +2,16 @@ package us.mindbuilders.petemit.timegoalie;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.SharedPreferencesCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
@@ -24,6 +27,7 @@ import android.widget.TextView;
 
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
@@ -97,6 +101,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_goal_list);
         getSupportLoaderManager().initLoader(GOAL_LOADER_ID, null, this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -156,7 +161,6 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
             }
         }
     }
-
 
     @Override
     protected void onResume() {
@@ -352,9 +356,6 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
         Calendar cal = Calendar.getInstance();
         cal.clear();
-        int er = i;
-        int ere = i1;
-        int eree = i2;
         cal.set(i, i1, i2);
         //very important to set date first
         BaseApplication.setActiveCalendarDate(cal);

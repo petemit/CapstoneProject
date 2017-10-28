@@ -197,7 +197,7 @@ public class NewGoalFragment extends Fragment {
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String goalname = newGoalEditText.getText().toString();
+                String goalname = newGoalEditText.getText().toString().replaceAll("[+.^<>:,]","");
                 //Do not create goal if Goalname is empty
                 if (goalname.equalsIgnoreCase("")) {
                     Toast.makeText(getContext(),
@@ -208,7 +208,7 @@ public class NewGoalFragment extends Fragment {
 
 
                 Goal goal = new Goal();
-                goal.setName((newGoalEditText).getText().toString());
+                goal.setName(goalname);
                 goal.setGoalTypeId(goalTypeSpinner.getSelectedItemId());
 
                 //if you AREN'T A YES NO GOAL

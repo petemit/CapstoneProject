@@ -73,12 +73,12 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
     private GoalEntryGoalCounter goalEntryGoalCounter;
 
     @Override
-    public void notifyChanges(Goal goal) {
+    public void notifyChanges(GoalEntry goalEntry) {
         if (goalArrayList != null) {
             for (int i = 0; i < goalArrayList.size(); i++) {
-                if (goal.getGoalId() == goalArrayList.get(i).getGoalId()) {
-                    if (goal.getGoalEntry() != null) {
-                        goalArrayList.get(i).setGoalEntry(goal.getGoalEntry());
+                if (goalEntry != null) {
+                    if (goalEntry.getGoal_id() == goalArrayList.get(i).getGoalId()) {
+                        goalArrayList.get(i).setGoalEntry(goalEntry);
                     }
                 }
             }
