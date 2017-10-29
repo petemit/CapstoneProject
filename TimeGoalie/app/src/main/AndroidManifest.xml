@@ -5,9 +5,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-    <meta-data
-        android:name="com.google.firebase.messaging.default_notification_icon"
-        android:resource="@drawable/ic_goalie_with_ball" />
 
     <application
         android:name=".BaseApplication"
@@ -80,6 +77,10 @@
             </intent-filter>
         </service>
 
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_goalie_with_ball" />
 
     </application>
 
