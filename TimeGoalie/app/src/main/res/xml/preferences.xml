@@ -31,6 +31,13 @@
             android:title="@string/daily_reminder"
             android:summary="@string/daily_reminder"
             android:defaultValue="false"/>
+
+        <CheckBoxPreference
+            android:key="pref_disable_app_notifications"
+            android:disableDependentsState="true"
+            android:title="@string/disable_app_notifications"
+            android:summary="@string/disable_app_notifications_summary"
+            android:defaultValue="false"/>
     </PreferenceCategory>
 
 

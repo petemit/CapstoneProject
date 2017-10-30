@@ -45,6 +45,8 @@
     <string name="goal_scope">goal_scope</string>
     <string name="months">Months</string>
     <string name="weeks">Weeks</string>
+    <string name="disable_app_notifications">Disable App Notifications</string>
+    <string name="disable_app_notifications_summary">Disable All Timer Notifications</string>
     <string name="report_goal_selection_key">report_goal_selection_key</string>
     <string name="all_goals">All Goals</string>
     <string name="selected_scope_key">selected_scope</string>
@@ -55,4 +57,5 @@
     <string name="is_daily_goal_string">is_daily_goal</string>
     <string name="time_goalie">Time Goalie</string>
     <string name="pref_daily_notification_key">pref_daily_notification</string>
+    <string name="goal_finished">Goal finished</string>
 </resources>
