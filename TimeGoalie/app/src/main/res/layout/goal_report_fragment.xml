@@ -7,6 +7,7 @@
     <RadioGroup
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/select_scope_description"
 
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="@+id/report_chart"
@@ -16,12 +17,14 @@
             android:id="@+id/radio_button_months"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/months_description"
             android:text="@string/months"/>
 
         <RadioButton
             android:id="@+id/radio_button_weeks"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/weeks_description"
             android:text="@string/weeks" />
 
     </RadioGroup>
@@ -30,8 +33,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/report_goal_spinner"
+        android:contentDescription="@string/select_a_goal_or_all_goals_description"
         app:layout_constraintRight_toRightOf="@+id/report_chart"
-        app:layout_constraintBottom_toTopOf="@+id/report_chart"></Spinner>
+        app:layout_constraintBottom_toTopOf="@+id/report_chart" />
 
     <com.github.mikephil.charting.charts.LineChart xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/report_chart"

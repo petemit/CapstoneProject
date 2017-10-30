@@ -75,6 +75,7 @@
             android:scaleY="1.5"
             android:layout_height="@dimen/checkbox_size"
             android:layout_marginEnd="@dimen/extra_right_margin"
+            android:contentDescription="@string/yes_no_goal_checkbox_description"
 
             app:layout_constraintBottom_toBottomOf="@+id/goal_image"
             app:layout_constraintRight_toRightOf="parent"

@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/left_margin_edittext"
             android:layout_marginTop="@dimen/top_margin"
+            android:contentDescription="@string/type_a_new_goal_name"
             android:hint="@string/type_a_new_goal_name" />
         <View
             android:layout_width="match_parent"
@@ -41,15 +42,16 @@
                 android:text="@string/goal_type"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <Spinner
-                android:id="@+id/goal_type_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/left_margin"
-                android:layout_marginTop="@dimen/top_margin"
-                android:layout_weight="2"
-                android:prompt="@string/settings"
-                android:spinnerMode="dialog"></Spinner>
+        <Spinner
+            android:id="@+id/goal_type_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/select_a_goal_type_description"
+            android:layout_marginStart="@dimen/left_margin"
+            android:layout_marginTop="@dimen/top_margin"
+            android:layout_weight="2"
+            android:prompt="@string/settings"
+            android:spinnerMode="dialog" />
 
 
 
@@ -79,6 +81,7 @@
             <CheckBox
                 android:id="@+id/daily_checkbox"
                 android:layout_width="0dp"
+                android:contentDescription="@string/is_repeated_daily_description"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
@@ -106,6 +109,7 @@
             <CheckBox
                 android:id="@+id/weekly_checkbox"
                 android:layout_width="0dp"
+                android:contentDescription="@string/weekly"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
@@ -140,7 +144,7 @@
 
                 <CheckBox
                     android:id="@+id/checkbox_mon"
-
+                    android:contentDescription="@string/repeat_mondays_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     />
@@ -161,6 +165,7 @@
 
                 <CheckBox
                     android:id="@+id/checkbox_tue"
+                    android:contentDescription="@string/repeat_tuesdays_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
@@ -182,6 +187,7 @@
 
                 <CheckBox
                     android:id="@+id/checkbox_wed"
+                    android:contentDescription="@string/repeat_wednesdays_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
@@ -203,6 +209,7 @@
 
                 <CheckBox
                     android:id="@+id/checkbox_thu"
+                    android:contentDescription="@string/repeat_thursdays_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
@@ -225,6 +232,7 @@
                 <CheckBox
                     android:id="@+id/checkbox_fri"
                     android:layout_width="wrap_content"
+                    android:contentDescription="@string/repeat_fridays_description"
                     android:layout_height="wrap_content"
 
                     />
@@ -246,6 +254,7 @@
                 <CheckBox
                     android:id="@+id/checkbox_sat"
                     android:layout_width="wrap_content"
+                    android:contentDescription="@string/repeat_saturdays_description"
                     android:layout_height="wrap_content"
 
                     />
@@ -266,6 +275,7 @@
 
                 <CheckBox
                     android:id="@+id/checkbox_sun"
+                    android:contentDescription="@string/repeat_sundays_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
@@ -311,8 +321,9 @@
 
                 <NumberPicker
                     android:id="@+id/np_hour"
+                    android:contentDescription="@string/select_hours_description"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/number_picker_height"></NumberPicker>
+                    android:layout_height="@dimen/number_picker_height" />
             </LinearLayout>
 
             <LinearLayout
@@ -328,6 +339,7 @@
 
                 <NumberPicker
                     android:id="@+id/np_minute"
+                    android:contentDescription="@string/select_minutes_description"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/number_picker_height" />
             </LinearLayout>
@@ -337,6 +349,7 @@
             style="@style/TimeGoalTheme.ButtonStyle"
             android:id="@+id/button_create_new_goal"
             android:layout_width="wrap_content"
+            android:contentDescription="@string/create_goal_description"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/left_margin"
             android:layout_marginEnd="@dimen/right_margin"

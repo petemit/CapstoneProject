@@ -44,6 +44,7 @@
                 android:layout_height="@dimen/checkbox_size"
                 android:layout_marginEnd="@dimen/right_margin"
                 android:layout_gravity="center"
+                android:contentDescription="@string/yes_no_goal_checkbox_description"
                 android:background="@android:drawable/checkbox_on_background"
                 android:clickable="false"
                 android:focusable="false" />

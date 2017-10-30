@@ -6,5 +6,6 @@
     android:layout_marginRight="@dimen/right_margin"
     android:layout_width="wrap_content"
     android:layout_height="@dimen/start_stop_button_height"
+    android:contentDescription="@string/start_stop_goal_timer_description"
     android:textOff="@string/start"
     android:textOn="@string/stop" />

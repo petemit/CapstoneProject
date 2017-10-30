@@ -58,4 +58,25 @@
     <string name="time_goalie">Time Goalie</string>
     <string name="pref_daily_notification_key">pref_daily_notification</string>
     <string name="goal_finished">Goal finished</string>
+    <string name="edit_goal_button_description">Edit Goal Button</string>
+    <string name="start_stop_goal_timer_description">Start/Stop Goal Timer</string>
+    <string name="date_selection_description">Date Selection</string>
+    <string name="yes_no_goal_checkbox_description">Yes/No Goal Checkbox</string>
+    <string name="goal_title_description">Goal Title</string>
+    <string name="select_scope_description">Select Scope</string>
+    <string name="months_description">Months</string>
+    <string name="weeks_description">Weeks</string>
+    <string name="select_a_goal_or_all_goals_description">Select a Goal or All Goals</string>
+    <string name="select_a_goal_type_description">Select a Goal Type</string>
+    <string name="is_repeated_daily_description">Is repeated daily</string>
+    <string name="repeat_mondays_description">Repeat on Mondays</string>
+    <string name="repeat_tuesdays_description">Repeat on Tuesdays</string>
+    <string name="repeat_wednesdays_description">Repeat on Wednesdays</string>
+    <string name="repeat_thursdays_description">Repeat on Thursdays</string>
+    <string name="repeat_fridays_description">Repeat on Fridays</string>
+    <string name="repeat_saturdays_description">Repeat on Saturdays</string>
+    <string name="repeat_sundays_description">Repeat on Sundays</string>
+    <string name="select_hours_description">Select hours</string>
+    <string name="select_minutes_description">Select Minutes</string>
+    <string name="create_goal_description">Create Goal</string>
 </resources>
