@@ -22,11 +22,13 @@
     <dimen name="weekly_checkbox_height">70dp</dimen>
     <dimen name="soccerball_size">30dp</dimen>
     <dimen name="half_margin">8dp</dimen>
-    <dimen name="time_tv">70dp</dimen>
+    <dimen name="time_tv">75dp</dimen>
     <dimen name="tiny_margin">2dp</dimen>
     <dimen name="widget_min_height">200dp</dimen>
     <dimen name="widget_min_width">300dp</dimen>
     <dimen name="widget_frame_size">50dp</dimen>
     <dimen name="checkbox_size">30dp</dimen>
     <dimen name="extra_right_margin">20dp</dimen>
+    <dimen name="button_radius">20dp</dimen>
+    <dimen name="action_bar_height_list">100dp</dimen>
 </resources>

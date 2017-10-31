@@ -50,7 +50,7 @@
     <string name="report_goal_selection_key">report_goal_selection_key</string>
     <string name="all_goals">All Goals</string>
     <string name="selected_scope_key">selected_scope</string>
-    <string name="delete_button_content_description">Delete Button</string>
+    <string name="delete_button_content_description">Delete Goal</string>
     <string name="goal_length">goal_length</string>
     <string name="add_time_to_goal_msg">Please add some time to your Time Goal</string>
     <string name="goal_days_string">goal_days</string>
@@ -79,4 +79,13 @@
     <string name="select_hours_description">Select hours</string>
     <string name="select_minutes_description">Select Minutes</string>
     <string name="create_goal_description">Create Goal</string>
+    <string name="subtract_large_description">Subtract 15 minutes from today\'s goal</string>
+    <string name="subtract_medium_description">Subtract 10 minutes from today\'s goal</string>
+    <string name="subtract_small_description">Subtract 5 minutes from today\'s goal</string>
+    <string name="plus_small_description">add 5 minutes for today\'s goal</string>
+    <string name="plus_medium_description">add 10 minutes for today\'s goal</string>
+    <string name="plus_large_description">add 15 minutes for today\'s goal</string>
+    <string name="add_new_goal_description">Add New Goal</string>
+
+
 </resources>

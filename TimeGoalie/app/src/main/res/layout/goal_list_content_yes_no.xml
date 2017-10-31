@@ -37,6 +37,8 @@
             android:id="@+id/yes_no_pencil_button"
             android:layout_width="@dimen/pencil_size"
             android:layout_height="@dimen/pencil_size"
+            android:contentDescription="@string/edit_goal_button_description"
+            android:hapticFeedbackEnabled="true"
             android:background="@drawable/ic_edit"
             app:layout_constraintRight_toRightOf="@+id/yes_no_checkbox"
             app:layout_constraintTop_toTopOf="@id/tv_goal_title"
@@ -51,7 +53,7 @@
             android:layout_marginStart="@dimen/left_margin"
             android:layout_marginTop="@dimen/top_margin"
             android:background="@drawable/soccergoal_left"
-            android:paddingLeft="@dimen/left_margin"
+            android:paddingStart="@dimen/left_margin"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_goal_title" />
 
@@ -61,7 +63,7 @@
             android:layout_width="@dimen/soccerball_size"
             android:layout_height="@dimen/soccerball_size"
             android:background="@drawable/anim_soccerball_small"
-            android:paddingLeft="@dimen/left_margin"
+            android:paddingStart="@dimen/left_margin"
             app:layout_constraintBottom_toBottomOf="@+id/goal_image"
 
 
@@ -76,7 +78,7 @@
             android:layout_height="@dimen/checkbox_size"
             android:layout_marginEnd="@dimen/extra_right_margin"
             android:contentDescription="@string/yes_no_goal_checkbox_description"
-
+            android:hapticFeedbackEnabled="true"
             app:layout_constraintBottom_toBottomOf="@+id/goal_image"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@+id/goal_image" />

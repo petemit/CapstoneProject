@@ -13,31 +13,37 @@
     <Button
         android:id="@+id/minus_large"
         style="@style/TimeGoalTheme.EditButton"
+        android:contentDescription="@string/subtract_large_description"
         android:text="@string/minus_large_text" />
 
     <Button
         android:id="@+id/minus_medium"
         style="@style/TimeGoalTheme.EditButton"
+        android:contentDescription="@string/subtract_medium_description"
         android:text="@string/minus_medium_text" />
 
     <Button
         android:id="@+id/minus_small"
         style="@style/TimeGoalTheme.EditButton"
+        android:contentDescription="@string/subtract_small_description"
         android:text="@string/minus_small_text" />
 
     <Button
         android:id="@+id/plus_small"
         style="@style/TimeGoalTheme.EditButton"
+        android:contentDescription="@string/plus_small_description"
         android:text="@string/plus_small_text" />
 
     <Button
         android:id="@+id/plus_medium"
         style="@style/TimeGoalTheme.EditButton"
+        android:contentDescription="@string/plus_medium_description"
         android:text="@string/plus_medium_text" />
 
     <Button
         android:id="@+id/plus_large"
         style="@style/TimeGoalTheme.EditButton"
+        android:contentDescription="@string/plus_large_description"
         android:text="@string/plus_large_text" />
 
 </LinearLayout>

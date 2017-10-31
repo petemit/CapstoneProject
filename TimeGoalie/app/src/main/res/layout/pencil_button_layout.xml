@@ -4,6 +4,7 @@
     android:layout_width="@dimen/pencil_size"
     android:layout_height="@dimen/pencil_size"
     android:background="@drawable/ic_edit"
+    android:hapticFeedbackEnabled="true"
     android:contentDescription="@string/edit_goal_button_description"
     android:textOff=""
     android:textOn="" />

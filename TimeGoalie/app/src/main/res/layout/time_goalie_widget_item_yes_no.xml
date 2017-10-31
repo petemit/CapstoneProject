@@ -16,10 +16,10 @@
             style="@style/TimeGoalTheme.WidgetTextTitle"
             android:layout_width="0dp"
             android:layout_height="@dimen/checkbox_size"
-            android:layout_gravity="center|left"
+            android:layout_gravity="center|start"
             android:layout_marginStart="@dimen/half_margin"
             android:layout_weight="1"
-            android:gravity="center|left"
+            android:gravity="center|start"
             tools:text="@string/dummy_goal_title" />
 
         <FrameLayout
@@ -33,7 +33,9 @@
                 android:layout_width="@dimen/checkbox_size"
                 android:layout_height="@dimen/checkbox_size"
                 android:layout_marginEnd="@dimen/right_margin"
+                android:hapticFeedbackEnabled="true"
                 android:layout_gravity="center"
+                android:contentDescription="@string/yes_no_goal_checkbox_description"
                 android:background="@android:drawable/checkbox_off_background"
                 android:clickable="false"
                 android:focusable="false" />
@@ -44,6 +46,7 @@
                 android:layout_height="@dimen/checkbox_size"
                 android:layout_marginEnd="@dimen/right_margin"
                 android:layout_gravity="center"
+                android:hapticFeedbackEnabled="true"
                 android:contentDescription="@string/yes_no_goal_checkbox_description"
                 android:background="@android:drawable/checkbox_on_background"
                 android:clickable="false"

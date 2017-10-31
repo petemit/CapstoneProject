@@ -8,7 +8,6 @@
             android:key="pref_silent_mode"
             android:disableDependentsState="true"
             android:title="@string/silent_mode"
-            android:summary="Silent Mode"
             android:defaultValue="false"/>
         <ListPreference
             android:dependency="pref_silent_mode"
@@ -29,7 +28,7 @@
             android:key="pref_daily_notification"
             android:disableDependentsState="true"
             android:title="@string/daily_reminder"
-            android:summary="@string/daily_reminder"
+
             android:defaultValue="false"/>
 
         <CheckBoxPreference

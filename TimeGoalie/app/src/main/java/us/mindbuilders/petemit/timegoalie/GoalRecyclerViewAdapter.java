@@ -156,6 +156,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
             //cursor.moveToPosition(position);
             holder.tv_goaltitle.setText(goal.getName());
+            holder.tv_goaltitle.setContentDescription(goal.getName());
             if (holder.spinningBallAnim != null) {
                 holder.spinningBallAnim.cancel();
             }
@@ -483,6 +484,12 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
             //Let's do the delete button
 
             if (holder.deleteButton != null) {
+                if (goal != null) {
+                    holder.deleteButton.setContentDescription(context.getString(
+                            R.string.delete_button_content_description).concat(" ").concat(
+                            goal.getName())
+                    );
+                }
                 holder.deleteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

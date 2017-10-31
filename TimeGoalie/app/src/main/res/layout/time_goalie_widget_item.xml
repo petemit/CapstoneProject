@@ -23,7 +23,7 @@
                 style="@style/TimeGoalTheme.WidgetTextTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left"
+                android:layout_gravity="start"
                 android:layout_marginStart="@dimen/half_margin"
                 tools:text="@string/dummy_goal_title" />
 
@@ -48,7 +48,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight=".5"
-                    android:gravity="center|left"
+                    android:gravity="center|start"
                     android:visibility="visible"
                     tools:text=" / 00:00:00" />
 

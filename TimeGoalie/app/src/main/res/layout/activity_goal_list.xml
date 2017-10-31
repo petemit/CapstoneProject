@@ -10,17 +10,8 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="@dimen/action_bar_height_list"
         android:theme="@style/TimeGoalTheme.AppBarOverlay">
-
-        <!--<android.support.design.widget.CollapsingToolbarLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--app:title="@string/defend_the_goals"-->
-            <!--app:layout_scrollFlags="scroll|exitUntilCollapsed"-->
-            <!--&gt;-->
-
-
 
 
         <android.support.v7.widget.Toolbar
@@ -89,6 +80,9 @@
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:hapticFeedbackEnabled="true"
+        android:clickable="true"
+        android:contentDescription="@string/add_new_goal_description"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/ic_add_24dp" />
