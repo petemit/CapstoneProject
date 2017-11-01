@@ -274,6 +274,11 @@ public class TimeGoalieAlarmManager {
             }
 
 
+            if (BaseApplication.getSecondlyHandler() != null) {
+                BaseApplication.destroyHandler();
+            }
+            BaseApplication.createHandler(TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY);
+
             TimeGoalieAlarmManager.setTimeGoalAlarm(
                     TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY,
                     context, null,

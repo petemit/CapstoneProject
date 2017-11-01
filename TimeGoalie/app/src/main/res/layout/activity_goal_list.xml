@@ -70,8 +70,6 @@
 
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-
-
         <include layout="@layout/goal_list" />
     </android.support.v4.widget.NestedScrollView>
 
@@ -81,6 +79,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hapticFeedbackEnabled="true"
+        android:focusable="true"
         android:clickable="true"
         android:contentDescription="@string/add_new_goal_description"
         android:layout_gravity="bottom|end"

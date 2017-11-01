@@ -2,6 +2,9 @@ package us.mindbuilders.petemit.timegoalie;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.os.Handler;
 import android.util.Log;
 
 import com.facebook.stetho.Stetho;
@@ -14,8 +17,12 @@ import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoal;
+import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
+import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
+import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
+import us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider;
 
 /**
  * Created by Peter on 9/22/2017.
@@ -27,6 +34,68 @@ public class BaseApplication extends Application {
     private static Context context;
     private static GoalActivityListListener goalActivityListListener;
     private static long lastTimeSecondUpdated;
+    private static Handler secondlyHandler;
+    private static Runnable runnable;
+
+    public static void createHandler(final long millis) {
+        secondlyHandler = new Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+
+                Cursor cursor = context.getContentResolver().query
+                        (TimeGoalieContract.getRunningGoalEntriesThatHaveGoalEntryForToday(),
+                                null,
+                                null,
+                                new String[]{TimeGoalieDateUtils.
+                                        getSqlDateString(activeCalendarDate)},
+                                null);
+
+                if (cursor != null && cursor.getCount() > 0) {
+                    ArrayList<GoalEntry> goalEntries = GoalEntry.makeGoalEntryListFromCursor(cursor);
+                    for (GoalEntry goalEntry : goalEntries
+                            ) {
+
+                        if (goalEntry.isRunning()) {
+
+                            goalEntry.addSecondElapsed();
+
+                            if (BaseApplication.getGoalActivityListListener() != null) {
+                                BaseApplication.getGoalActivityListListener().notifyChanges(goalEntry);
+                            }
+
+                            new InsertNewGoalEntry(context).execute(goalEntry);
+
+                            Intent updateWidgetintent = new Intent(context, TimeGoalieWidgetProvider.class);
+                            updateWidgetintent.setAction(TimeGoalieWidgetProvider.ACTION_GET_GOALS_FOR_TODAY);
+                            context.sendBroadcast(updateWidgetintent);
+
+                            Log.e("alarm", goalEntry.getGoal_id() + " : " + goalEntry.getSecondsElapsed() + "");
+
+                            BaseApplication.setLastTimeSecondUpdated(TimeGoalieDateUtils.getCurrentTimeInMillis());
+
+                        }
+
+
+                    }//end for
+
+
+                }
+                ///end if second has elapsed.
+                else if (cursor == null || cursor.getCount() == 0) {
+                    secondlyHandler.removeCallbacks(this);
+                }
+
+                secondlyHandler.postDelayed(this, millis);
+            }
+        };
+        secondlyHandler.postDelayed(runnable,millis);
+    }
+
+    public static void destroyHandler() {
+        secondlyHandler.removeCallbacks(runnable);
+        secondlyHandler = null;
+    }
 
     public static ArrayList<TimeGoalieAlarmObject> getTimeGoalieAlarmObjects() {
         return timeGoalieAlarmObjects;
@@ -46,6 +115,15 @@ public class BaseApplication extends Application {
 
     public static void setLastTimeSecondUpdated(long lastTimeSecondUpdated) {
         BaseApplication.lastTimeSecondUpdated = lastTimeSecondUpdated;
+    }
+
+    public static Handler getSecondlyHandler() {
+
+        return secondlyHandler;
+    }
+
+    public static void setSecondlyHandler(Handler secondlyHandler) {
+        BaseApplication.secondlyHandler = secondlyHandler;
     }
 
     public interface GoalActivityListListener {
@@ -122,10 +200,10 @@ public class BaseApplication extends Application {
 
     }
 
-    public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id){
-        for (int i = 0 ; i < timeGoalieAlarmObjects.size() ; i ++) {
-            if (timeGoalieAlarmObjects.get(i).getGoal_id()==goal_id){
-                Log.e("check",goal_id+"");
+    public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id) {
+        for (int i = 0; i < timeGoalieAlarmObjects.size(); i++) {
+            if (timeGoalieAlarmObjects.get(i).getGoal_id() == goal_id) {
+                Log.e("check", goal_id + "");
                 return timeGoalieAlarmObjects.get(i);
 
             }
@@ -133,11 +211,11 @@ public class BaseApplication extends Application {
         return null;
     }
 
-    public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id, String date){
-        for (int i = 0 ; i < timeGoalieAlarmObjects.size() ; i ++) {
-            if (timeGoalieAlarmObjects.get(i).getGoal_id()==goal_id &&
-                    timeGoalieAlarmObjects.get(i).getDate().equals(date)){
-                Log.e("check",goal_id+"");
+    public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id, String date) {
+        for (int i = 0; i < timeGoalieAlarmObjects.size(); i++) {
+            if (timeGoalieAlarmObjects.get(i).getGoal_id() == goal_id &&
+                    timeGoalieAlarmObjects.get(i).getDate().equals(date)) {
+                Log.e("check", goal_id + "");
                 return timeGoalieAlarmObjects.get(i);
 
             }
