@@ -8,10 +8,13 @@ import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.RectF;
 import android.graphics.drawable.RotateDrawable;
 
 import android.support.constraint.ConstraintLayout;
 import android.support.transition.AutoTransition;
+import android.support.transition.Fade;
+import android.support.transition.Transition;
 import android.support.transition.TransitionManager;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
@@ -27,6 +30,8 @@ import android.view.ViewGroup;
 
 
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 
@@ -395,30 +400,42 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                         .execute(goal.getGoalEntry());
                                 new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
                                 new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
-                                holder.soccerBallImage.animate().translationX(600f)
+
+
+                                //get the distance properly
+                                int[] ballLocation = new int[2];
+                                holder.soccerBallImage.getLocationOnScreen(ballLocation);
+                                int[] checkboxLocation = new int[2];
+                                holder.goalCheckBox.getLocationOnScreen(checkboxLocation);
+
+                                float distance = Math.abs(ballLocation[0] - checkboxLocation[0] +
+                                        holder.goalCheckBox.getMeasuredWidth());
+                                holder.soccerBallImage.animate().translationX(distance)
                                         .setDuration(1000)
                                         .setInterpolator(new AccelerateDecelerateInterpolator())
                                         .setListener(new Animator.AnimatorListener() {
-                                            @Override
-                                            public void onAnimationStart(Animator animator) {
-                                                holder.spinningBallAnim.start();
-                                            }
+                                    @Override
+                                    public void onAnimationStart(Animator animator) {
+                                        holder.spinningBallAnim.start();
 
-                                            @Override
-                                            public void onAnimationEnd(Animator animator) {
-                                                holder.spinningBallAnim.cancel();
-                                            }
+                                    }
 
-                                            @Override
-                                            public void onAnimationCancel(Animator animator) {
-                                                holder.spinningBallAnim.cancel();
-                                            }
+                                    @Override
+                                    public void onAnimationEnd(Animator animator) {
+                                        holder.spinningBallAnim.cancel();
 
-                                            @Override
-                                            public void onAnimationRepeat(Animator animator) {
+                                    }
 
-                                            }
-                                        });
+                                    @Override
+                                    public void onAnimationCancel(Animator animator) {
+                                        holder.spinningBallAnim.cancel();
+                                    }
+
+                                    @Override
+                                    public void onAnimationRepeat(Animator animator) {
+
+                                    }
+                                });
                             }
                         } else {
 
@@ -440,6 +457,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
                                             @Override
                                             public void onAnimationEnd(Animator animator) {
+
                                                 holder.spinningBallAnim.cancel();
 
                                             }
@@ -493,6 +511,11 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                 holder.deleteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Animation fadeOut = new AlphaAnimation(1, 0);
+                        fadeOut.setInterpolator(new AccelerateInterpolator());
+                        fadeOut.setStartOffset(500);
+                        fadeOut.setDuration(500);
+                        holder.cardView.setAnimation(fadeOut);
                         goalArrayList.remove(position);
                         notifyItemRangeChanged(position, getItemCount());
                         notifyItemRemoved(position);
@@ -641,19 +664,10 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
             if (goalCheckBox != null) {
 
-
                 spinningBallAnim = ObjectAnimator.ofFloat(soccerBallImage, "rotation", 0f, 70f);
                 spinningBallAnim.setInterpolator(new LinearInterpolator());
                 spinningBallAnim.setDuration(1000);
                 spinningBallAnim.setRepeatCount(ValueAnimator.INFINITE);
-
-
-//                moveSoccerBallAnim = new TranslateAnimation(0, 200f,0,0f);
-//                moveSoccerBallAnim.setDuration(1000);
-//                moveSoccerBallAnim.setFillAfter(true);
-//                moveSoccerBallAnim.setRepeatCount(1);
-//                moveSoccerBallAnim.setRepeatMode(Animation.REVERSE);
-
             }
 
 
