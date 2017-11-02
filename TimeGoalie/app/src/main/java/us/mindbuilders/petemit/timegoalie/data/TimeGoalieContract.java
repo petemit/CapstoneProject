@@ -103,6 +103,18 @@ public class TimeGoalieContract {
     }
 
     //get a goal_entry by goalid
+    public static Uri buildGetAllGoalEntriesByGoalId(long goalid) {
+        return ContentUris.withAppendedId(GoalEntries.CONTENT_URI
+                        .buildUpon()
+                        .appendPath("goal")
+                        .appendPath("all")
+                        .build()
+                ,goalid);
+    }
+
+
+
+    //get a goal_entry by goalid
     public static Uri buildGetAGoalEntryByGoalEntryId(long goalEntryid) {
         return ContentUris.withAppendedId(GoalEntries.CONTENT_URI,goalEntryid);
     }

@@ -34,4 +34,6 @@
     <dimen name="delete_button_size">30dp</dimen>
     <dimen name="max_width_for_list">700dp</dimen>
     <dimen name="widget_time_width">70dp</dimen>
+    <dimen name="no_goals_yet_margin">128dp</dimen>
+    <dimen name="add_goals_top_margin">64dp</dimen>
 </resources>

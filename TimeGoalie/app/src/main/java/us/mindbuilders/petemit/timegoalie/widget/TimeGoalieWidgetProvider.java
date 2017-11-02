@@ -75,9 +75,6 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
                     break;
             }
         }
-        if (intent.getAction().equals(ACTION_UPDATE_GOAL_ENTRY)) {
-
-        }
         super.onReceive(context, intent);
     }
 

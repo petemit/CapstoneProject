@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -31,8 +32,12 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
             "us.mindbuilders.petemit.timegoalie.GOAL_ONE_MINUTE_WARNING";
     public static final String SECONDLY_GOAL_UPDATE_ENTRY =
             "us.mindbuilders.petemit.timegoalie.SECONDLY_GOAL_UPDATE_ENTRY";
+    public static final String GOAL_KILLED =
+            "us.mindbuilders.petemit.timegoalie.GOAL_KILL_SAFETY";
     public static final long SECONDLY_FREQUENCY = 1000;
+    public static final long KILLGOAL_TIMER = 36000;
     public static final int SECONDLY_ID = 10101;
+    public static final int KILLGOAL = 1010101;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -52,6 +57,15 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
         Intent intent = new Intent(context, TimeGoalieAlarmReceiver.class);
         intent.putExtra(context.getString(R.string.goal_id_key), goal_id);
         intent.setAction(GOAL_FINISHED);
+        intent.putExtra(context.getString(R.string.goal_title_key), message);
+        return intent;
+    }
+
+    public static Intent createKillGoalTimeGoalieAlarmIntent(Context context,
+                                                              String message, int goal_id) {
+        Intent intent = new Intent(context, TimeGoalieAlarmReceiver.class);
+        intent.putExtra(context.getString(R.string.goal_id_key), goal_id);
+        intent.setAction(GOAL_KILLED);
         intent.putExtra(context.getString(R.string.goal_title_key), message);
         return intent;
     }
@@ -80,6 +94,14 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                 intent, PendingIntent.FLAG_CANCEL_CURRENT);
         return pendingIntent;
     }
+
+    public static PendingIntent createKillGoalSafetyPendingIntent(Context context,
+                                                                      Intent intent, int goal_id) {
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (KILLGOAL+goal_id),
+                intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return pendingIntent;
+    }
+
 
 
     public static PendingIntent createTimeGoaliePendingIntent(Context context, 
@@ -183,6 +205,9 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
 
                 if (goal != null && goalEntry != null) {
                     switch (action) {
+                        case GOAL_KILLED:
+                            goalEntry.setRunning(false);
+                            break;
                         case GOAL_FINISHED:
 
 
@@ -203,14 +228,14 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                                 }
                             }
 
-//                if (goalEntry != null) {
-//                    goalEntry.setSecondsElapsed((int) goal.getGoalSeconds() + goalEntry.getGoalAugment(), true);
-//                }
-                            if (id != -1) {
-                                //  BaseApplication.getTimeGoalieAlarmObjectById(id).setRunning(false);
-                                //BaseApplication.getTimeGoalieAlarmObjectById(id).setHasFinished(true);
+                            Intent killGoalIntent = createKillGoalTimeGoalieAlarmIntent(context,
+                                    "Stopping goal due to inactivity",(int)goal.getGoalId());
 
-                            }
+                            PendingIntent killGoalPi = createKillGoalSafetyPendingIntent(context,
+                                    killGoalIntent, (int)goal.getGoalId());
+
+                            TimeGoalieAlarmManager.setTimeGoalAlarm(KILLGOAL_TIMER,context,null,
+                                    killGoalPi);
 
                             break;
                         case GOAL_ONE_MINUTE_WARNING:
@@ -240,7 +265,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                             BaseApplication.getLastTimeSecondUpdated();
                     Log.e("mindy", diff + " diff");
                     if (BaseApplication.getSecondlyHandler() == null) {
-                        if (diff >= 1000) {
+                        if (diff >= SECONDLY_FREQUENCY) {
 
                             long secondsElapsed = (int) (Math.floor(diff / 1000));
 
@@ -252,8 +277,14 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
 
                                     if (goalEntry.isRunning()) {
 
-                                        goalEntry.setSecondsElapsed(goalEntry.getSecondsElapsed()
-                                                + (int) secondsElapsed);
+                                        if (diff>=10000){
+                                            goalEntry.addSecondElapsed();
+                                        }
+                                        if (diff <= 10000 && diff >=0) {
+                                            goalEntry.setSecondsElapsed(goalEntry.getSecondsElapsed()
+                                                    + (int) secondsElapsed);
+                                        }
+
 
 
                                         if (BaseApplication.getGoalActivityListListener() != null) {

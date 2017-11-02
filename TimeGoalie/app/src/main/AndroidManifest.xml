@@ -46,6 +46,7 @@
                 <action android:name="us.mindbuilders.petemit.timegoalie.GOAL_FINISHED" />
                 <action android:name="us.mindbuilders.petemit.timegoalie.GOAL_ONE_MINUTE_WARNING" />
                 <action android:name="us.mindbuilders.petemit.timegoalie.SECONDLY_GOAL_UPDATE_ENTRY" />
+                <action android:name="us.mindbuilders.petemit.timegoalie.GOAL_KILL_SAFETY" />
             </intent-filter>
 
 

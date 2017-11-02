@@ -93,6 +93,7 @@
     <string name="time_goal">Time Goal</string>
     <string name="date_spinner">date_spinner</string>
     <string name="done_with_goal">You\'re done with your goal!</string>
+    <string name="add_a_goal_to_get_started">Add a goal to get started.</string>
 
 
 </resources>

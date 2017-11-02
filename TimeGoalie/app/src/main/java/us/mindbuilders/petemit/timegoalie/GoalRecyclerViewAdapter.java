@@ -5,7 +5,9 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.RotateDrawable;
 
 import android.support.transition.AutoTransition;
@@ -251,6 +253,18 @@ public class GoalRecyclerViewAdapter extends
                                         timeGoalieAlarmObject.getOneMinuteWarningPendingIntent().cancel();
                                         timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(null);
                                     }
+                                    //cancel killgoal intent
+
+                                    Intent killGoalIntent = TimeGoalieAlarmReceiver
+                                            .createKillGoalTimeGoalieAlarmIntent(context,
+                                            "Stopping goal due to inactivity",(int)goal.getGoalId());
+
+                                    PendingIntent killGoalPi = TimeGoalieAlarmReceiver
+                                    .createKillGoalSafetyPendingIntent(context,
+                                            killGoalIntent, (int)goal.getGoalId());
+
+                                    TimeGoalieAlarmManager.cancelTimeGoalAlarm(context,killGoalPi);
+
                                     //                   TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context, goal);
                                     //timeGoalieAlarmObject.setRunning(false);
                                     goal.getGoalEntry().setRunning(false);
@@ -554,7 +568,7 @@ public class GoalRecyclerViewAdapter extends
                         notifyItemRangeChanged(position, getItemCount());
                         notifyItemRemoved(position);
 
-                        new DeleteGoal(context).execute(goal);
+                        new DeleteGoal(context, goalEntryGoalCounter).execute(goal);
 
                     }
                 });

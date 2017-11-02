@@ -3,10 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
     android:maxWidth="@dimen/max_width_for_list"
-    android:layout_height="match_parent"
     android:orientation="vertical">
+
 
     <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -18,12 +19,44 @@
         android:layout_marginEnd="@dimen/half_margin"
         android:layout_marginStart="@dimen/half_margin"
         android:layout_marginTop="@dimen/half_margin"
-
         android:paddingBottom="64dp"
+
         app:layoutManager="LinearLayoutManager"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:context="us.mindbuilders.petemit.timegoalie.GoalListActivity"
         tools:listitem="@layout/goal_list_content_less" />
+
+    <FrameLayout
+        android:id="@+id/no_goals_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/no_goals_yet_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/no_goals_yet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|top"
+            android:maxLines="2"
+            android:text="@string/no_goals_yet"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+            />
+
+        <TextView
+            android:id="@+id/add_a_new_goal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/add_goals_top_margin"
+            android:gravity="center_vertical|bottom"
+            android:maxLines="2"
+            android:text="@string/add_a_goal_to_get_started"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+             />
+    </FrameLayout>
 </android.support.constraint.ConstraintLayout>

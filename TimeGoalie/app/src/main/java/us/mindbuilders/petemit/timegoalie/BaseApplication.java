@@ -228,7 +228,6 @@ public class BaseApplication extends Application {
         return null;
     }
 
-
     public static Context getContext() {
         return context;
     }

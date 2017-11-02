@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -42,6 +43,7 @@ adb shell setprop debug.firebase.analytics.app .none.
 //
 
  */
+
 /**
  * List of Goals.  In multi-pane, shows reports as well {@link GoalReportActivity}
  */
@@ -59,6 +61,8 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     GoalReportFragment fragment;
     private int successfulGoalCount = 0;
     private TextView tv_successfulGoalCount;
+    private View noGoalsView;
+    RecyclerView recyclerView;
 
     private FirebaseAnalytics firebaseAnalytics;
 
@@ -104,6 +108,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         rvAdapter = new GoalRecyclerViewAdapter(this, this, this);
         toolbar.setTitle(getTitle());
         tv_successfulGoalCount = findViewById(R.id.tv_numberOfGoalsCleared);
+        noGoalsView = findViewById(R.id.no_goals_frame);
 
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
@@ -121,7 +126,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
             }
         });
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.goal_list);
+        recyclerView = findViewById(R.id.goal_list);
         if (recyclerView != null) {
             recyclerView.setAdapter(rvAdapter);
         }
@@ -329,6 +334,17 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         goalArrayList = (Goal.createGoalListWithGoalEntriesFromCursor(data));
         rvAdapter.swapCursor(goalArrayList, isToday);
         rvAdapter.notifyDataSetChanged();
+        if (goalArrayList.size() > 0) {
+            if (recyclerView != null) {
+             recyclerView.setVisibility(View.VISIBLE);
+             noGoalsView.setVisibility(View.GONE);
+            }
+
+        }
+        else{
+            recyclerView.setVisibility(View.GONE);
+            noGoalsView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
