@@ -4,8 +4,8 @@
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
     android:orientation="horizontal"
-    android:paddingLeft="@dimen/left_margin"
-    android:paddingRight="@dimen/right_margin"
+    android:paddingStart="@dimen/left_margin"
+    android:paddingEnd="@dimen/right_margin"
     android:paddingTop="@dimen/top_margin"
     android:visibility="gone"
     xmlns:android="http://schemas.android.com/apk/res/android">

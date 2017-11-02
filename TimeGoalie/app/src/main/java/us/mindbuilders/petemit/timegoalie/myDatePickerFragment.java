@@ -1,7 +1,7 @@
 package us.mindbuilders.petemit.timegoalie;
 
 import android.app.DatePickerDialog;
-import android.app.Dialog;;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
@@ -22,7 +22,8 @@ import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog dialog=new DatePickerDialog(getActivity(), (DatePickerDialog.OnDateSetListener)getActivity(), year, month, day);
+        DatePickerDialog dialog=new DatePickerDialog(getActivity(),
+                (DatePickerDialog.OnDateSetListener)getActivity(), year, month, day);
         dialog.getDatePicker().setMaxDate(TimeGoalieDateUtils.getCurrentTimeInMillis());
 
         return dialog;

@@ -1,10 +1,6 @@
 package us.mindbuilders.petemit.timegoalie;
 
-import android.content.ContentUris;
-import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,22 +21,11 @@ import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import org.w3c.dom.Text;
-
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.TimeZone;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Day;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoal;
-import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
-import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
 /**
@@ -197,7 +182,8 @@ public class NewGoalFragment extends Fragment {
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String goalname = newGoalEditText.getText().toString().replaceAll("[+.^<>:,]","");
+                String goalname = newGoalEditText.getText().toString().replaceAll("[+.^<>:,]",
+                        "");
                 //Do not create goal if Goalname is empty
                 if (goalname.equalsIgnoreCase("")) {
                     Toast.makeText(getContext(),

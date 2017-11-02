@@ -2,7 +2,6 @@ package us.mindbuilders.petemit.timegoalie.widget;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -15,10 +14,8 @@ import java.util.ArrayList;
 import us.mindbuilders.petemit.timegoalie.BaseApplication;
 import us.mindbuilders.petemit.timegoalie.R;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.utils.CustomTextView;
-import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieUtils;
 
@@ -32,18 +29,15 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
 
     public TimeGoalieWidgetListRemoteViewsFactory(Context context) {
         this.context = context;
-        Log.e("findme", "I got here now");
     }
 
     @Override
     public void onCreate() {
-        Log.e("findme", "I got here again");
 
     }
 
     @Override
     public void onDataSetChanged() {
-        Log.e("findme", "I got here");
         if (goalData != null) {
             goalData = null;
         }
@@ -98,10 +92,12 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
                     views.setViewVisibility(R.id.widget_yes_no_checkbox_on, View.VISIBLE);
                 }
 
-                Log.e("myMindbuilders-before", goal.getName() + " " + goal.getGoalId() + " " + Boolean.toString(goal.getGoalEntry().getHasSucceeded()));
+                Log.e("myMindbuilders-before", goal.getName() + " " + goal.getGoalId()
+                        + " " + Boolean.toString(goal.getGoalEntry().getHasSucceeded()));
                 views.setOnClickFillInIntent(R.id.widget_yes_no_checkbox,
                         TimeGoalieWidgetProvider.getUpdateYesNoGoalFillInIntent(goal));
-                Log.e("myMindbuilders-after", goal.getName() + " " + goal.getGoalId() + " " + Boolean.toString(goal.getGoalEntry().getHasSucceeded()));
+                Log.e("myMindbuilders-after", goal.getName() + " " + goal.getGoalId()
+                        + " " + Boolean.toString(goal.getGoalEntry().getHasSucceeded()));
 
             } else { //Time limit Goal
                 views = new RemoteViews(context.getPackageName(),
@@ -113,27 +109,29 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
 
                 //Set up the time goal if goals are running
                 if (goal.getGoalEntry().isRunning()) {
-                    Log.e("myMindbuilders-after", goal.getName() + " " + goal.getGoalId() + " " + Boolean.toString(goal.getGoalEntry().isRunning()));
+                    Log.e("myMindbuilders-after", goal.getName() + " " + goal.getGoalId()
+                            + " " + Boolean.toString(goal.getGoalEntry().isRunning()));
                     views.setTextViewText(R.id.start_stop, context.getString(R.string.stop));
 
 
-                    //not sure if I can do this
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            long newtime = goal.getGoalSeconds();
-                            if (goal.getGoalEntry() != null) {
-                                newtime = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
-                            }
+                    //not sure if I can do this or need this
 
-//                            TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
-//                           // TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
+//                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            long newtime = goal.getGoalSeconds();
+//                            if (goal.getGoalEntry() != null) {
+//                                newtime = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
+//                            }
+//
+////                            TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
+////                           // TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
+////                        }
+////                    });
+////                    TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
+//
 //                        }
 //                    });
-//                    TimeGoalieAlarmManager.startTimer(null, timeText, newtime, goal, context, null);
-
-                        }
-                    });
 
 
 
@@ -141,7 +139,8 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
                     views.setTextViewText(R.id.start_stop, context.getString(R.string.start));
                 }
 
-                Log.e("myMindbuilders-before", goal.getName() + " " + goal.getGoalId() + " " + Boolean.toString(goal.getGoalEntry().isRunning()));
+                Log.e("myMindbuilders-before", goal.getName() + " " + goal.getGoalId()
+                        + " " + Boolean.toString(goal.getGoalEntry().isRunning()));
                 views.setOnClickFillInIntent(R.id.start_stop, TimeGoalieWidgetProvider.
                         getUpdateTimeGoalFillInIntent(goal));
                 TimeGoalieUtils.setTimeTextLabel(goal, timeText, timeOutOfText);
@@ -151,9 +150,9 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
 //
             }
 
-            if (views != null) {
+          //  if (views != null) {
                 views.setTextViewText(R.id.widget_goal_tv, goal.getName());
-            }
+         //   }
             return views;
         } else
 

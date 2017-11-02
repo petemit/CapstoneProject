@@ -68,19 +68,12 @@
 
         <service
             android:name=".widget.TimeGoalieRvWidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS"></service>
-
-        <service
-            android:name=".services.TimeGoalieFirebaseInstanceIdService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-            </intent-filter>
-        </service>
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_goalie_with_ball" />
+            android:resource="@drawable/ic_goalie_with_ball_grey" />
 
     </application>
 

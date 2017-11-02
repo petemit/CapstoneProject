@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntryGoalCounter;
 
 /**
  * Created by Peter on 10/16/2017.

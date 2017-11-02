@@ -2,12 +2,10 @@ package us.mindbuilders.petemit.timegoalie.utils;
 
 import android.util.Log;
 
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
@@ -38,14 +36,6 @@ public class TimeGoalieDateUtils {
         calendar.add(Calendar.SECOND, seconds);
         return calendar.getTimeInMillis();
     }
-
-    public static int calculateSecondsElapsed(long futuremillis, long currentmillis, int hours, int minutes, int augment) {
-        long millisleft = futuremillis - currentmillis;
-        long timeElapsed = ((hours * 60 * 60) + (minutes * 60)) -
-                (millisleft/1000) + augment;
-        return ((int) timeElapsed);
-    }
-
     public static long getCurrentTimeInMillis() {
         return Calendar.getInstance().getTimeInMillis();
     }

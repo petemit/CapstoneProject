@@ -86,6 +86,13 @@
     <string name="plus_medium_description">add 10 minutes for today\'s goal</string>
     <string name="plus_large_description">add 15 minutes for today\'s goal</string>
     <string name="add_new_goal_description">Add New Goal</string>
+    <string name="image_of_soccer_goal_desc">Image of Soccer Goal</string>
+    <string name="image_of_soccer_ball_desc">Image of Soccer Ball</string>
+    <string name="goals_saved">Goals Saved</string>
+    <string name="zero">0</string>
+    <string name="time_goal">Time Goal</string>
+    <string name="date_spinner">date_spinner</string>
+    <string name="done_with_goal">You\'re done with your goal!</string>
 
 
 </resources>

@@ -35,7 +35,7 @@
                 <TextView
                     android:id="@+id/widget_time_tv"
                     style="@style/TimeGoalTheme.WidgetText"
-                    android:layout_width="@dimen/time_tv"
+                    android:layout_width="@dimen/widget_time_width"
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/half_margin"
                     android:gravity="center_vertical"
@@ -83,6 +83,6 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="@dimen/top_margin"
-        android:background="@android:color/darker_gray"></LinearLayout>
+        android:background="@android:color/darker_gray" />
 
 </LinearLayout>

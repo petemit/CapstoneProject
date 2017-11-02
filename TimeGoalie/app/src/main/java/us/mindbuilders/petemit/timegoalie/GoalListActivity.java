@@ -2,16 +2,12 @@ package us.mindbuilders.petemit.timegoalie;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.content.SharedPreferencesCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
@@ -27,7 +23,6 @@ import android.widget.TextView;
 
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
@@ -44,7 +39,7 @@ adb shell setprop debug.firebase.analytics.app us.mindbuilders.petemit.timegoali
 
 adb shell setprop debug.firebase.analytics.app .none.
 
-//eioYARk9P3o:APA91bFu4YOZNHHWXVUF7fm1_XAW80B5qIQHD4QVcCMY7fB3Rq0RnS2FmOQOBbp3RELIOAZyzbbASDmSftgf2LwQK65vZO6eJKWVmjLlEb43sEusJy_Cov9XvV-g2Fy39RpoOe--L0Y-
+//
 
  */
 /**
@@ -140,7 +135,8 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         }
 
         if (savedInstanceState != null) {
-            fragment = (GoalReportFragment) getSupportFragmentManager().getFragment(savedInstanceState, "report_fragment");
+            fragment = (GoalReportFragment) getSupportFragmentManager().
+                    getFragment(savedInstanceState, "report_fragment");
         }
 
         if (mTwoPane) {
@@ -322,7 +318,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
             }
 
         }
-        tv_successfulGoalCount.setText(successfulGoalCount + "");
+        tv_successfulGoalCount.setText(String.valueOf(successfulGoalCount));
     }
 
     @Override

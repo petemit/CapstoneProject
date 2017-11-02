@@ -5,20 +5,11 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.RectF;
 import android.graphics.drawable.RotateDrawable;
 
-import android.support.constraint.ConstraintLayout;
 import android.support.transition.AutoTransition;
-import android.support.transition.Fade;
-import android.support.transition.Transition;
 import android.support.transition.TransitionManager;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
-import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
@@ -66,7 +58,9 @@ import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieUtils;
  * Data handler for goal recyclerview.  This is turning out to be the brains of this operation
  */
 
-public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerViewAdapter.GoalViewHolder> implements BaseApplication.GoalActivityListListener {
+public class GoalRecyclerViewAdapter extends
+        RecyclerView.Adapter<GoalRecyclerViewAdapter.GoalViewHolder>
+        implements BaseApplication.GoalActivityListListener {
 
     // private final List<DummyContent.DummyItem> mValues;
 
@@ -76,6 +70,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
     private GoalCounter goalCounter;
     private Context context;
     private GoalEntryGoalCounter goalEntryGoalCounter;
+    ViewTreeObserver.OnGlobalLayoutListener layoutListener;
 
     @Override
     public void notifyChanges(GoalEntry goalEntry) {
@@ -99,7 +94,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 //        mValues = items;
 //        this.onClickListener = onClickListener;
 //    }
-    public GoalRecyclerViewAdapter(View.OnClickListener onClickListener, GoalCounter goalCounter, Context context) {
+    public GoalRecyclerViewAdapter(View.OnClickListener onClickListener, GoalCounter goalCounter,
+                                   Context context) {
         this.onClickListener = onClickListener;
         this.goalCounter = goalCounter;
         this.context = context;
@@ -182,14 +178,6 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                     holder.goalCheckBox.setChecked(false);
                 }
             }
-//            } else if (goal.getGoalTypeId() == 2) {//yes no goal
-//                if (goal.getGoalEntry() != null) {
-//                    if (goal.getGoalEntry().getHasSucceeded() == 1) {
-//                        goalCounter.updateGoalCounter(true);
-//                    }
-//                }
-//            }
-
 
             //if statement checks to see if this is a time goal by the existence of a start/stop button
             if (holder.startStopTimer != null) {
@@ -202,7 +190,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                 if (goal.getGoalTypeId() == 0) {
 
                     if (holder.seekbar != null) {
-                        holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) / goal.getGoalSeconds())) * 100 * 100));
+                        holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) /
+                                goal.getGoalSeconds())) * 100 * 100));
                     }
 
                 } else {
@@ -211,7 +200,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
                         //set Progress bar Progress
                         if (holder.seekbar != null) {
-                            holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) / goal.getGoalSeconds())) * 100 * 100));
+                            holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) /
+                                    goal.getGoalSeconds())) * 100 * 100));
                         }
                     }
                 }
@@ -223,7 +213,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                             TimeGoalieAlarmObject timeGoalieAlarmObject =
                                     BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
 
-                            Log.e("mindbuilders3", goal.getName() + " tick " + goal.getGoalEntry().getSecondsElapsed());
+                            Log.e("mindbuilders3", goal.getName() + " tick " +
+                                    goal.getGoalEntry().getSecondsElapsed());
 
                             long newtime = goal.getGoalSeconds();
                             if (goal.getGoalEntry() != null) {
@@ -236,7 +227,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                 holder.spinningBallAnim.start();
                                 //Start the Goal!!
                                 goal.getGoalEntry().setRunning(true);
-                                Log.e("mindbuilders4", goal.getName() + " tick " + goal.getGoalEntry().getSecondsElapsed());
+                                Log.e("mindbuilders4", goal.getName() + " tick " +
+                                        goal.getGoalEntry().getSecondsElapsed());
                                 new InsertNewGoalEntry(
                                         compoundButton.getContext()).execute(goal.getGoalEntry());
                             } else {
@@ -262,7 +254,8 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                                     //                   TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context, goal);
                                     //timeGoalieAlarmObject.setRunning(false);
                                     goal.getGoalEntry().setRunning(false);
-                                    Log.e("mindbuilders5", goal.getName() + " tick " + goal.getGoalEntry().getSecondsElapsed());
+                                    Log.e("mindbuilders5", goal.getName() + " tick " +
+                                            goal.getGoalEntry().getSecondsElapsed());
                                     new InsertNewGoalEntry(
                                             compoundButton.getContext()).execute(goal.getGoalEntry());
                                 }
@@ -298,10 +291,12 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                     final TimeGoalieAlarmObject timeGoalieAlarmObject =
                             BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
 
-                    int[] incrementValues = holder.smallAdd.getContext().getResources().getIntArray(R.array.incrementArray);
+                    int[] incrementValues = holder.smallAdd.getContext().getResources()
+                            .getIntArray(R.array.incrementArray);
                     // edit buttons
                     Button[] addButtons = new Button[]{holder.smallAdd, holder.mediumAdd, holder.largeAdd};
-                    Button[] subtractButtons = new Button[]{holder.smallSubtract, holder.mediumSubtract, holder.largeSubtract};
+                    Button[] subtractButtons = new Button[]{holder.smallSubtract, holder.mediumSubtract,
+                            holder.largeSubtract};
 
                     for (int i = 0; i < incrementValues.length; i++) {
                         final int value = incrementValues[i];
@@ -389,6 +384,49 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
             //and now, the goal Checkbox
 
             if (holder.goalCheckBox != null) {
+                if (holder.goalCheckBox.isChecked()) {
+                    layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            int[] ballLocation = new int[2];
+                            holder.soccerBallImage.getLocationOnScreen(ballLocation);
+                            int[] checkboxLocation = new int[2];
+                            holder.goalCheckBox.getLocationOnScreen(checkboxLocation);
+
+                            float distance = Math.abs(ballLocation[0] - checkboxLocation[0] +
+                                    holder.goalCheckBox.getMeasuredWidth());
+                            holder.soccerBallImage.animate().translationX(distance)
+                                    .setDuration(1000)
+                                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                                    .setListener(new Animator.AnimatorListener() {
+                                        @Override
+                                        public void onAnimationStart(Animator animator) {
+                                            holder.spinningBallAnim.start();
+
+                                        }
+
+                                        @Override
+                                        public void onAnimationEnd(Animator animator) {
+                                            holder.spinningBallAnim.cancel();
+
+                                        }
+
+                                        @Override
+                                        public void onAnimationCancel(Animator animator) {
+                                            holder.spinningBallAnim.cancel();
+                                        }
+
+                                        @Override
+                                        public void onAnimationRepeat(Animator animator) {
+
+                                        }
+                                    });
+                            holder.goalCheckBox.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
+                        }
+                    };
+                    holder.goalCheckBox.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+                }
+
                 holder.goalCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -472,10 +510,6 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
 
                                             }
                                         });
-
-//                                if (holder.soccerBallImage != null && holder.moveSoccerBallAnim != null) {
-//                                    holder.soccerBallImage.startAnimation(holder.moveSoccerBallAnim);
-//                                }
                             }
 
                         }
@@ -595,7 +629,7 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
             goalCheckBox = view.findViewById(R.id.yes_no_checkbox);
             soccerBallImage = view.findViewById(R.id.soccer_ball_image);
             cardView = view.findViewById(R.id.card_layout);
-            RotateDrawable rt = null;
+            RotateDrawable rt;
 
 
             if (pencil != null) {
@@ -640,9 +674,6 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                 });
                 seekbar.setMax(seekbar.getMax() * 100);
 
-//                AnimatedVectorDrawable anim = (AnimatedVectorDrawable) view.getResources().getDrawable(R.drawable.anim_soccerball_small,null);
-//                iv.setImageDrawable(anim);
-
                 rt = new RotateDrawable();
 
                 rt.setDrawable(view.getResources().getDrawable(R.drawable.soccerball_small, null));
@@ -653,13 +684,6 @@ public class GoalRecyclerViewAdapter extends RecyclerView.Adapter<GoalRecyclerVi
                 spinningBallAnim.setDuration(1000);
                 spinningBallAnim.setRepeatCount(ValueAnimator.INFINITE);
                 seekbar.setThumb(rt);
-//                RotateAnimation animation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-//                animation.setDuration(500);
-//                animation.setRepeatMode(Animation.INFINITE);
-//                iv.startAnimation(animation);
-//                anim.start();
-
-
             }
 
             if (goalCheckBox != null) {

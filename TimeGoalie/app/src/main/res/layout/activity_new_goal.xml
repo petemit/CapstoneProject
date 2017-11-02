@@ -25,5 +25,5 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/new_goal_container"></FrameLayout>
+        android:id="@+id/new_goal_container" />
 </LinearLayout>

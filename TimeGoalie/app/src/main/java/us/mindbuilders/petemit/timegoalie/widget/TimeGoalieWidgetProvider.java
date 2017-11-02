@@ -75,7 +75,6 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
                     break;
             }
         }
-        Log.e("mindbuilders", "think about your life");
         if (intent.getAction().equals(ACTION_UPDATE_GOAL_ENTRY)) {
 
         }

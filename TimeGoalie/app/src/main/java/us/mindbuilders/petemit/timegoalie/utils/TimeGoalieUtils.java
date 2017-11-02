@@ -63,9 +63,9 @@ public class TimeGoalieUtils {
             switch ((int)goal.getGoalTypeId()) {
                 case 0: //Time Goal To Encourage
                     if (tv_timeOutOf != null) {
-                        tv_timeOutOf.setText(" / " + TimeGoalieAlarmManager.makeTimeTextFromMillis(
-                                goal.getGoalSeconds() * 1000
-                        ));
+                    String result = " / " + TimeGoalieAlarmManager.makeTimeTextFromMillis(
+                            goal.getGoalSeconds() * 1000);
+                        tv_timeOutOf.setText(result);
                         tv_timeOutOf.setVisibility(View.VISIBLE);
                     }
 

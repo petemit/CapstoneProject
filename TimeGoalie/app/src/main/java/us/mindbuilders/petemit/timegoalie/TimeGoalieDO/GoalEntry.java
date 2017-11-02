@@ -5,17 +5,9 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
-import java.sql.Date;
 import java.util.ArrayList;
 
-import us.mindbuilders.petemit.timegoalie.BaseApplication;
-import us.mindbuilders.petemit.timegoalie.GoalListActivity;
-import us.mindbuilders.petemit.timegoalie.data.GetGoalEntryByDateAndGoal;
-import us.mindbuilders.petemit.timegoalie.data.GetGoalEntryById;
-import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
-import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
 /**
  * Created by Peter on 9/23/2017.
@@ -57,7 +49,7 @@ public class GoalEntry implements Parcelable {
 
     public void updateSecondsElapsed(Context context) {
 
-        Cursor cursor = null;
+        Cursor cursor;
         cursor = context.getContentResolver().query(
                 TimeGoalieContract.buildGetAGoalEntryByGoalId(getGoal_id()),
                 null,
@@ -160,11 +152,7 @@ public class GoalEntry implements Parcelable {
 //    }
 
     public boolean isHasFinished() {
-        if (isFinished == 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return isFinished == 1;
     }
 
     public void setHasFinished(boolean running) {
@@ -188,11 +176,7 @@ public class GoalEntry implements Parcelable {
     }
 
     public boolean getHasSucceeded() {
-        if (hasSucceeded == 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return hasSucceeded == 1;
     }
 
     public void setHasSucceeded(boolean hasSucceeded) {
@@ -251,11 +235,7 @@ public class GoalEntry implements Parcelable {
     };
 
     public boolean isRunning() {
-        if (isRunning == 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return isRunning == 1;
     }
 
     public void setRunning(boolean running) {

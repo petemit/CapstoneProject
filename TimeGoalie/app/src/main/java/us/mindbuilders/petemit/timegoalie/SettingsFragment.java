@@ -1,7 +1,6 @@
 package us.mindbuilders.petemit.timegoalie;
 
 
-import android.media.audiofx.BassBoost;
 import android.os.Bundle;
 
 
@@ -34,7 +33,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             public boolean onPreferenceChange(Preference preference, Object o) {
                 boolean result = (boolean)o;
                 TimeGoalieNotifications.subscribeFromPref(result);
-                return false;
+                return result;
             }
         });
 

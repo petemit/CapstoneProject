@@ -8,9 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.preference.PreferenceManager;
 
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -53,7 +51,7 @@ public class TimeGoalieNotifications {
 
             NotificationCompat.Builder builder =
                     new NotificationCompat.Builder(context, null)
-                            .setSmallIcon(R.drawable.ic_goalie_with_ball)
+                            .setSmallIcon(R.drawable.ic_goalie_with_ball_grey)
                             .setContentTitle(message)
                             .setTimeoutAfter(CANCELLATION_TIMEOUT)
                             .setAutoCancel(true)

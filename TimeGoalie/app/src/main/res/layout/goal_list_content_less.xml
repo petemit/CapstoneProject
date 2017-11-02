@@ -2,7 +2,6 @@
 
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/card_layout"
@@ -71,6 +70,7 @@
             android:layout_width="@dimen/goal_image_width"
             android:layout_height="@dimen/goal_image_height"
             android:layout_marginBottom="@dimen/half_margin"
+            android:contentDescription="@string/image_of_soccer_goal_desc"
 
             android:layout_marginEnd="@dimen/right_margin"
             android:layout_marginTop="@dimen/half_margin"

@@ -1,11 +1,8 @@
 package us.mindbuilders.petemit.timegoalie.TimeGoalieDO;
 
 import android.database.Cursor;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 
 import java.sql.Date;
-import java.sql.Time;
 import java.util.ArrayList;
 
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;

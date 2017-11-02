@@ -16,8 +16,7 @@
             android:summary="%s"
             android:entries="@array/audio_array"
             android:entryValues="@array/audio_array_values"
-            android:defaultValue="@string/default_audio_value"
-            ></ListPreference>
+            android:defaultValue="@string/default_audio_value" />
     </PreferenceCategory>
 
     <PreferenceCategory

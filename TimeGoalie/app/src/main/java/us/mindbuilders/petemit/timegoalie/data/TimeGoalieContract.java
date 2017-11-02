@@ -4,9 +4,6 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import java.sql.Timestamp;
-import java.util.Date;
-
 /**
  * Created by Peter on 9/20/2017.
  */

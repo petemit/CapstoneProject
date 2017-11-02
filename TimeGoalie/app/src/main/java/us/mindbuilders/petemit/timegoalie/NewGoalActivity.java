@@ -15,7 +15,8 @@ public class NewGoalActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_goal);
         Toolbar toolbar = (Toolbar) findViewById(R.id.report_toolbar);
         setSupportActionBar(toolbar);
-        getSupportFragmentManager().beginTransaction().replace(R.id.new_goal_container,NewGoalFragment.getInstance()).commit();
+        getSupportFragmentManager().beginTransaction().replace(
+                R.id.new_goal_container,NewGoalFragment.getInstance()).commit();
 
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();

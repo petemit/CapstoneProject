@@ -11,7 +11,6 @@ import android.widget.RemoteViewsService;
 public class TimeGoalieRvWidgetService extends RemoteViewsService{
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
-        Log.e("findme","I got here!!!");
         return new TimeGoalieWidgetListRemoteViewsFactory(this.getApplicationContext());
     }
 }

@@ -3,9 +3,8 @@ package us.mindbuilders.petemit.timegoalie;
 import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.support.annotation.IdRes;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -19,9 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
@@ -30,31 +27,23 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.formatter.LargeValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.github.mikephil.charting.utils.EntryXComparator;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.MonthInterval;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.WeekInterval;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
-import us.mindbuilders.petemit.timegoalie.dummy.DummyContent;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
 /**
@@ -155,7 +144,8 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
                 }
 
                 if (getActivity().getSupportLoaderManager().getLoader(GOAL_REPORT_LOADER_ID) != null) {
-                    getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID, loaderBundle, mySelf);
+                    getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID,
+                            loaderBundle, mySelf);
 
                 }
             }
@@ -176,7 +166,8 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
                         goalSelection=goalSelectionEnum.ALLGOALS.name();
                     }
                     if (getActivity().getSupportLoaderManager().getLoader(GOAL_REPORT_LOADER_ID) != null) {
-                        getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID, loaderBundle, mySelf);
+                        getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID,
+                                loaderBundle, mySelf);
                     }
                 }
             }
@@ -240,8 +231,10 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
         chart.getAxisRight().setEnabled(false);
 
 
-        getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID, loaderBundle, this);
-        getActivity().getSupportLoaderManager().restartLoader(GOAL_ENTRY_LOADER_ID, loaderBundle, this);
+        getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID, loaderBundle,
+                this);
+        getActivity().getSupportLoaderManager().restartLoader(GOAL_ENTRY_LOADER_ID, loaderBundle,
+                this);
 
 
         return rootView;
@@ -393,7 +386,7 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
         int max = DEFAULTMAX;
         YAxis yAxis = chart.getAxisLeft();
 
-        if (entries != null && entries.size() > 0) {
+        if (entries.size() > 0) {
             for (Entry ent : entries
                     ) {
                 if (max < ent.getY()) {
@@ -406,7 +399,7 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
 
 
 
-        LineDataSet dataSet = null;
+        LineDataSet dataSet;
         if (selectedGoal != null) {
             if (selectedGoal.getGoalId() != ALL_GOALS_ID) {
                 dataSet = new LineDataSet(entries, selectedGoal.getName());
@@ -452,17 +445,17 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
 
             if (scope == null && selectedScope != null) {
                 scope = selectedScope;
-                if (scope == null) {
-                    scope = scopeEnum.WEEKLY.name();
-                }
+//                if (scope == null) {
+//                    scope = scopeEnum.WEEKLY.name();
+//                }
             }
 
 
             if (goalSelect == null && goalSelection != null) {
                 goalSelect = goalSelection;
-                if (goalSelect == null) {
-                    goalSelect = goalSelectionEnum.ALLGOALS.name();
-                }
+//                if (goalSelect == null) {
+//                    goalSelect = goalSelectionEnum.ALLGOALS.name();
+//                }
             }
 
             long goalId = 0;

@@ -5,9 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
-import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
 /**
  * Created by Peter on 9/27/2017.

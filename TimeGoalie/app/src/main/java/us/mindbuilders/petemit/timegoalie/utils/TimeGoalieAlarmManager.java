@@ -8,21 +8,19 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 import us.mindbuilders.petemit.timegoalie.BaseApplication;
 import us.mindbuilders.petemit.timegoalie.GoalRecyclerViewAdapter;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntryGoalCounter;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.GetSuccessfulGoalCount;
-import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
-import us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider;
 
 /**
  * Created by Peter on 9/29/2017.
@@ -71,7 +69,10 @@ public class TimeGoalieAlarmManager {
                 //set Progress bar Progress
                 if (seekbar != null && !goal.getGoalEntry().isHasFinished()) {
 
-                    ObjectAnimator animation = ObjectAnimator.ofInt(seekbar, "progress", seekbar.getProgress(), (int) ((1 - ((double) (millisuntilfinished / 1000) / totalSeconds)) * 100 * 100));
+                    ObjectAnimator animation = ObjectAnimator.ofInt(seekbar, "progress",
+                            seekbar.getProgress(), (int)
+                                    ((1 - ((double) (millisuntilfinished / 1000) / totalSeconds))
+                                            * 100 * 100));
                     animation.setDuration(2000);
                     animation.setInterpolator(new LinearInterpolator());
                     animation.start();
@@ -79,7 +80,8 @@ public class TimeGoalieAlarmManager {
                 if (seekbar != null && goal.getGoalEntry().isHasFinished()) {
                     seekbar.setProgress(10000);
                 }
-                Log.e("mindbuilders2", goal.getName() + " tick " + goal.getGoalEntry().getSecondsElapsed());
+                Log.e("mindbuilders2", goal.getName() + " tick "
+                        + goal.getGoalEntry().getSecondsElapsed());
             }
 
             @Override
@@ -99,12 +101,14 @@ public class TimeGoalieAlarmManager {
 
                         new GetSuccessfulGoalCount(tv.getContext()).execute(goalEntryGoalCounter);
 
-                        if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalEntry().getGoal_id()) != null) {
+                        if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalEntry()
+                                .getGoal_id()) != null) {
                             TimeGoalieAlarmObject timeGoalieAlarmObject =
                                     BaseApplication.getTimeGoalieAlarmObjectById(
                                             goal.getGoalEntry().getGoal_id());
                             timeGoalieAlarmObject.getCountDownTimer().cancel();
-                            if (goal.getGoalEntry().getDate().equals(TimeGoalieDateUtils.getSqlDateString())) {
+                            if (goal.getGoalEntry().getDate().equals(TimeGoalieDateUtils
+                                    .getSqlDateString())) {
                                 timeGoalieAlarmObject.setCountDownTimer(makeCountdownTimer(goalCounter,
                                         1000,
                                         intervalInSeconds,
@@ -169,9 +173,9 @@ public class TimeGoalieAlarmManager {
         int minutes = (seconds - (hours * 60 * 60)) / 60;
         seconds = (seconds - (hours * 60 * 60) - (minutes * 60));
 
-        return (String.format("%02d", hours)
-                + ":" + String.format("%02d", minutes)
-                + ":" + String.format("%02d", seconds));
+        return (String.format(Locale.US,"%02d", hours)
+                + ":" + String.format(Locale.US,"%02d", minutes)
+                + ":" + String.format(Locale.US,"%02d", seconds));
     }
 
 

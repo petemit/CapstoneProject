@@ -2,9 +2,6 @@ package us.mindbuilders.petemit.timegoalie.utils;
 
 import android.content.Context;
 import android.widget.RemoteViews;
-import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 /**
  * Created by Peter on 10/12/2017.

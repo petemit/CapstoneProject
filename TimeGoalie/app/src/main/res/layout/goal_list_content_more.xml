@@ -73,7 +73,7 @@
             android:layout_width="@dimen/goal_image_width"
             android:layout_height="@dimen/goal_image_height"
             android:layout_marginBottom="@dimen/half_margin"
-
+            android:contentDescription="@string/image_of_soccer_goal_desc"
             android:layout_marginStart="@dimen/left_margin"
             android:layout_marginTop="@dimen/half_margin"
             android:background="@drawable/soccergoal_left"

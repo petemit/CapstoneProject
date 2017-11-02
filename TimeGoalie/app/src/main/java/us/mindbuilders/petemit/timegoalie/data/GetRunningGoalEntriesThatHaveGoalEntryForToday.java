@@ -20,7 +20,8 @@ public class GetRunningGoalEntriesThatHaveGoalEntryForToday extends AsyncTask<
     TimeGoalieJobCallback callback;
     Context context;
     JobParameters jobParameters;
-    public GetRunningGoalEntriesThatHaveGoalEntryForToday(Context context, JobParameters jobParameters) {
+    public GetRunningGoalEntriesThatHaveGoalEntryForToday(Context context,
+                                                          JobParameters jobParameters) {
         this.context = context;
         this.jobParameters = jobParameters;
     }
