@@ -278,7 +278,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                     long diff = TimeGoalieDateUtils.getCurrentTimeInMillis() -
                             BaseApplication.getLastTimeSecondUpdated();
                     Log.e("mindy", diff + " diff");
-                    if (BaseApplication.getSecondlyHandler() == null) {
+                    if (!BaseApplication.isHandlerRunning()) {
                         if (diff >= SECONDLY_FREQUENCY) {
 
                             long secondsElapsed = (int) (Math.floor(diff / 1000));
@@ -291,10 +291,10 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
 
                                     if (goalEntry.isRunning()) {
 
-                                        if (diff >= 10000) {
+                                        if (diff >= 10000000) {
                                             goalEntry.addSecondElapsed();
                                         }
-                                        if (diff <= 10000 && diff >= 0) {
+                                        if (diff <= 10000000 && diff >= 0) {
                                             goalEntry.setSecondsElapsed(goalEntry.getSecondsElapsed()
                                                     + (int) secondsElapsed);
                                         }

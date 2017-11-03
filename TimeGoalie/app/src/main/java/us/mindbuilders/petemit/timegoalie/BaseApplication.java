@@ -34,13 +34,14 @@ public class BaseApplication extends Application {
     private static long lastTimeSecondUpdated;
     private static Handler secondlyHandler;
     private static Runnable runnable;
+    private static boolean handlerRunning;
 
     public static void createHandler(final long millis) {
         secondlyHandler = new Handler();
         runnable = new Runnable() {
             @Override
             public void run() {
-
+                handlerRunning = true;
                 Cursor cursor = context.getContentResolver().query
                         (TimeGoalieContract.getRunningGoalEntriesThatHaveGoalEntryForToday(),
                                 null,
@@ -87,8 +88,8 @@ public class BaseApplication extends Application {
                 else if (cursor == null || cursor.getCount() == 0) {
                     secondlyHandler.removeCallbacks(this);
                 }
-
                 secondlyHandler.postDelayed(this, millis);
+                handlerRunning = false;
             }
         };
         secondlyHandler.postDelayed(runnable, millis);
@@ -126,6 +127,14 @@ public class BaseApplication extends Application {
 
     public static void setSecondlyHandler(Handler secondlyHandler) {
         BaseApplication.secondlyHandler = secondlyHandler;
+    }
+
+    public static boolean isHandlerRunning() {
+        return handlerRunning;
+    }
+
+    public static void setHandlerRunning(boolean handlerRunning) {
+        BaseApplication.handlerRunning = handlerRunning;
     }
 
     public interface GoalActivityListListener {
