@@ -42,7 +42,7 @@ public class InsertNewGoal extends AsyncTask<Goal, Void, Goal> {
             goals[0].setGoalId(goal_id);
 
 
-            if (goal.getGoalDays()!=null) {
+            if (goal.getGoalDays() != null) {
                 for (int i = 0; i < goal.getGoalDays().size(); i++) {
                     ContentValues goal_day_cv = new ContentValues();
 
@@ -62,11 +62,11 @@ public class InsertNewGoal extends AsyncTask<Goal, Void, Goal> {
     protected void onPostExecute(Goal goal) {
         super.onPostExecute(goal);
 
-        if (goal!=null && ((goal.getIsDaily()==0&&goal.getIsWeekly()==0)||goal.getIsDaily()==1)) {
-            GoalEntry todayGoalEntry= new GoalEntry(-1,goal.getGoalId(),
+        if (goal != null && ((goal.getIsDaily() == 0 && goal.getIsWeekly() == 0) || goal.getIsDaily() == 1)) {
+            GoalEntry todayGoalEntry = new GoalEntry(-1, goal.getGoalId(),
                     TimeGoalieDateUtils.getSqlDateString());
             todayGoalEntry.setSecondsElapsed(0);
-            if (goal.getGoalTypeId()==1) {
+            if (goal.getGoalTypeId() == 1) {
                 todayGoalEntry.setHasSucceeded(1);
             }
             new InsertNewGoalEntry(context).execute(todayGoalEntry);

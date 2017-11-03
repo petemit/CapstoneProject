@@ -2,9 +2,6 @@ package us.mindbuilders.petemit.timegoalie;
 
 
 import android.os.Bundle;
-
-
-
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.preference.Preference;
@@ -18,7 +15,7 @@ import us.mindbuilders.petemit.timegoalie.services.TimeGoalieNotifications;
  */
 public class SettingsFragment extends PreferenceFragmentCompat {
 
-    public SettingsFragment(){
+    public SettingsFragment() {
 
     }
 
@@ -31,7 +28,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object o) {
-                boolean result = (boolean)o;
+                boolean result = (boolean) o;
                 TimeGoalieNotifications.subscribeFromPref(result);
                 return true;
             }

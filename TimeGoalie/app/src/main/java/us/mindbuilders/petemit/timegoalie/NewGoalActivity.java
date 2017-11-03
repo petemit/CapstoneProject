@@ -1,9 +1,9 @@
 package us.mindbuilders.petemit.timegoalie;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
@@ -16,7 +16,7 @@ public class NewGoalActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.report_toolbar);
         setSupportActionBar(toolbar);
         getSupportFragmentManager().beginTransaction().replace(
-                R.id.new_goal_container,NewGoalFragment.getInstance()).commit();
+                R.id.new_goal_container, NewGoalFragment.getInstance()).commit();
 
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();

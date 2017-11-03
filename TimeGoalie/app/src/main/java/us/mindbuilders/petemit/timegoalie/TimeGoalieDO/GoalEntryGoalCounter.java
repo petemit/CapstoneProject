@@ -11,9 +11,9 @@ public class GoalEntryGoalCounter {
     private GoalEntry goalEntry;
     private String date;
 
-    public GoalEntryGoalCounter(GoalRecyclerViewAdapter.GoalCounter gc, String date){
-        this.gc=gc;
-        this.date=date;
+    public GoalEntryGoalCounter(GoalRecyclerViewAdapter.GoalCounter gc, String date) {
+        this.gc = gc;
+        this.date = date;
     }
 
     public GoalRecyclerViewAdapter.GoalCounter getGc() {

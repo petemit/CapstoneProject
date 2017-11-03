@@ -2,57 +2,55 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <item android:id="@android:id/background" >
+    <item android:id="@android:id/background">
 
         <shape>
-            <corners
-                android:radius="5dp" />
+            <corners android:radius="5dp" />
             <gradient
                 android:angle="270"
-                android:startColor="#33000000"
                 android:centerColor="#11000000"
-                android:endColor="#11000000"
                 android:centerY="0.2"
-                android:type="linear"
-                />
+                android:endColor="#11000000"
+                android:startColor="#33000000"
+                android:type="linear" />
         </shape>
     </item>
-    <item android:id="@android:id/secondaryProgress" >
-        <clip android:clipOrientation="horizontal" android:gravity="left" >
+    <item android:id="@android:id/secondaryProgress">
+        <clip
+            android:clipOrientation="horizontal"
+            android:gravity="left">
             <shape>
-                <corners
-                    android:radius="5dp" />
+                <corners android:radius="5dp" />
                 <gradient
-                    android:startColor="@color/primaryDarkColor"
+                    android:angle="0"
                     android:centerColor="@color/primaryDarkColor"
                     android:endColor="@color/primaryDarkColor"
-                    android:angle="0"
-                    />
+                    android:startColor="@color/primaryDarkColor" />
             </shape>
         </clip>
     </item>
 
-    <item android:id="@android:id/progress" >
-        <clip android:clipOrientation="horizontal" android:gravity="left" >
+    <item android:id="@android:id/progress">
+        <clip
+            android:clipOrientation="horizontal"
+            android:gravity="left">
             <shape>
-                <corners
-                    android:radius="5dp" />
+                <corners android:radius="5dp" />
                 <gradient
-                    android:startColor="@color/primaryDarkColor"
+                    android:angle="0"
                     android:centerColor="@color/primaryDarkColor"
 
                     android:endColor="@color/primaryDarkColor"
-                    android:angle="0"
-                    />
+                    android:startColor="@color/primaryDarkColor" />
             </shape>
         </clip>
     </item>
 
     <!--<item android:id="@android:id/progress"-->
-        <!--android:drawable="@drawable/seekbarbg"></item>-->
+    <!--android:drawable="@drawable/seekbarbg"></item>-->
     <!--<item android:id="@android:id/background">-->
-        <!--<scale android:drawable="@android:color/transparent"-->
-             <!--/>-->
+    <!--<scale android:drawable="@android:color/transparent"-->
+    <!--/>-->
     <!--</item>-->
 
 </layer-list>

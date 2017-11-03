@@ -4,13 +4,13 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
 import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,30 +18,23 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
-import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-
 import com.google.firebase.analytics.FirebaseAnalytics;
+
+import java.util.ArrayList;
+import java.util.Calendar;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 import us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-
-// TODO: 10/26/2017 delete this
 /*
 adb shell setprop debug.firebase.analytics.app us.mindbuilders.petemit.timegoalie
 
 adb shell setprop debug.firebase.analytics.app .none.
-
-//
-
  */
 
 /**
@@ -52,26 +45,20 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         GoalRecyclerViewAdapter.GoalCounter {
     private static final int GOAL_LOADER_ID = 4;
     private static final String noDateString = "NODATE";
-    private GoalRecyclerViewAdapter rvAdapter;
     Spinner datespinner;
+    GoalReportFragment fragment;
+    RecyclerView recyclerView;
+    private GoalRecyclerViewAdapter rvAdapter;
     private TextView dateSpinnerTextView;
     private ArrayAdapter<String> spinnerAdapter;
     private boolean isToday;
     private ArrayList<Goal> goalArrayList;
-    GoalReportFragment fragment;
     private int successfulGoalCount = 0;
     private TextView tv_successfulGoalCount;
     private View noGoalsView;
-    RecyclerView recyclerView;
-
     private FirebaseAnalytics firebaseAnalytics;
 
     private TimeGoalieReportUpdater timeGoalieReportUpdater;
-
-    public interface TimeGoalieReportUpdater {
-        void updateReport();
-    }
-
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
@@ -88,14 +75,6 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         }
 
     }
-
-//    @Override
-//    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-//        super.onRestoreInstanceState(savedInstanceState);
-//        if (savedInstanceState != null) {
-//            fragment = (GoalReportFragment) getSupportFragmentManager().getFragment(savedInstanceState, "report_fragment");
-//        }
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,14 +147,6 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         super.onResume();
         getSupportLoaderManager().restartLoader(GOAL_LOADER_ID, null, this);
         rvAdapter.notifyDataSetChanged();
-
-//        if (findViewById(R.id.goal_detail_container) != null) {
-//            // The detail container view will be present only in the
-//            // large-screen layouts (res/values-w900dp).
-//            // If this view is present, then the
-//            // activity should be in two-pane mode.
-//            mTwoPane = true;
-//        }
     }
 
     @Override
@@ -202,7 +173,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    android.support.v4.app.DialogFragment dateFrag = new myDatePickerFragment();
+                    android.support.v4.app.DialogFragment dateFrag = new MyDatePickerFragment();
                     dateFrag.show(getSupportFragmentManager(), "datepicker");
                     return true;
                 } else {
@@ -234,7 +205,6 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.settings_key) {
@@ -250,33 +220,9 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         return true;
     }
 
-    /**
-     * The Goal List Activity will handle onClicks
-     *
-     * @param v
-     */
     @Override
     public void onClick(View v) {
-
-        // TODO: 9/15/2017 implement logic to support editing pencil
-//        if (mTwoPane) {
-//            Bundle arguments = new Bundle();
-//       //     arguments.putString(GoalReportFragment.ARG_ITEM_ID, holder.mItem.id);
-//            GoalReportFragment fragment = new GoalReportFragment();
-//            fragment.setArguments(arguments);
-//            getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.goal_detail_container, fragment)
-//                    .commit();
-//        } else {
-//            Context context = v.getContext();
-//            Intent intent = new Intent(context, GoalReportActivity.class);
-//       //     intent.putExtra(GoalReportFragment.ARG_ITEM_ID, holder.mItem.id);
-//
-//            context.startActivity(intent);
-//        }
-
     }
-
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -336,12 +282,11 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         rvAdapter.notifyDataSetChanged();
         if (goalArrayList.size() > 0) {
             if (recyclerView != null) {
-             recyclerView.setVisibility(View.VISIBLE);
-             noGoalsView.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+                noGoalsView.setVisibility(View.GONE);
             }
 
-        }
-        else{
+        } else {
             recyclerView.setVisibility(View.GONE);
             noGoalsView.setVisibility(View.VISIBLE);
         }
@@ -380,12 +325,14 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void updateGoalCounter(int successfulGoalCount) {
-        //You know... I should just read from the database.  That'd be better.
-        //   this.successfulGoalCount=successfulGoalCount;
 
         tv_successfulGoalCount.setText(String.valueOf(successfulGoalCount));
         if (timeGoalieReportUpdater != null) {
             timeGoalieReportUpdater.updateReport();
         }
+    }
+
+    public interface TimeGoalieReportUpdater {
+        void updateReport();
     }
 }

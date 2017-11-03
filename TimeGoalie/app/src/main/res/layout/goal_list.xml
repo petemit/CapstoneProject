@@ -32,8 +32,8 @@
         android:id="@+id/no_goals_frame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:layout_marginTop="@dimen/no_goals_yet_margin"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -45,8 +45,7 @@
             android:layout_gravity="center_horizontal|top"
             android:maxLines="2"
             android:text="@string/no_goals_yet"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-            />
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
 
         <TextView
             android:id="@+id/add_a_new_goal"
@@ -56,7 +55,6 @@
             android:gravity="center_vertical|bottom"
             android:maxLines="2"
             android:text="@string/add_a_goal_to_get_started"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-             />
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
     </FrameLayout>
 </android.support.constraint.ConstraintLayout>

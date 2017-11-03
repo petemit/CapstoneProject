@@ -10,16 +10,17 @@ import android.widget.RemoteViews;
 public class CustomTextView extends android.support.v7.widget.AppCompatTextView {
     RemoteViews views;
     int id;
+
     public CustomTextView(Context context, RemoteViews views, int id) {
         super(context);
-        this.views=views;
-        this.id=id;
+        this.views = views;
+        this.id = id;
     }
 
     @Override
     public void setText(CharSequence text, BufferType type) {
         super.setText(text, type);
-        if (text!= null && views != null) {
+        if (text != null && views != null) {
             views.setTextViewText(id, text);
         }
     }

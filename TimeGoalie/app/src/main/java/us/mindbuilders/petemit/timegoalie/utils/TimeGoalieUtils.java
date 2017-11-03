@@ -27,12 +27,11 @@ public class TimeGoalieUtils {
         } else {
 
 
-
-
             return null;
         }
 
     }
+
     public static long getRemainingSeconds(Goal goal) {
         long onBindElapsedSeconds = 0;
         if (goal.getGoalEntry() != null) {
@@ -58,13 +57,13 @@ public class TimeGoalieUtils {
 
         if (goal.getGoalEntry() != null) {
             long remainingSeconds = getRemainingSeconds(goal);
-          //  long remainingSeconds = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
+            //  long remainingSeconds = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
 
-            switch ((int)goal.getGoalTypeId()) {
+            switch ((int) goal.getGoalTypeId()) {
                 case 0: //Time Goal To Encourage
                     if (tv_timeOutOf != null) {
-                    String result = " / " + TimeGoalieAlarmManager.makeTimeTextFromMillis(
-                            goal.getGoalSeconds() * 1000);
+                        String result = " / " + TimeGoalieAlarmManager.makeTimeTextFromMillis(
+                                goal.getGoalSeconds() * 1000);
                         tv_timeOutOf.setText(result);
                         tv_timeOutOf.setVisibility(View.VISIBLE);
                     }
@@ -90,7 +89,7 @@ public class TimeGoalieUtils {
 
                     } else {
                         tv_timeText.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(remainingSeconds * 1000));
-                        }
+                    }
 
                     break;
             }

@@ -1,43 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="Audio Settings"
-        android:key="pref_key_audio_settings">
+        android:key="pref_key_audio_settings"
+        android:title="Audio Settings">
 
         <CheckBoxPreference
-            android:key="pref_silent_mode"
+            android:defaultValue="false"
             android:disableDependentsState="true"
-            android:title="@string/silent_mode"
-            android:defaultValue="false"/>
+            android:key="pref_silent_mode"
+            android:title="@string/silent_mode" />
         <ListPreference
+            android:defaultValue="@string/default_audio_value"
             android:dependency="pref_silent_mode"
-            android:key="pref_audio_mode"
-            android:title="Notification Preference"
-            android:summary="%s"
             android:entries="@array/audio_array"
             android:entryValues="@array/audio_array_values"
-            android:defaultValue="@string/default_audio_value" />
+            android:key="pref_audio_mode"
+            android:summary="%s"
+            android:title="Notification Preference" />
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Notification Settings"
-        android:key="pref_key_notification_settings">
+        android:key="pref_key_notification_settings"
+        android:title="Notification Settings">
 
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:disableDependentsState="true"
             android:key="pref_daily_notification"
-            android:disableDependentsState="true"
-            android:title="@string/daily_reminder"
 
-            android:defaultValue="false"/>
+            android:title="@string/daily_reminder" />
 
         <CheckBoxPreference
-            android:key="pref_disable_app_notifications"
+            android:defaultValue="false"
             android:disableDependentsState="true"
-            android:title="@string/disable_app_notifications"
+            android:key="pref_disable_app_notifications"
             android:summary="@string/disable_app_notifications_summary"
-            android:defaultValue="false"/>
+            android:title="@string/disable_app_notifications" />
     </PreferenceCategory>
-
 
 
 </PreferenceScreen>

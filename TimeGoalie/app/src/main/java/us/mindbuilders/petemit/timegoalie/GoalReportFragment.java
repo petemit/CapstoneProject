@@ -60,7 +60,9 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
     private static final float CHART_TEXT_SIZE = 14f;
     private static final float CHART_OFFSET = 8f;
     private static final float RIGHT_CHART_OFFSET = 36f;
-
+    private static final int DEFAULTWEEKS = 4;
+    private static final int DEFAULTMONTHS = 4;
+    private static final int DEFAULTMAX = 20;
     private Spinner goalSpinner;
     private RadioGroup monthlyWeeklyRadioGroup;
     private RadioButton weeksRb;
@@ -73,31 +75,18 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
     private ArrayAdapter spinnerAdapter;
     private Goal selectedGoal;
     private GoalReportFragment mySelf;
-
-    @Override
-    public void updateReport() {
-        getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID, null, this);
-    }
-
-    public enum scopeEnum {
-        WEEKLY, MONTHLY
-    }
-
-    public enum goalSelectionEnum {
-        ALLGOALS, SINGLEGOAL
-    }
-
-    private static final int DEFAULTWEEKS = 4;
-    private static final int DEFAULTMONTHS = 4;
-    private static final int DEFAULTMAX = 20;
     private int numOfWeeks;
     private int numOfMonths;
-
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
     public GoalReportFragment() {
+    }
+
+    @Override
+    public void updateReport() {
+        getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID, null, this);
     }
 
     @Override
@@ -111,8 +100,8 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString(getString(R.string.selected_scope_key),selectedScope);
-        outState.putString(getString(R.string.report_goal_selection_key),goalSelection);
+        outState.putString(getString(R.string.selected_scope_key), selectedScope);
+        outState.putString(getString(R.string.report_goal_selection_key), goalSelection);
         super.onSaveInstanceState(outState);
     }
 
@@ -159,11 +148,11 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
                     if (selectedGoal.getGoalId() != ALL_GOALS_ID) {
                         loaderBundle.putString(getString(R.string.report_goal_selection_key),
                                 goalSelectionEnum.SINGLEGOAL.name());
-                        goalSelection=goalSelectionEnum.SINGLEGOAL.name();
+                        goalSelection = goalSelectionEnum.SINGLEGOAL.name();
                     } else {
                         loaderBundle.putString(getString(R.string.report_goal_selection_key),
                                 goalSelectionEnum.ALLGOALS.name());
-                        goalSelection=goalSelectionEnum.ALLGOALS.name();
+                        goalSelection = goalSelectionEnum.ALLGOALS.name();
                     }
                     if (getActivity().getSupportLoaderManager().getLoader(GOAL_REPORT_LOADER_ID) != null) {
                         getActivity().getSupportLoaderManager().restartLoader(GOAL_REPORT_LOADER_ID,
@@ -199,7 +188,7 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
             if (selectedGoal == null) {
                 loaderBundle.putString(getString(R.string.report_goal_selection_key),
                         goalSelectionEnum.ALLGOALS.name());
-                goalSelection=goalSelectionEnum.ALLGOALS.name();
+                goalSelection = goalSelectionEnum.ALLGOALS.name();
             }
 
         }
@@ -324,7 +313,7 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
             xAxis.setValueFormatter(new IAxisValueFormatter() {
                 @Override
                 public String getFormattedValue(float v, AxisBase axisBase) {
-                    int inverse = weekIntervals.size()-1-(int)v;
+                    int inverse = weekIntervals.size() - 1 - (int) v;
                     return weekIntervals.get(inverse).getBeginningOfWeek();
                 }
             });
@@ -376,8 +365,8 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
             xAxis.setValueFormatter(new IAxisValueFormatter() {
                 @Override
                 public String getFormattedValue(float v, AxisBase axisBase) {
-                    int inverse = monthIntervals.size()-1-(int)v;
-                    String month =monthIntervals.get(inverse).getBegOfMonth();
+                    int inverse = monthIntervals.size() - 1 - (int) v;
+                    String month = monthIntervals.get(inverse).getBegOfMonth();
                     return TimeGoalieDateUtils.getMonthFromStringDate(month);
                 }
             });
@@ -398,7 +387,6 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
         yAxis.setAxisMaximum(max);
 
 
-
         LineDataSet dataSet;
         if (selectedGoal != null) {
             if (selectedGoal.getGoalId() != ALL_GOALS_ID) {
@@ -409,7 +397,6 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
         } else {
             dataSet = new LineDataSet(entries, "Total Goals Saved");
         }
-
 
 
         dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
@@ -438,7 +425,7 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
 
             String scope = null;
             String goalSelect = null;
-            if (args!= null) {
+            if (args != null) {
                 scope = args.getString(getString(R.string.goal_scope));
                 goalSelect = args.getString(getString(R.string.report_goal_selection_key));
             }
@@ -569,5 +556,13 @@ public class GoalReportFragment extends Fragment implements LoaderManager.Loader
         }
 
 
+    }
+
+    public enum scopeEnum {
+        WEEKLY, MONTHLY
+    }
+
+    public enum goalSelectionEnum {
+        ALLGOALS, SINGLEGOAL
     }
 }

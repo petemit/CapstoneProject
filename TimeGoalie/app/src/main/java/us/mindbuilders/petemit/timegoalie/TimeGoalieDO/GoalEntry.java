@@ -14,6 +14,17 @@ import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
  */
 
 public class GoalEntry implements Parcelable {
+    public static final Parcelable.Creator<GoalEntry> CREATOR = new Parcelable.Creator<GoalEntry>() {
+        @Override
+        public GoalEntry createFromParcel(Parcel in) {
+            return new GoalEntry(in);
+        }
+
+        @Override
+        public GoalEntry[] newArray(int size) {
+            return new GoalEntry[size];
+        }
+    };
     private long id;
     private String date = "";
     private int goalAugment;
@@ -38,6 +49,55 @@ public class GoalEntry implements Parcelable {
 //        }
     }
 
+    protected GoalEntry(Parcel in) {
+        id = in.readLong();
+        date = in.readString();
+        goalAugment = in.readInt();
+        goal_id = in.readLong();
+        isFinished = in.readInt();
+        secondsElapsed = in.readInt();
+        hasSucceeded = in.readInt();
+        isRunning = in.readInt();
+        targetTime = in.readLong();
+    }
+
+    public static ArrayList<GoalEntry> makeGoalEntryListFromCursor(Cursor cursor) {
+
+        ArrayList<GoalEntry> goalEntries = new ArrayList<GoalEntry>();
+        if (cursor != null && cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                GoalEntry goalEntry = new GoalEntry(cursor.getLong(cursor.
+                        getColumnIndex(TimeGoalieContract.GoalEntries._ID))
+                        , cursor.getLong(
+                        cursor.getColumnIndex(
+                                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID))
+                        , cursor.getString(
+                        cursor.getColumnIndex(TimeGoalieContract
+                                .GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
+                goalEntry.setSecondsElapsed(
+                        cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
+                                .GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED)), true);
+                goalEntry.setGoalAugment(cursor.getInt(
+                        cursor.getColumnIndex(TimeGoalieContract
+                                .GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT)));
+                goalEntry.setHasSucceeded(cursor.getInt(
+                        cursor.getColumnIndex(TimeGoalieContract.
+                                GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED)
+                ));
+                goalEntry.setHasFinished(
+                        cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
+                                .GoalEntries.GOALENTRIES_COLUMN_ISFINISHED))
+                );
+                goalEntry.setRunning(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.
+                        GoalEntries.GOALENTRIES_COLUMN_ISRUNNING)));
+
+                goalEntry.setTargetTime((cursor.getLong(cursor.getColumnIndex(TimeGoalieContract.
+                        GoalEntries.GOALENTRIES_COLUMN_TARGETTIME))));
+                goalEntries.add(goalEntry);
+            }
+        }
+        return goalEntries;
+    }
 
     public String getDate() {
         return date;
@@ -82,16 +142,6 @@ public class GoalEntry implements Parcelable {
 
     }
 
-    public void addSecondElapsed() {
-//        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
-//            BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date ).setSecondsElapsed(
-//                    BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).getSecondsElapsed() + 1
-//            );
-//        }
-
-        setSecondsElapsed(getSecondsElapsed() + 1);
-    }
-
     public void setSecondsElapsed(int secondsElapsed) {
 //        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
 //        } else {
@@ -103,6 +153,16 @@ public class GoalEntry implements Parcelable {
 //        }
         this.secondsElapsed = secondsElapsed;
 
+    }
+
+    public void addSecondElapsed() {
+//        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
+//            BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date ).setSecondsElapsed(
+//                    BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).getSecondsElapsed() + 1
+//            );
+//        }
+
+        setSecondsElapsed(getSecondsElapsed() + 1);
     }
 
     public void setSecondsElapsed(int secondsElapsed, boolean isAlarm) {
@@ -125,18 +185,6 @@ public class GoalEntry implements Parcelable {
         return goal_id;
     }
 
-    public void setGoal_id(long goal_id) {
-        this.goal_id = goal_id;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
 //    public boolean isHasFinished() {
 //        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date) != null) {
 //            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date).isHasFinished();
@@ -151,8 +199,24 @@ public class GoalEntry implements Parcelable {
 //        }
 //    }
 
+    public void setGoal_id(long goal_id) {
+        this.goal_id = goal_id;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public boolean isHasFinished() {
         return isFinished == 1;
+    }
+
+    public void setHasFinished(int running) {
+        isFinished = running;
     }
 
     public void setHasFinished(boolean running) {
@@ -161,10 +225,6 @@ public class GoalEntry implements Parcelable {
         } else {
             isFinished = 0;
         }
-    }
-
-    public void setHasFinished(int running) {
-        isFinished = running;
     }
 
     public int getGoalAugment() {
@@ -179,29 +239,16 @@ public class GoalEntry implements Parcelable {
         return hasSucceeded == 1;
     }
 
+    public void setHasSucceeded(int hasSucceeded) {
+        this.hasSucceeded = hasSucceeded;
+    }
+
     public void setHasSucceeded(boolean hasSucceeded) {
         if (hasSucceeded) {
             this.hasSucceeded = 1;
         } else {
             this.hasSucceeded = 0;
         }
-    }
-
-    public void setHasSucceeded(int hasSucceeded) {
-        this.hasSucceeded = hasSucceeded;
-    }
-
-
-    protected GoalEntry(Parcel in) {
-        id = in.readLong();
-        date = in.readString();
-        goalAugment = in.readInt();
-        goal_id = in.readLong();
-        isFinished = in.readInt();
-        secondsElapsed = in.readInt();
-        hasSucceeded = in.readInt();
-        isRunning = in.readInt();
-        targetTime = in.readLong();
     }
 
     @Override
@@ -222,20 +269,12 @@ public class GoalEntry implements Parcelable {
         dest.writeLong(targetTime);
     }
 
-    public static final Parcelable.Creator<GoalEntry> CREATOR = new Parcelable.Creator<GoalEntry>() {
-        @Override
-        public GoalEntry createFromParcel(Parcel in) {
-            return new GoalEntry(in);
-        }
-
-        @Override
-        public GoalEntry[] newArray(int size) {
-            return new GoalEntry[size];
-        }
-    };
-
     public boolean isRunning() {
         return isRunning == 1;
+    }
+
+    public void setRunning(int running) {
+        isRunning = running;
     }
 
     public void setRunning(boolean running) {
@@ -244,10 +283,6 @@ public class GoalEntry implements Parcelable {
         } else {
             isRunning = 0;
         }
-    }
-
-    public void setRunning(int running) {
-        isRunning = running;
     }
 
     public long getTargetTime() {
@@ -264,43 +299,5 @@ public class GoalEntry implements Parcelable {
 
     public void setNeedsSecondsUpdate(boolean needsSecondsUpdate) {
         this.needsSecondsUpdate = needsSecondsUpdate;
-    }
-
-    public static ArrayList<GoalEntry> makeGoalEntryListFromCursor(Cursor cursor) {
-
-        ArrayList<GoalEntry> goalEntries = new ArrayList<GoalEntry>();
-        if (cursor != null && cursor.getCount() > 0) {
-            while(cursor.moveToNext()) {
-                GoalEntry goalEntry = new GoalEntry(cursor.getLong(cursor.
-                        getColumnIndex(TimeGoalieContract.GoalEntries._ID))
-                        , cursor.getLong(
-                                cursor.getColumnIndex(
-                                        TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID))
-                        , cursor.getString(
-                        cursor.getColumnIndex(TimeGoalieContract
-                                .GoalEntries.GOALENTRIES_COLUMN_DATETIME)));
-                goalEntry.setSecondsElapsed(
-                        cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
-                                .GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED)), true);
-                goalEntry.setGoalAugment(cursor.getInt(
-                        cursor.getColumnIndex(TimeGoalieContract
-                                .GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT)));
-                goalEntry.setHasSucceeded(cursor.getInt(
-                        cursor.getColumnIndex(TimeGoalieContract.
-                                GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED)
-                ));
-                goalEntry.setHasFinished(
-                        cursor.getInt(cursor.getColumnIndex(TimeGoalieContract
-                                .GoalEntries.GOALENTRIES_COLUMN_ISFINISHED))
-                );
-                goalEntry.setRunning(cursor.getInt(cursor.getColumnIndex(TimeGoalieContract.
-                        GoalEntries.GOALENTRIES_COLUMN_ISRUNNING)));
-
-                goalEntry.setTargetTime((cursor.getLong(cursor.getColumnIndex(TimeGoalieContract.
-                        GoalEntries.GOALENTRIES_COLUMN_TARGETTIME))));
-                goalEntries.add(goalEntry);
-            }
-        }
-        return goalEntries;
     }
 }

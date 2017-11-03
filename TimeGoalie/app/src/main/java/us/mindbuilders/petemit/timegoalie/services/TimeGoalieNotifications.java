@@ -24,10 +24,6 @@ public class TimeGoalieNotifications {
     private static final int NOTIFICATIONID = 1;
     private static final int CANCELLATION_TIMEOUT = 2000;
 
-    public enum vibrationPref {
-        vibrate, sound, soundandvibrate
-    }
-
     public static void createNotification(Context context, Intent intent, String injectedMessage) {
 
         SharedPreferences sharedPreferences =
@@ -98,5 +94,9 @@ public class TimeGoalieNotifications {
         } else {
             FirebaseMessaging.getInstance().unsubscribeFromTopic("dailyNotification");
         }
+    }
+
+    public enum vibrationPref {
+        vibrate, sound, soundandvibrate
     }
 }

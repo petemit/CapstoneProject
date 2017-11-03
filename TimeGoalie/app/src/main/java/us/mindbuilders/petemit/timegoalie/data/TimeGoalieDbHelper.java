@@ -18,7 +18,7 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
 
     public TimeGoalieDbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
-        this.context=context;
+        this.context = context;
     }
 
     @Override
@@ -44,18 +44,18 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME +
                 "(" + TimeGoalieContract.GoalEntries._ID +
                 " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED + " INTEGER, "+
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT + " INTEGER, "+
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED + " INTEGER, "+
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISRUNNING + " INTEGER, "+
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISFINISHED + " INTEGER, "+
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_TARGETTIME + " INTEGER, "+
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID + " INTEGER NOT NULL, "+
-                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME + " TEXT NOT NULL, "+
-        " UNIQUE("+
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED + " INTEGER, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOALAUGMENT + " INTEGER, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED + " INTEGER, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISRUNNING + " INTEGER, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISFINISHED + " INTEGER, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_TARGETTIME + " INTEGER, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID + " INTEGER NOT NULL, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME + " TEXT NOT NULL, " +
+                " UNIQUE(" +
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID + "," +
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME +
-                ") "+
+                ") " +
                 " ON CONFLICT REPLACE )";
         db.execSQL(createGoalEntriesTable);
 
@@ -79,13 +79,12 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 ", " + TimeGoalieContract.GoalTypes._ID +
                 ") " + "VALUES ";
         for (int i = 0; i < goalTypes.length; i++) {
-            populateGoalTypesSql= populateGoalTypesSql.concat(" (");
-            populateGoalTypesSql =  populateGoalTypesSql.concat(buildInsertSqlfromStringArray
-                    (new String[]{'"'+goalTypes[i]+'"', goalTypeValues[i]}));
-            if (i!=goalTypes.length-1) {
+            populateGoalTypesSql = populateGoalTypesSql.concat(" (");
+            populateGoalTypesSql = populateGoalTypesSql.concat(buildInsertSqlfromStringArray
+                    (new String[]{'"' + goalTypes[i] + '"', goalTypeValues[i]}));
+            if (i != goalTypes.length - 1) {
                 populateGoalTypesSql = populateGoalTypesSql.concat("), ");
-            }
-            else{
+            } else {
                 populateGoalTypesSql = populateGoalTypesSql.concat(")");
             }
         }
@@ -113,13 +112,12 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 ", " + TimeGoalieContract.Days.DAYS_COLUMN_SEQUENCE +
                 ") " + "VALUES ";
         for (int i = 0; i < dayNames.length; i++) {
-           populateDaysSql = populateDaysSql.concat(" (");
-          populateDaysSql =  populateDaysSql.concat(buildInsertSqlfromStringArray
-                    (new String[]{'"'+dayNames[i]+'"', daySeqValues[i]}));
-            if (i!=dayNames.length-1) {
+            populateDaysSql = populateDaysSql.concat(" (");
+            populateDaysSql = populateDaysSql.concat(buildInsertSqlfromStringArray
+                    (new String[]{'"' + dayNames[i] + '"', daySeqValues[i]}));
+            if (i != dayNames.length - 1) {
                 populateDaysSql = populateDaysSql.concat("), ");
-            }
-            else{
+            } else {
                 populateDaysSql = populateDaysSql.concat(")");
             }
         }
@@ -146,7 +144,6 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 TimeGoalieContract.GoalsDatesAccomplished
                         .GOALS_DATES_ACCOMPLISHED_COLUMN_DATE + " TEXT NOT NULL);";
         db.execSQL(createGoalsDatesAccomplishedSQL);
-
 
 
         if (BuildConfig.DEBUG) {
@@ -222,8 +219,6 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
         }
 
 
-
-
     }
 
     @Override
@@ -241,14 +236,13 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
 
     }
 
-    public String buildInsertSqlfromStringArray(String[] array){
-        String returnString="";
+    public String buildInsertSqlfromStringArray(String[] array) {
+        String returnString = "";
         for (int i = 0; i < array.length; i++) {
-            if (i!=array.length-1){
-              returnString = returnString.concat(array[i])
+            if (i != array.length - 1) {
+                returnString = returnString.concat(array[i])
                         .concat(",");
-            }
-            else{
+            } else {
                 returnString = returnString.concat(array[i]);
             }
         }

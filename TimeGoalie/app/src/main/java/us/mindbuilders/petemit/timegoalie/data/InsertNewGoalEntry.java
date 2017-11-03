@@ -15,14 +15,14 @@ public class InsertNewGoalEntry extends AsyncTask<GoalEntry, Void, Void> {
 
     Context context;
 
-    public InsertNewGoalEntry(Context context){
-        this.context=context;
+    public InsertNewGoalEntry(Context context) {
+        this.context = context;
     }
 
     @Override
     protected Void doInBackground(GoalEntry... goalEntries) {
         ContentValues goalEntries_cv = new ContentValues();
-        for (int i = 0 ; i < goalEntries.length ; i++ ) {
+        for (int i = 0; i < goalEntries.length; i++) {
             goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID,
                     goalEntries[i].getGoal_id());
             goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME,
@@ -40,15 +40,16 @@ public class InsertNewGoalEntry extends AsyncTask<GoalEntry, Void, Void> {
 //            if (goalEntries[0].isNeedsSecondsUpdate()){
             goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED,
                     goalEntries[i].getSecondsElapsed());
-         //   }
+            //   }
 
         }
 
-       long goalEntry_id = ContentUris.parseId(context.getContentResolver()
-               .insert(TimeGoalieContract.GoalEntries.CONTENT_URI,goalEntries_cv));
+        long goalEntry_id = ContentUris.parseId(context.getContentResolver()
+                .insert(TimeGoalieContract.GoalEntries.CONTENT_URI, goalEntries_cv));
         goalEntries[0].setId(goalEntry_id);
         if (goalEntries.length > 0) {
-            for (int i = 0; i < goalEntries.length; i++) {}
+            for (int i = 0; i < goalEntries.length; i++) {
+            }
 
         }
         return null;

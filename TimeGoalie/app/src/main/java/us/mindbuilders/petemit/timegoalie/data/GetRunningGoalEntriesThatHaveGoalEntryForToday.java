@@ -20,6 +20,7 @@ public class GetRunningGoalEntriesThatHaveGoalEntryForToday extends AsyncTask<
     TimeGoalieJobCallback callback;
     Context context;
     JobParameters jobParameters;
+
     public GetRunningGoalEntriesThatHaveGoalEntryForToday(Context context,
                                                           JobParameters jobParameters) {
         this.context = context;
@@ -41,7 +42,7 @@ public class GetRunningGoalEntriesThatHaveGoalEntryForToday extends AsyncTask<
 
     @Override
     protected void onPostExecute(Cursor cursor) {
-        if(callback != null) {
+        if (callback != null) {
             callback.callBack(cursor, jobParameters);
         }
         if (cursor != null) {

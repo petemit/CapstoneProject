@@ -61,10 +61,10 @@ public class TimeGoalieAlarmManager {
             public void onTick(long millisuntilfinished) {
                 Log.e("mindbuilders1", goal.getName() + " tick " + goal.getGoalEntry().getSecondsElapsed());
 
-                TimeGoalieUtils.setTimeTextLabel(goal,tv,null);
+                TimeGoalieUtils.setTimeTextLabel(goal, tv, null);
                 // TODO: 10/18/2017 am I really going to do this?
-              //  goalEntry.addSecondElapsed();
-           //     new InsertNewGoalEntry(tv.getContext()).execute(goalEntry);
+                //  goalEntry.addSecondElapsed();
+                //     new InsertNewGoalEntry(tv.getContext()).execute(goalEntry);
 
                 //set Progress bar Progress
                 if (seekbar != null && !goal.getGoalEntry().isHasFinished()) {
@@ -173,9 +173,9 @@ public class TimeGoalieAlarmManager {
         int minutes = (seconds - (hours * 60 * 60)) / 60;
         seconds = (seconds - (hours * 60 * 60) - (minutes * 60));
 
-        return (String.format(Locale.US,"%02d", hours)
-                + ":" + String.format(Locale.US,"%02d", minutes)
-                + ":" + String.format(Locale.US,"%02d", seconds));
+        return (String.format(Locale.US, "%02d", hours)
+                + ":" + String.format(Locale.US, "%02d", minutes)
+                + ":" + String.format(Locale.US, "%02d", seconds));
     }
 
 
@@ -193,7 +193,7 @@ public class TimeGoalieAlarmManager {
 
         long remainingSeconds = totalSeconds;// - secondsElapsed;
         Log.e("Mindbuilders", "remainingseconds: " + remainingSeconds);
-        if (timeGoalieAlarmObject != null ) {
+        if (timeGoalieAlarmObject != null) {
             if (seekbar != null) {
                 timeGoalieAlarmObject.setCountDownTimer(
                         TimeGoalieAlarmManager.makeCountdownTimer(goalCounter,
@@ -228,13 +228,13 @@ public class TimeGoalieAlarmManager {
             BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject);
         }
 
-   //     new InsertNewGoalEntry(time_tv.getContext()).execute(goal.getGoalEntry());
+        //     new InsertNewGoalEntry(time_tv.getContext()).execute(goal.getGoalEntry());
 
         // this will create the system alarm.  :-O !  It will not create it if the pi
         // already exists, or if the goal has already finished
 
         // preemptively cancel secondly
-     //  TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context,goal);
+        //  TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context,goal);
 
         if (timeGoalieAlarmObject != null && timeGoalieAlarmObject.getAlarmDonePendingIntent() == null &&
                 !goal.getGoalEntry().isHasFinished()) {
@@ -285,7 +285,7 @@ public class TimeGoalieAlarmManager {
 
             TimeGoalieAlarmManager.setTimeGoalAlarm(
                     TimeGoalieDateUtils.createTargetSecondlyCalendarTime((int)
-                            TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY/1000),
+                            TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY / 1000),
                     context, null,
                     TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(
                             context,

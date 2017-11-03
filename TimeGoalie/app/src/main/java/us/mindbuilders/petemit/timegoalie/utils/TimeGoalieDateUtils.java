@@ -14,9 +14,9 @@ import java.util.GregorianCalendar;
 
 public class TimeGoalieDateUtils {
 
-    private static GregorianCalendar gcal = new GregorianCalendar();
     public static SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
     public static SimpleDateFormat monthFormat = new SimpleDateFormat("MMM");
+    private static GregorianCalendar gcal = new GregorianCalendar();
 
     public static long getDayIdFromToday() {
         return gcal.get(Calendar.DAY_OF_WEEK) - 1;
@@ -50,7 +50,7 @@ public class TimeGoalieDateUtils {
     }
 
     public static String getNicelyFormattedDate(Calendar cal) {
-     //  DateFormat df = new SimpleDateFormat("EEE, MMM d, yyyy");//  I like this one better
+        //  DateFormat df = new SimpleDateFormat("EEE, MMM d, yyyy");//  I like this one better
         DateFormat df = new SimpleDateFormat("MMM d, yyyy");
         String date = df.format(cal.getTime());
         return date;
@@ -61,12 +61,11 @@ public class TimeGoalieDateUtils {
         return date;
     }
 
-    public static String getMonthFromStringDate(String s){
-        String returnString="";
+    public static String getMonthFromStringDate(String s) {
+        String returnString = "";
         try {
             returnString = monthFormat.format(df.parse(s));
-        }
-        catch (ParseException p){
+        } catch (ParseException p) {
             Log.e("TimeGoalieDateUtils", p.toString());
         }
         return returnString;

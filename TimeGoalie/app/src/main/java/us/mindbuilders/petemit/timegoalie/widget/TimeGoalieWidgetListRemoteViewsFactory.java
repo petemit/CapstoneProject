@@ -2,9 +2,6 @@ package us.mindbuilders.petemit.timegoalie.widget;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -25,10 +22,10 @@ import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieUtils;
  */
 
 public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
+    private static int counter = 0;
     private Context context;
     private ArrayList<Goal> goalData;
     private RemoteViews lastView;
-    private static int counter=0;
 
     public TimeGoalieWidgetListRemoteViewsFactory(Context context) {
         this.context = context;
@@ -41,7 +38,7 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
 
     @Override
     public void onDataSetChanged() {
-        Log.e("dang",counter+"");
+        Log.e("dang", counter + "");
         counter++;
         if (goalData != null) {
             goalData = null;
@@ -133,13 +130,12 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
 //
             }
 
-          //  if (views != null) {
-                views.setTextViewText(R.id.widget_goal_tv, goal.getName());
-         //   }
-            if (goalData.size()==1) {
+            //  if (views != null) {
+            views.setTextViewText(R.id.widget_goal_tv, goal.getName());
+            //   }
+            if (goalData.size() == 1) {
                 lastView = views;
-            }
-            else {
+            } else {
                 lastView = null;
             }
             return views;

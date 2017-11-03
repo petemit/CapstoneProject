@@ -4,12 +4,10 @@ package us.mindbuilders.petemit.timegoalie;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.RotateDrawable;
-
 import android.support.transition.AutoTransition;
 import android.support.transition.TransitionManager;
 import android.support.v7.widget.AppCompatCheckBox;
@@ -20,19 +18,15 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
-
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
-
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.CompoundButton;
-
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -42,9 +36,7 @@ import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 
-
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
-
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntryGoalCounter;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
@@ -66,13 +58,25 @@ public class GoalRecyclerViewAdapter extends
 
     // private final List<DummyContent.DummyItem> mValues;
 
+    ViewTreeObserver.OnGlobalLayoutListener layoutListener;
     private View.OnClickListener onClickListener;
     private ArrayList<Goal> goalArrayList;
     private boolean isToday;
     private GoalCounter goalCounter;
     private Context context;
     private GoalEntryGoalCounter goalEntryGoalCounter;
-    ViewTreeObserver.OnGlobalLayoutListener layoutListener;
+
+    //    public GoalRecyclerViewAdapter(List<DummyContent.DummyItem> items, View.OnClickListener onClickListener) {
+//        mValues = items;
+//        this.onClickListener = onClickListener;
+//    }
+    public GoalRecyclerViewAdapter(View.OnClickListener onClickListener, GoalCounter goalCounter,
+                                   Context context) {
+        this.onClickListener = onClickListener;
+        this.goalCounter = goalCounter;
+        this.context = context;
+        BaseApplication.setGoalActivityListListener(this);
+    }
 
     @Override
     public void notifyChanges(GoalEntry goalEntry) {
@@ -85,23 +89,6 @@ public class GoalRecyclerViewAdapter extends
                 }
             }
         }
-    }
-
-
-    public interface GoalCounter {
-        void updateGoalCounter(int add);
-    }
-
-    //    public GoalRecyclerViewAdapter(List<DummyContent.DummyItem> items, View.OnClickListener onClickListener) {
-//        mValues = items;
-//        this.onClickListener = onClickListener;
-//    }
-    public GoalRecyclerViewAdapter(View.OnClickListener onClickListener, GoalCounter goalCounter,
-                                   Context context) {
-        this.onClickListener = onClickListener;
-        this.goalCounter = goalCounter;
-        this.context = context;
-        BaseApplication.setGoalActivityListListener(this);
     }
 
     @Override
@@ -258,13 +245,13 @@ public class GoalRecyclerViewAdapter extends
 
                                     Intent killGoalIntent = TimeGoalieAlarmReceiver
                                             .createKillGoalTimeGoalieAlarmIntent(context,
-                                            "Stopping goal due to inactivity",(int)goal.getGoalId());
+                                                    "Stopping goal due to inactivity", (int) goal.getGoalId());
 
                                     PendingIntent killGoalPi = TimeGoalieAlarmReceiver
-                                    .createKillGoalSafetyPendingIntent(context,
-                                            killGoalIntent, (int)goal.getGoalId());
+                                            .createKillGoalSafetyPendingIntent(context,
+                                                    killGoalIntent, (int) goal.getGoalId());
 
-                                    TimeGoalieAlarmManager.cancelTimeGoalAlarm(context,killGoalPi);
+                                    TimeGoalieAlarmManager.cancelTimeGoalAlarm(context, killGoalPi);
 
                                     //                   TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context, goal);
                                     //timeGoalieAlarmObject.setRunning(false);
@@ -467,28 +454,28 @@ public class GoalRecyclerViewAdapter extends
                                         .setDuration(1000)
                                         .setInterpolator(new AccelerateDecelerateInterpolator())
                                         .setListener(new Animator.AnimatorListener() {
-                                    @Override
-                                    public void onAnimationStart(Animator animator) {
-                                        holder.spinningBallAnim.start();
+                                            @Override
+                                            public void onAnimationStart(Animator animator) {
+                                                holder.spinningBallAnim.start();
 
-                                    }
+                                            }
 
-                                    @Override
-                                    public void onAnimationEnd(Animator animator) {
-                                        holder.spinningBallAnim.cancel();
+                                            @Override
+                                            public void onAnimationEnd(Animator animator) {
+                                                holder.spinningBallAnim.cancel();
 
-                                    }
+                                            }
 
-                                    @Override
-                                    public void onAnimationCancel(Animator animator) {
-                                        holder.spinningBallAnim.cancel();
-                                    }
+                                            @Override
+                                            public void onAnimationCancel(Animator animator) {
+                                                holder.spinningBallAnim.cancel();
+                                            }
 
-                                    @Override
-                                    public void onAnimationRepeat(Animator animator) {
+                                            @Override
+                                            public void onAnimationRepeat(Animator animator) {
 
-                                    }
-                                });
+                                            }
+                                        });
                             }
                         } else {
 
@@ -579,15 +566,14 @@ public class GoalRecyclerViewAdapter extends
         } //end if itemviewcount
     }//end BindViewHolder
 
-    /* This will actually link the static list of Alarms and Countdowntimers in the baseapplication
-       to the textview
-    */
-
-
     @Override
     public int getItemViewType(int position) {
         return (int) goalArrayList.get(position).getGoalTypeId();
     }
+
+    /* This will actually link the static list of Alarms and Countdowntimers in the baseapplication
+       to the textview
+    */
 
     @Override
     public int getItemCount() {
@@ -596,6 +582,10 @@ public class GoalRecyclerViewAdapter extends
         } else {
             return 0;
         }
+    }
+
+    public interface GoalCounter {
+        void updateGoalCounter(int add);
     }
 
     public class GoalViewHolder extends RecyclerView.ViewHolder {

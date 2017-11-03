@@ -14,14 +14,14 @@ public class InsertNewGoalAccomplished extends AsyncTask<GoalEntry, Void, Void> 
 
     Context context;
 
-    public InsertNewGoalAccomplished(Context context){
-        this.context=context;
+    public InsertNewGoalAccomplished(Context context) {
+        this.context = context;
     }
 
     @Override
     protected Void doInBackground(GoalEntry... goalEntries) {
         ContentValues goalEntries_cv = new ContentValues();
-        for (int i = 0 ; i < goalEntries.length ; i++ ) {
+        for (int i = 0; i < goalEntries.length; i++) {
             goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID,
                     goalEntries[i].getGoal_id());
             goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME,
@@ -32,10 +32,11 @@ public class InsertNewGoalAccomplished extends AsyncTask<GoalEntry, Void, Void> 
                     goalEntries[i].getGoalAugment());
         }
 
-        context.getContentResolver().insert(TimeGoalieContract.GoalEntries.CONTENT_URI,goalEntries_cv);
+        context.getContentResolver().insert(TimeGoalieContract.GoalEntries.CONTENT_URI, goalEntries_cv);
 
         if (goalEntries.length > 0) {
-            for (int i = 0; i < goalEntries.length; i++) {}
+            for (int i = 0; i < goalEntries.length; i++) {
+            }
 
         }
         return null;

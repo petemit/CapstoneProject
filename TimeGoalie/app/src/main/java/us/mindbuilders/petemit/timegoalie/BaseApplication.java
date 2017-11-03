@@ -7,8 +7,6 @@ import android.database.Cursor;
 import android.os.Handler;
 import android.util.Log;
 
-//import com.facebook.stetho.Stetho;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -21,6 +19,8 @@ import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 import us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider;
+
+//import com.facebook.stetho.Stetho;
 
 /**
  * Created by Peter on 9/22/2017.
@@ -104,6 +104,10 @@ public class BaseApplication extends Application {
         return timeGoalieAlarmObjects;
     }
 
+    public static void setTimeGoalieAlarmObjects(ArrayList<TimeGoalieAlarmObject> timeGoalieAlarmObjects) {
+        BaseApplication.timeGoalieAlarmObjects = timeGoalieAlarmObjects;
+    }
+
     public static GoalActivityListListener getGoalActivityListListener() {
         return goalActivityListListener;
     }
@@ -137,14 +141,6 @@ public class BaseApplication extends Application {
         BaseApplication.handlerRunning = handlerRunning;
     }
 
-    public interface GoalActivityListListener {
-        void notifyChanges(GoalEntry goalEntry);
-    }
-
-    public static void setTimeGoalieAlarmObjects(ArrayList<TimeGoalieAlarmObject> timeGoalieAlarmObjects) {
-        BaseApplication.timeGoalieAlarmObjects = timeGoalieAlarmObjects;
-    }
-
     public static Calendar getActiveCalendarDate() {
         if (activeCalendarDate == null) {
             return Calendar.getInstance();
@@ -155,6 +151,37 @@ public class BaseApplication extends Application {
     public static void setActiveCalendarDate(Calendar activeCalendarDate) {
         BaseApplication.activeCalendarDate = activeCalendarDate;
 
+    }
+
+    public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id) {
+        for (int i = 0; i < timeGoalieAlarmObjects.size(); i++) {
+            if (timeGoalieAlarmObjects.get(i).getGoal_id() == goal_id) {
+                Log.e("check", goal_id + "");
+                return timeGoalieAlarmObjects.get(i);
+
+            }
+        }
+        return null;
+    }
+
+    public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id, String date) {
+        for (int i = 0; i < timeGoalieAlarmObjects.size(); i++) {
+            if (timeGoalieAlarmObjects.get(i).getGoal_id() == goal_id &&
+                    timeGoalieAlarmObjects.get(i).getDate().equals(date)) {
+                Log.e("check", goal_id + "");
+                return timeGoalieAlarmObjects.get(i);
+
+            }
+        }
+        return null;
+    }
+
+    public static Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     @Override
@@ -214,34 +241,7 @@ public class BaseApplication extends Application {
 
     }
 
-    public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id) {
-        for (int i = 0; i < timeGoalieAlarmObjects.size(); i++) {
-            if (timeGoalieAlarmObjects.get(i).getGoal_id() == goal_id) {
-                Log.e("check", goal_id + "");
-                return timeGoalieAlarmObjects.get(i);
-
-            }
-        }
-        return null;
-    }
-
-    public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id, String date) {
-        for (int i = 0; i < timeGoalieAlarmObjects.size(); i++) {
-            if (timeGoalieAlarmObjects.get(i).getGoal_id() == goal_id &&
-                    timeGoalieAlarmObjects.get(i).getDate().equals(date)) {
-                Log.e("check", goal_id + "");
-                return timeGoalieAlarmObjects.get(i);
-
-            }
-        }
-        return null;
-    }
-
-    public static Context getContext() {
-        return context;
-    }
-
-    public void setContext(Context context) {
-        this.context = context;
+    public interface GoalActivityListListener {
+        void notifyChanges(GoalEntry goalEntry);
     }
 }

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -39,13 +38,6 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
     public static final int SECONDLY_ID = 10101;
     public static final int KILLGOAL = 1010101;
     private static final int DELAYINTENT_INTERVAL = 7;
-
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        Log.e("Mindbuilders", "Alarm Finished!");
-        new HandleAlarmFinished(context).execute(intent);
-    }
 
     public static void cancelSecondlyAlarm(Context context, Goal goal) {
 //        PendingIntent secondlyPi = TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(
@@ -88,7 +80,6 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
         return intent;
     }
 
-
     public static PendingIntent createSecondlyTimeGoaliePendingIntent(Context context,
                                                                       Intent intent) {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, SECONDLY_ID,
@@ -103,7 +94,6 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
         return pendingIntent;
     }
 
-
     public static PendingIntent createTimeGoaliePendingIntent(Context context,
                                                               Intent intent, int goal_id) {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, goal_id,
@@ -111,12 +101,18 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
         return pendingIntent;
     }
 
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Log.e("Mindbuilders", "Alarm Finished!");
+        new HandleAlarmFinished(context).execute(intent);
+    }
+
     private class HandleAlarmFinished extends AsyncTask<Intent, Void, Cursor> {
+        Intent intent;
         private Context context;
         private Goal goal;
         private GoalEntry goalEntry;
         private String action;
-        Intent intent;
         private int id;
 
         public HandleAlarmFinished(Context context) {

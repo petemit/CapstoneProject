@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:id="@+id/edit_button_ll"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/edit_button_ll"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
     android:orientation="horizontal"
-    android:paddingStart="@dimen/left_margin"
     android:paddingEnd="@dimen/right_margin"
+    android:paddingStart="@dimen/left_margin"
     android:paddingTop="@dimen/top_margin"
-    android:visibility="gone"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:visibility="gone">
 
     <Button
         android:id="@+id/minus_large"

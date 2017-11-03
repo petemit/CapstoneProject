@@ -17,45 +17,43 @@
 
 
         <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:title="@string/app_name"
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
 
-                android:layout_height="?attr/actionBarSize"
-                app:popupTheme="@style/TimeGoalTheme.PopupOverlay">
-
+            android:title="@string/app_name"
+            app:popupTheme="@style/TimeGoalTheme.PopupOverlay">
 
 
         </android.support.v7.widget.Toolbar>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_marginTop="@dimen/half_margin"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/left_margin"
-            android:layout_height="wrap_content">
+            android:layout_marginTop="@dimen/half_margin">
 
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/tv_numberOfGoalsCleared"
-            android:text="@string/zero"
-            android:layout_marginEnd="@dimen/half_margin"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            <TextView
+                android:id="@+id/tv_numberOfGoalsCleared"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/half_margin"
+                android:text="@string/zero"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
 
-   />
+                />
 
-        <TextView
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/textView"
 
 
-            android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
 
-            android:text="@string/goals_saved"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:id="@+id/textView"
-            android:layout_marginEnd="@dimen/right_margin"
-            />
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/right_margin"
+                android:text="@string/goals_saved"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
         </LinearLayout>
         <!--</android.support.design.widget.CollapsingToolbarLayout>-->
 
@@ -65,8 +63,8 @@
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/top_margin"
         android:orientation="vertical"
+        android:paddingBottom="@dimen/top_margin"
 
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -78,12 +76,12 @@
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hapticFeedbackEnabled="true"
-        android:focusable="true"
-        android:clickable="true"
-        android:contentDescription="@string/add_new_goal_description"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"
+        android:contentDescription="@string/add_new_goal_description"
+        android:focusable="true"
+        android:hapticFeedbackEnabled="true"
         app:srcCompat="@drawable/ic_add_24dp" />
 
 

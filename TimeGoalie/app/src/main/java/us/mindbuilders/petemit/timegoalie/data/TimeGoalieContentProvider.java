@@ -20,29 +20,19 @@ import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
  */
 
 public class TimeGoalieContentProvider extends ContentProvider {
-    private TimeGoalieDbHelper dbHelper;
-    private static final UriMatcher uriMatcher = makeUriMatcher();
-
     private static final int GOAL = 100;
     private static final int GOAL_BY_ID = 101;
     private static final int GOALS_BY_TODAYS_DATE = 102;
-
     private static final int GOALTYPES = 200;
     private static final int GOALTYPE_BY_ID = 201;
-
     private static final int DAYS = 300;
     private static final int DAY_BY_ID = 301;
     private static final int DAY_BY_DATE_SEQUENCE = 302;
-
-
     private static final int GOALS_ACCOMPLISHED_BY_GOAL_ID_BY_DATE = 405;
-
     private static final int GOALS_DAYS = 500;
     private static final int GOALS_BY_DAY_ID = 501;
-
     private static final int GOAL_ENTRIES = 600;
     private static final int GOAL_ENTRIES_BY_GOAL_ID = 601;
-
     private static final int GOAL_ENTRIES_BY_DATE = 602;
     private static final int SUCCESSFUL_GOAL_ENTRIES_BY_DATE = 603;
     private static final int GOAL_ENTRY_BY_GOAL_ENTRY_ID = 604;
@@ -52,8 +42,9 @@ public class TimeGoalieContentProvider extends ContentProvider {
     private static final int GOALS_ENTRIES_ACCOMPLISHED_BY_MONTH_BY_GOAL_ID = 608;
     private static final int GOAL_ENTRIES_RUNNING = 609;
     private static final int GOAL_ENTRIES_ALL_BY_GOAL_ID = 610;
-
+    private static final UriMatcher uriMatcher = makeUriMatcher();
     private static final String PARAMETER = "=? ";
+    private TimeGoalieDbHelper dbHelper;
 
     private static UriMatcher makeUriMatcher() {
         UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -328,7 +319,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         -Integer.parseInt(uri.getQueryParameter("numOfWeeks")));
                 dateString = TimeGoalieDateUtils.getSqlDateString(today);
                 //make the date and the goalid the arguments;
-                selectionArgs = new String[]{dateString,String.valueOf(ContentUris.parseId(uri))};
+                selectionArgs = new String[]{dateString, String.valueOf(ContentUris.parseId(uri))};
                 selection = TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED
                         .concat("=")
                         .concat("'1'")
@@ -375,7 +366,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
                 today.add(Calendar.MONTH,
                         -Integer.parseInt(uri.getQueryParameter("numOfMonths")));
                 dateString = TimeGoalieDateUtils.getSqlDateString(today);
-                selectionArgs = new String[]{dateString,String.valueOf(ContentUris.parseId(uri))};
+                selectionArgs = new String[]{dateString, String.valueOf(ContentUris.parseId(uri))};
                 selection = TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED
                         .concat("=")
                         .concat("'1'")
@@ -400,8 +391,8 @@ public class TimeGoalieContentProvider extends ContentProvider {
                 selection = TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME
                         .concat(PARAMETER)
                         .concat(" AND ")
-                .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISRUNNING)
-                .concat(" = 1 ");
+                        .concat(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISRUNNING)
+                        .concat(" = 1 ");
 
                 cursor = db.query(TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME,
                         null,
@@ -412,7 +403,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID);
                 break;
 
-                //goaldays
+            //goaldays
             case GOALS_BY_DAY_ID:
 
 
@@ -457,23 +448,6 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         .concat(date)
                         .concat("'");
 
-//                selection = "("
-//                        .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_DAY_ID)
-//                        .concat(PARAMETER)
-//                        .concat(" AND ")
-//                        .concat(TimeGoalieContract.Goals.GOALS_TABLE_NAME
-//                        .concat(".")
-//                        .concat(TimeGoalieContract.Goals._ID))
-//                        .concat("=")
-//                        .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME
-//                        .concat(".")
-//                        .concat(TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_GOAL_ID)
-//                        .concat(") OR (")
-//                        .concat(TimeGoalieContract.Goals.GOALS_COLUMN_CREATIONDATE)
-//                        .concat("='")
-//                        .concat(TimeGoalieDateUtils.getSqlDateString())
-//                        .concat("')")
-//                        );
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
                 String tablesJoinStatement = TimeGoalieContract.Goals.GOALS_TABLE_NAME

@@ -13,10 +13,12 @@ import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntryGoalCounter;
 public class DeleteGoal extends AsyncTask<Goal, Void, Void> {
     private Context context;
     private GoalEntryGoalCounter goalEntryGoalCounter;
+
     public DeleteGoal(Context context, GoalEntryGoalCounter goalEntryGoalCounter) {
         this.context = context;
         this.goalEntryGoalCounter = goalEntryGoalCounter;
     }
+
     @Override
     protected Void doInBackground(Goal... goals) {
         if (goals != null) {

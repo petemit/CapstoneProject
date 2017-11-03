@@ -29,7 +29,7 @@ public class GetGoalEntryByDateAndGoal extends AsyncTask<GoalEntry, Void, Void> 
                     null);
         }
 
-        if (cursor != null && cursor.getCount()>0) {
+        if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
 
             GoalEntry newGoalEntry = new GoalEntry(cursor.getLong(

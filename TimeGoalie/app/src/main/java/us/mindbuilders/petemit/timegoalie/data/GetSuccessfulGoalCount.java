@@ -4,14 +4,12 @@ package us.mindbuilders.petemit.timegoalie.data;
  * Created by Peter on 10/10/2017.
  */
 
-import android.database.Cursor;
-
-import us.mindbuilders.petemit.timegoalie.GoalRecyclerViewAdapter;
-
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.os.AsyncTask;
 
+import us.mindbuilders.petemit.timegoalie.GoalRecyclerViewAdapter;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntryGoalCounter;
 
@@ -24,8 +22,8 @@ public class GetSuccessfulGoalCount extends AsyncTask<GoalEntryGoalCounter, Void
     Context context;
     Cursor cursor;
     GoalEntry goalEntry;
-    private String date;
     GoalRecyclerViewAdapter.GoalCounter goalCounter;
+    private String date;
 
     public GetSuccessfulGoalCount(Context context) {
         this.context = context;
@@ -68,10 +66,10 @@ public class GetSuccessfulGoalCount extends AsyncTask<GoalEntryGoalCounter, Void
 
         cursor = context.getContentResolver().query
                 (TimeGoalieContract.getSuccessfulGoalsForToday(date),
-                null,
-                null,
-                null,
-                null);
+                        null,
+                        null,
+                        null,
+                        null);
 
         return null;
     }

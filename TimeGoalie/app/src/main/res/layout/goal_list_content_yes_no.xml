@@ -1,48 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/card_layout"
-    android:layout_marginStart="@dimen/left_margin"
     android:layout_marginBottom="@dimen/tiny_margin"
-
     android:layout_marginEnd="@dimen/right_margin"
+
+    android:layout_marginStart="@dimen/left_margin"
 
     android:layout_marginTop="@dimen/top_margin">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:paddingBottom="@dimen/top_margin"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/top_margin">
 
         <include
             layout="@layout/delete_button"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:visibility="invisible"
-            />
+            android:visibility="invisible" />
 
         <include
             layout="@layout/goal_title_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:layout_marginStart="@dimen/left_margin"
-            android:layout_marginTop="@dimen/half_margin" />
+            android:layout_marginTop="@dimen/half_margin"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ToggleButton xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/yes_no_pencil_button"
             android:layout_width="@dimen/pencil_size"
             android:layout_height="@dimen/pencil_size"
+            android:background="@drawable/ic_edit"
             android:contentDescription="@string/edit_goal_button_description"
             android:hapticFeedbackEnabled="true"
-            android:background="@drawable/ic_edit"
-            app:layout_constraintRight_toRightOf="@+id/yes_no_checkbox"
-            app:layout_constraintTop_toTopOf="@id/tv_goal_title"
             android:textOff=""
-            android:textOn="" />
+            android:textOn=""
+            app:layout_constraintRight_toRightOf="@+id/yes_no_checkbox"
+            app:layout_constraintTop_toTopOf="@id/tv_goal_title" />
 
 
         <ImageView
@@ -51,18 +50,18 @@
             android:layout_height="@dimen/goal_image_height"
             android:layout_marginStart="@dimen/left_margin"
             android:layout_marginTop="@dimen/top_margin"
-            android:contentDescription="@string/image_of_soccer_goal_desc"
             android:background="@drawable/soccergoal_left"
+            android:contentDescription="@string/image_of_soccer_goal_desc"
             android:paddingStart="@dimen/left_margin"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_goal_title" />
 
         <ImageView
             android:id="@+id/soccer_ball_image"
-            android:contentDescription="@string/image_of_soccer_ball_desc"
             android:layout_width="@dimen/soccerball_size"
             android:layout_height="@dimen/soccerball_size"
             android:background="@drawable/anim_soccerball_small"
+            android:contentDescription="@string/image_of_soccer_ball_desc"
             android:paddingStart="@dimen/left_margin"
             app:layout_constraintBottom_toBottomOf="@+id/goal_image"
 
@@ -73,12 +72,12 @@
         <android.support.v7.widget.AppCompatCheckBox
             android:id="@+id/yes_no_checkbox"
             android:layout_width="@dimen/checkbox_size"
-            android:scaleX="1.5"
-            android:scaleY="1.5"
             android:layout_height="@dimen/checkbox_size"
             android:layout_marginEnd="@dimen/extra_right_margin"
             android:contentDescription="@string/yes_no_goal_checkbox_description"
             android:hapticFeedbackEnabled="true"
+            android:scaleX="1.5"
+            android:scaleY="1.5"
             app:layout_constraintBottom_toBottomOf="@+id/goal_image"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@+id/goal_image" />

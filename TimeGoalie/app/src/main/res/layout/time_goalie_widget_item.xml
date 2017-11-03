@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/top_margin"
+    android:orientation="vertical"
 
-    android:orientation="vertical">
+    android:paddingTop="@dimen/top_margin">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,8 +14,8 @@
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
@@ -70,10 +70,10 @@
                 style="@style/TimeGoalTheme.ButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
-                android:contentDescription="@string/start_stop_goal_timer_description"
-
                 android:layout_gravity="center"
+
                 android:layout_marginEnd="@dimen/right_margin"
+                android:contentDescription="@string/start_stop_goal_timer_description"
                 android:text="@string/start" />
         </FrameLayout>
     </LinearLayout>
