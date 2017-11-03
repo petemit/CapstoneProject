@@ -47,6 +47,8 @@
 
     <style name="TimeGoalTheme.ButtonStyle">
         <item name="android:background">@drawable/rounded_button</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Widget.Button</item>
     </style>
 
     <style name="TimeGoalTheme.EditButton" parent="TimeGoalTheme.ButtonStyle">

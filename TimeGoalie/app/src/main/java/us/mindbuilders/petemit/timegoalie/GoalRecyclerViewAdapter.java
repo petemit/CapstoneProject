@@ -209,6 +209,7 @@ public class GoalRecyclerViewAdapter extends
                 }
                 if (isToday) {
                     holder.startStopTimer.setVisibility(View.VISIBLE);
+                    holder.startStopTimer.setChecked(goal.getGoalEntry().isRunning());
                     holder.startStopTimer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {

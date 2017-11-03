@@ -12,8 +12,8 @@
     </string-array>
 
     <string-array name="goal_type_array">
-        <item>Time Goal to Encourage</item>
-        <item>Time Goal to Limit</item>
+        <item>Time Goal</item>
+        <item>Time Limit</item>
         <item>Yes/No Goal</item>
     </string-array>
 

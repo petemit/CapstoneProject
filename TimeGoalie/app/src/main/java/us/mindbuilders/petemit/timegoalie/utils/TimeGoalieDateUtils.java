@@ -36,6 +36,15 @@ public class TimeGoalieDateUtils {
         calendar.add(Calendar.SECOND, seconds);
         return calendar.getTimeInMillis();
     }
+
+    public static long createTargetSecondlyCalendarTime(int seconds) {
+        //create calendar
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.add(Calendar.SECOND, seconds);
+        return calendar.getTimeInMillis();
+    }
+
     public static long getCurrentTimeInMillis() {
         return Calendar.getInstance().getTimeInMillis();
     }

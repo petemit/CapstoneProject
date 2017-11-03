@@ -33,7 +33,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             public boolean onPreferenceChange(Preference preference, Object o) {
                 boolean result = (boolean)o;
                 TimeGoalieNotifications.subscribeFromPref(result);
-                return result;
+                return true;
             }
         });
 

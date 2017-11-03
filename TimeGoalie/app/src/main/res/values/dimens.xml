@@ -29,7 +29,7 @@
     <dimen name="widget_frame_size">50dp</dimen>
     <dimen name="checkbox_size">30dp</dimen>
     <dimen name="extra_right_margin">20dp</dimen>
-    <dimen name="button_radius">20dp</dimen>
+    <dimen name="button_radius">10dp</dimen>
     <dimen name="action_bar_height_list">100dp</dimen>
     <dimen name="delete_button_size">30dp</dimen>
     <dimen name="max_width_for_list">700dp</dimen>

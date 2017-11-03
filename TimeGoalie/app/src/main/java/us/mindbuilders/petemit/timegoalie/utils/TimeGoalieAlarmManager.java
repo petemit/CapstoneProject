@@ -28,7 +28,7 @@ import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
 
 public class TimeGoalieAlarmManager {
 
-    private static final int ONE_MINUTE_WARNING_TIME = 1;
+    public static final int ONE_MINUTE_WARNING_TIME = 1;
 
     public static void setTimeGoalAlarm(long futureTimeInMillis,
                                         Context context, @Nullable Bundle extras, PendingIntent alarmPendingIntent) {
@@ -284,13 +284,13 @@ public class TimeGoalieAlarmManager {
             BaseApplication.createHandler(TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY);
 
             TimeGoalieAlarmManager.setTimeGoalAlarm(
-                    TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY,
+                    TimeGoalieDateUtils.createTargetSecondlyCalendarTime((int)
+                            TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY/1000),
                     context, null,
                     TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(
                             context,
                             TimeGoalieAlarmReceiver.
-                                    createEverySecondDbUpdateAlarmIntent(context,
-                                            (int)goal.getGoalId()),(int)goal.getGoalId()));
+                                    createEverySecondDbUpdateAlarmIntent(context)));
 
 
             //Sets up the running out of time alert
