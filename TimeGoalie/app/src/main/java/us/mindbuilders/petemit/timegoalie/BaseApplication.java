@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Handler;
+
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -189,10 +190,12 @@ public class BaseApplication extends Application {
         super.onCreate();
         setContext(getBaseContext());
         setTimeGoalieAlarmObjects(new ArrayList<TimeGoalieAlarmObject>());
-        //    Stetho.initializeWithDefaults(this);
+
 
         //Only do this if we are in the debug build
         if (BuildConfig.DEBUG) {
+            //StethoEnabler
+
             getDatabasePath("timeGoalie.db").delete();
             //dummy goal
             Goal goal = new Goal();
@@ -238,7 +241,7 @@ public class BaseApplication extends Application {
             new InsertNewGoal(getBaseContext()).execute(goal4);
         }
 
-
+        StethoEnabler.enable(this);
     }
 
     public interface GoalActivityListListener {

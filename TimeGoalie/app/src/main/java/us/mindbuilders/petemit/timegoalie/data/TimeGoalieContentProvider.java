@@ -446,7 +446,10 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         .concat(TimeGoalieContract.Goals.GOALS_COLUMN_CREATIONDATE)
                         .concat("='")
                         .concat(date)
-                        .concat("'");
+                        .concat("'")
+                        .concat(" OR ")
+                        .concat(TimeGoalieContract.Goals.GOALS_COLUMN_ISDAILY)
+                        .concat("=1 ");
 
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
