@@ -44,13 +44,21 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
             goalData = null;
         }
         Cursor cursor = context.getContentResolver().query(
-                TimeGoalieContract.getGoalsThatHaveGoalEntryForToday(),
+                TimeGoalieContract.buildGetAllGoalsForCurrentDayOfWeekQueryUri(
+                        TimeGoalieDateUtils.getDayIdFromToday()),
                 null,
                 null,
-                new String[]{TimeGoalieDateUtils.
-                        getSqlDateString(BaseApplication.getActiveCalendarDate())},
+                null,
                 null
         );
+//        Cursor cursor = context.getContentResolver().query(
+//                TimeGoalieContract.getGoalsThatHaveGoalEntryForToday(),
+//                null,
+//                null,
+//                new String[]{TimeGoalieDateUtils.
+//                        getSqlDateString(BaseApplication.getActiveCalendarDate())},
+//                null
+//        );
         if (cursor != null) {
             goalData = Goal.createGoalListWithGoalEntriesFromCursor(cursor);
             cursor.close();

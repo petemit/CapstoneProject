@@ -195,7 +195,6 @@ public class BaseApplication extends Application {
         //Only do this if we are in the debug build
         if (BuildConfig.DEBUG) {
             //StethoEnabler
-
             getDatabasePath("timeGoalie.db").delete();
             //dummy goal
             Goal goal = new Goal();
@@ -220,12 +219,12 @@ public class BaseApplication extends Application {
             thu.setSequence(4);
             dayArrayList.add(thu);
             goal2.setGoalDays(dayArrayList);
-            Goal goal3 = new Goal();
-            goal3.setName("Brush Teeth");
-            goal3.setGoalTypeId(2);
-            goal3.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
-            goal3.setIsDaily(1);
-            goal3.setIsWeekly(0);
+            Goal goal7 = new Goal();
+            goal7.setName("Enough Teethos!");
+            goal7.setGoalTypeId(2);
+            goal7.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
+            goal7.setIsDaily(1);
+            goal7.setIsWeekly(0);
             Goal goal4 = new Goal();
             goal4.setName("Take Nap");
             goal4.setGoalTypeId(1);
@@ -234,11 +233,33 @@ public class BaseApplication extends Application {
             goal4.setIsWeekly(0);
             goal4.setHours(0);
             goal4.setMinutes(1);
+            Goal goal3 = new Goal();
+            goal3.setName("Brush Teeth");
+            goal3.setGoalTypeId(2);
+            goal3.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
+            goal3.setIsDaily(1);
+            goal3.setIsWeekly(0);
+            Goal goal5 = new Goal();
+            goal5.setName("Dust Teeth");
+            goal5.setGoalTypeId(2);
+            goal5.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
+            goal5.setIsDaily(1);
+            goal5.setIsWeekly(0);
+            Goal goal6 = new Goal();
+            goal6.setName("Enough Teeth!");
+            goal6.setGoalTypeId(2);
+            goal6.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
+            goal6.setIsDaily(1);
+            goal6.setIsWeekly(0);
+
 
             new InsertNewGoal(getBaseContext()).execute(goal);
             new InsertNewGoal(getBaseContext()).execute(goal2);
-            new InsertNewGoal(getBaseContext()).execute(goal3);
             new InsertNewGoal(getBaseContext()).execute(goal4);
+            new InsertNewGoal(getBaseContext()).execute(goal3);
+            new InsertNewGoal(getBaseContext()).execute(goal5);
+            new InsertNewGoal(getBaseContext()).execute(goal6);
+            new InsertNewGoal(getBaseContext()).execute(goal7);
         }
 
         StethoEnabler.enable(this);

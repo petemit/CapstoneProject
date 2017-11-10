@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import us.mindbuilders.petemit.timegoalie.BaseApplication;
 import us.mindbuilders.petemit.timegoalie.R;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
@@ -154,6 +155,8 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
                         goalEntry.setHasSucceeded(!goalEntry.getHasSucceeded());
                     } else {
                         goalEntry.setRunning(!goalEntry.isRunning());
+
+                        BaseApplication.setLastTimeSecondUpdated(0);
 
 
                         PendingIntent goalDonePi = TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
