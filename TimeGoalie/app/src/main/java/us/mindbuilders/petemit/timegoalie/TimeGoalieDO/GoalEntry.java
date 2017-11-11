@@ -35,6 +35,7 @@ public class GoalEntry implements Parcelable {
     private long targetTime;
     private int isFinished;
     private boolean needsSecondsUpdate;
+    private boolean hasMoved;
 
 
     public GoalEntry(long id, long goal_id, String date) {
@@ -299,5 +300,13 @@ public class GoalEntry implements Parcelable {
 
     public void setNeedsSecondsUpdate(boolean needsSecondsUpdate) {
         this.needsSecondsUpdate = needsSecondsUpdate;
+    }
+
+    public boolean isHasMoved() {
+        return hasMoved;
+    }
+
+    public void setHasMoved(boolean hasMoved) {
+        this.hasMoved = hasMoved;
     }
 }

@@ -65,6 +65,7 @@ public class GoalRecyclerViewAdapter extends
     private GoalCounter goalCounter;
     private Context context;
     private GoalEntryGoalCounter goalEntryGoalCounter;
+    private boolean justARefresh;
 
     //    public GoalRecyclerViewAdapter(List<DummyContent.DummyItem> items, View.OnClickListener onClickListener) {
 //        mValues = items;
@@ -117,6 +118,7 @@ public class GoalRecyclerViewAdapter extends
                 tgoal.getCountDownTimer().cancel();
         }
         this.goalArrayList = goalArrayList;
+        justARefresh = false;
         notifyDataSetChanged();
     }
 
@@ -127,6 +129,7 @@ public class GoalRecyclerViewAdapter extends
         }
         this.goalArrayList = goalArrayList;
         this.isToday = isToday;
+        justARefresh = false;
         notifyDataSetChanged();
     }
 
@@ -332,7 +335,9 @@ public class GoalRecyclerViewAdapter extends
                                 //timeGoalieAlarmObject.setTargetTime(0);
                                 goal.getGoalEntry().setTargetTime(0);
                                 new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
+                                justARefresh = true;
                                 notifyDataSetChanged();
+
 
 
                             }
@@ -369,6 +374,7 @@ public class GoalRecyclerViewAdapter extends
                                 //timeGoalieAlarmObject.setTargetTime(0);
                                 goal.getGoalEntry().setTargetTime(0);
                                 new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
+                                justARefresh = true;
                                 notifyDataSetChanged();
                             }
                         });
@@ -385,48 +391,54 @@ public class GoalRecyclerViewAdapter extends
 
             //and now, the goal Checkbox
 
-            if (holder.goalCheckBox != null) {
+            if (holder.goalCheckBox != null && !justARefresh) {
                 if (holder.goalCheckBox.isChecked()) {
-                    layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            int[] ballLocation = new int[2];
-                            holder.soccerBallImage.getLocationOnScreen(ballLocation);
-                            int[] checkboxLocation = new int[2];
-                            holder.goalCheckBox.getLocationOnScreen(checkboxLocation);
+                    if (!holder.soccerBallImage.isShown()) {
+                        goal.getGoalEntry().setHasMoved(false);
+                        layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                if(!goal.getGoalEntry().isHasMoved()) {
+                                    int[] ballLocation = new int[2];
+                                    holder.soccerBallImage.getLocationOnScreen(ballLocation);
+                                    int[] checkboxLocation = new int[2];
+                                    holder.goalCheckBox.getLocationOnScreen(checkboxLocation);
 
-                            float distance = Math.abs(ballLocation[0] - checkboxLocation[0] +
-                                    holder.goalCheckBox.getMeasuredWidth());
-                            holder.soccerBallImage.animate().translationX(distance)
-                                    .setDuration(1000)
-                                    .setInterpolator(new AccelerateDecelerateInterpolator())
-                                    .setListener(new Animator.AnimatorListener() {
-                                        @Override
-                                        public void onAnimationStart(Animator animator) {
-                                            holder.spinningBallAnim.start();
+                                    float distance = Math.abs(ballLocation[0] - checkboxLocation[0] +
+                                            holder.goalCheckBox.getMeasuredWidth());
+                                    holder.soccerBallImage.animate().translationX(distance)
+                                            .setDuration(1000)
+                                            .setInterpolator(new AccelerateDecelerateInterpolator())
+                                            .setListener(new Animator.AnimatorListener() {
+                                                @Override
+                                                public void onAnimationStart(Animator animator) {
+                                                    holder.spinningBallAnim.start();
 
-                                        }
+                                                }
 
-                                        @Override
-                                        public void onAnimationEnd(Animator animator) {
-                                            holder.spinningBallAnim.cancel();
+                                                @Override
+                                                public void onAnimationEnd(Animator animator) {
+                                                    holder.spinningBallAnim.cancel();
 
-                                        }
+                                                }
 
-                                        @Override
-                                        public void onAnimationCancel(Animator animator) {
-                                            holder.spinningBallAnim.cancel();
-                                        }
+                                                @Override
+                                                public void onAnimationCancel(Animator animator) {
+                                                    holder.spinningBallAnim.cancel();
+                                                }
 
-                                        @Override
-                                        public void onAnimationRepeat(Animator animator) {
+                                                @Override
+                                                public void onAnimationRepeat(Animator animator) {
 
-                                        }
-                                    });
-                            holder.goalCheckBox.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
-                        }
-                    };
-                    holder.goalCheckBox.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+                                                }
+                                            });
+                                    holder.goalCheckBox.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
+                                    goal.getGoalEntry().setHasMoved(true);
+                                }
+                            }
+                        };
+                        holder.goalCheckBox.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+                    }
                 }
 
                 holder.goalCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -553,6 +565,7 @@ public class GoalRecyclerViewAdapter extends
                         fadeOut.setDuration(500);
                         holder.cardView.setAnimation(fadeOut);
                         goalArrayList.remove(position);
+                        justARefresh = true;
                         notifyItemRangeChanged(position, getItemCount());
                         notifyItemRemoved(position);
 
