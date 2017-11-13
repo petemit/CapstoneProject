@@ -15,6 +15,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -153,6 +154,18 @@ public class GoalRecyclerViewAdapter extends
                 holder.spinningBallAnim.cancel();
             }
 
+
+            if (holder.seekbar != null) {
+                holder.seekbar.setOnSeekBarChangeListener(null);
+                holder.seekbar.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+                        return true;
+                    }
+                });
+            }
+
+
             if (goal.getGoalTypeId() == 1) { // if this is GoalType Limit goal
                 if (goal.getGoalEntry() != null) {
 
@@ -198,6 +211,9 @@ public class GoalRecyclerViewAdapter extends
                 }
                 if (isToday) {
                     // wow... trying to change the time with the seekbar?  That sounds dangerous
+
+                    holder.seekbar.setOnTouchListener(null);
+
                     holder.seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
                         @Override
