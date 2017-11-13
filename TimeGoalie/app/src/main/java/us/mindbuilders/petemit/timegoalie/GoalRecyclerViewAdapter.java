@@ -217,6 +217,7 @@ public class GoalRecyclerViewAdapter extends
                         public void onStartTrackingTouch(SeekBar seekBar) {
                             //can't click seekbar when animation is going
                             if (goal.getGoalEntry().isRunning()) {
+                                holder.spinningBallAnim.cancel();
 
                                 if (goal.getSeekbarAnimation() != null) {
                                     goal.getSeekbarAnimation().setDuration(1);
@@ -295,10 +296,11 @@ public class GoalRecyclerViewAdapter extends
                                     goal.getGoalEntry().setRunning(true);
                                     Log.e("mindbuilders4", goal.getName() + " tick " +
                                             goal.getGoalEntry().getSecondsElapsed());
-                                    new InsertNewGoalEntry(
-                                            context).execute(goal.getGoalEntry());
                                 }
+
                             }
+                            new InsertNewGoalEntry(
+                                    context).execute(goal.getGoalEntry());
                             new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
                         }
                     });
