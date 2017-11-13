@@ -574,8 +574,8 @@ public class GoalRecyclerViewAdapter extends
                     }
                 });
             }
-
-
+            //get the initial goal count.
+            new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
         } //end if itemviewcount
     }//end BindViewHolder
 
