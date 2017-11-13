@@ -15,7 +15,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -198,6 +197,113 @@ public class GoalRecyclerViewAdapter extends
                     }
                 }
                 if (isToday) {
+                    // wow... trying to change the time with the seekbar?  That sounds dangerous
+                    holder.seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
+                            if (fromUser) {
+                                float percentage = (float) i / 10000;
+                                int secondsElapsed = (int) (goal.getGoalSeconds() * percentage);
+                                goal.getGoalEntry().setSecondsElapsed(secondsElapsed);
+                                Log.e("mindbuilders", secondsElapsed + " seconds elapsed " +
+                                        "calculation.  Out of " + goal.getGoalSeconds() + " perc " +
+                                        percentage + " progress int " + i);
+                                TimeGoalieUtils.setTimeTextLabel(goal, holder.time_tv, holder.tv_timeOutOf);
+                            }
+                        }
+
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
+                            //can't click seekbar when animation is going
+                            if (goal.getGoalEntry().isRunning()) {
+
+                                if (goal.getSeekbarAnimation() != null) {
+                                    goal.getSeekbarAnimation().setDuration(1);
+                                    goal.getSeekbarAnimation().cancel();
+                                }
+                                goal.getGoalEntry().setRunning(false);
+                                goal.getGoalEntry().setHasFinished(false);
+                                if (goal.getGoalTypeId()==1) { //if this is a time limit goal
+                                    goal.getGoalEntry().setHasSucceeded(true);
+                                }
+                                if (goal.getGoalTypeId()==0) { //if this is a time limit goal
+                                    goal.getGoalEntry().setHasSucceeded(false);
+                                }
+
+
+                                TimeGoalieAlarmObject timeGoalieAlarmObject =
+                                        BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
+
+                                if (timeGoalieAlarmObject != null) {
+                                    if (timeGoalieAlarmObject.getCountDownTimer() != null) {
+                                        timeGoalieAlarmObject.getCountDownTimer().cancel();
+                                        timeGoalieAlarmObject.setCountDownTimer(null);
+                                    }
+                                    if (timeGoalieAlarmObject.getAlarmDonePendingIntent() != null) {
+                                        TimeGoalieAlarmManager.cancelTimeGoalAlarm(
+                                                context,
+                                                timeGoalieAlarmObject.getAlarmDonePendingIntent());
+                                        timeGoalieAlarmObject.getAlarmDonePendingIntent().cancel();
+                                        timeGoalieAlarmObject.setAlarmDonePendingIntent(null);
+                                    }
+                                    if (timeGoalieAlarmObject.getOneMinuteWarningPendingIntent() != null) {
+                                        TimeGoalieAlarmManager.cancelTimeGoalAlarm(
+                                                context,
+                                                timeGoalieAlarmObject.getOneMinuteWarningPendingIntent());
+                                        timeGoalieAlarmObject.getOneMinuteWarningPendingIntent().cancel();
+                                        timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(null);
+                                    }
+                                    //cancel killgoal intent
+
+                                    Intent killGoalIntent = TimeGoalieAlarmReceiver
+                                            .createKillGoalTimeGoalieAlarmIntent(context,
+                                                    "Stopping goal due to inactivity", (int) goal.getGoalId());
+
+                                    PendingIntent killGoalPi = TimeGoalieAlarmReceiver
+                                            .createKillGoalSafetyPendingIntent(context,
+                                                    killGoalIntent, (int) goal.getGoalId());
+
+                                    TimeGoalieAlarmManager.cancelTimeGoalAlarm(context, killGoalPi);
+
+                                    //                   TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context, goal);
+
+                                    new InsertNewGoalEntry(
+                                            context).execute(goal.getGoalEntry());
+                                }
+
+                            }
+
+                        }
+
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
+
+                            //can't click seekbar when animation is going
+                            if (holder.startStopTimer.isChecked()) {
+                                goal.getGoalEntry().setRunning(true);
+                                long newtime = goal.getGoalSeconds();
+                                if (goal.getGoalEntry() != null) {
+                                    newtime = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
+                                }
+                                if (goal.getGoalEntry().getDate()
+                                        .equals(TimeGoalieDateUtils.getSqlDateString())) {
+                                    TimeGoalieAlarmManager.startTimer(goalCounter, holder.time_tv, newtime, goal,
+                                            context, holder.seekbar);
+                                    holder.spinningBallAnim.start();
+                                    //Start the Goal!!
+                                    goal.getGoalEntry().setRunning(true);
+                                    Log.e("mindbuilders4", goal.getName() + " tick " +
+                                            goal.getGoalEntry().getSecondsElapsed());
+                                    new InsertNewGoalEntry(
+                                            context).execute(goal.getGoalEntry());
+                                }
+                            }
+                            new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
+                        }
+                    });
+
+
                     holder.startStopTimer.setVisibility(View.VISIBLE);
                     holder.startStopTimer.setChecked(goal.getGoalEntry().isRunning());
                     holder.startStopTimer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -339,7 +445,6 @@ public class GoalRecyclerViewAdapter extends
                                 notifyDataSetChanged();
 
 
-
                             }
                         });
 
@@ -398,7 +503,7 @@ public class GoalRecyclerViewAdapter extends
                         layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
                             @Override
                             public void onGlobalLayout() {
-                                if(!goal.getGoalEntry().isHasMoved()) {
+                                if (!goal.getGoalEntry().isHasMoved()) {
                                     int[] ballLocation = new int[2];
                                     holder.soccerBallImage.getLocationOnScreen(ballLocation);
                                     int[] checkboxLocation = new int[2];
@@ -684,12 +789,12 @@ public class GoalRecyclerViewAdapter extends
             }
 
             if (seekbar != null) {
-                seekbar.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View view, MotionEvent motionEvent) {
-                        return true;
-                    }
-                });
+//                seekbar.setOnTouchListener(new View.OnTouchListener() {
+//                    @Override
+//                    public boolean onTouch(View view, MotionEvent motionEvent) {
+//                        return true;
+//                    }
+//                });
                 seekbar.setMax(seekbar.getMax() * 100);
 
                 rt = new RotateDrawable();

@@ -1,6 +1,8 @@
 package us.mindbuilders.petemit.timegoalie.TimeGoalieDO;
 
+import android.animation.ObjectAnimator;
 import android.database.Cursor;
+import android.view.animation.Animation;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ public class Goal {
     private ArrayList<Date> datesAccomplished;
     private GoalEntry goalEntry;
     private ArrayList<Day> goalDays;
+    private ObjectAnimator seekbarAnimation;
 
     public static ArrayList<Goal> createGoalListWithGoalEntriesFromCursor(Cursor cursor) {
         ArrayList<Goal> goalList = new ArrayList<Goal>();
@@ -208,5 +211,13 @@ public class Goal {
     @Override
     public String toString() {
         return this.getName();
+    }
+
+    public ObjectAnimator getSeekbarAnimation() {
+        return seekbarAnimation;
+    }
+
+    public void setSeekbarAnimation(ObjectAnimator seekbarAnimation) {
+        this.seekbarAnimation = seekbarAnimation;
     }
 }

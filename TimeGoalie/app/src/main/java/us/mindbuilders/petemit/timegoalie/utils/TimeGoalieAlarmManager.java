@@ -43,6 +43,11 @@ public class TimeGoalieAlarmManager {
         alarmMgr.cancel(alarmPendingIntent);
     }
 
+    public interface seekbarAnimation {
+        void stopAnimation(Goal goal);
+
+    }
+
 
     public static CountDownTimer makeCountdownTimer(final GoalRecyclerViewAdapter.GoalCounter goalCounter,
                                                     long secondsInFuture,
@@ -75,6 +80,8 @@ public class TimeGoalieAlarmManager {
                                             * 100 * 100));
                     animation.setDuration(2000);
                     animation.setInterpolator(new LinearInterpolator());
+                    goal.setSeekbarAnimation(animation);
+
                     animation.start();
                 }
                 if (seekbar != null && goal.getGoalEntry().isHasFinished()) {
