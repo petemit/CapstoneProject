@@ -295,6 +295,9 @@ public class NewGoalFragment extends Fragment {
                 }
 
                 new InsertNewGoal(getContext()).execute(goal);
+                String message = goalname.concat(" ")
+                        .concat(getString(us.mindbuilders.petemit.timegoalie.R.string.created));
+                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
                 getContext().startActivity(new Intent(getContext(), GoalListActivity.class));
             }
         });

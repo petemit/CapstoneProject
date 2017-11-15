@@ -104,6 +104,7 @@
     <string name="hurry_up">Hurry up!</string>
     <string name="stopping_inactive_goal">Stopping goal due to inactivity</string>
     <string name="ran_out_of_time">Oops! Ran out of time.  Maybe next time.</string>
+    <string name="created">created</string>
 
 
 </resources>
