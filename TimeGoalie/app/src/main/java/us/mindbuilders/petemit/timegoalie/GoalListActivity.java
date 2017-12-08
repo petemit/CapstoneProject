@@ -108,6 +108,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         recyclerView = findViewById(R.id.goal_list);
         if (recyclerView != null) {
             recyclerView.setAdapter(rvAdapter);
+            recyclerView.getRecycledViewPool().setMaxRecycledViews(2,0);
         }
 
         if (findViewById(R.id.goal_detail_container) != null) {

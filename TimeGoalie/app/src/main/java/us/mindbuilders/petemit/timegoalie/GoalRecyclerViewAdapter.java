@@ -422,7 +422,7 @@ public class GoalRecyclerViewAdapter extends
                     holder.goalCheckBox.setEnabled(true);
                 }
                 if (holder.goalCheckBox != null && !justARefresh) {
-                    if (holder.goalCheckBox.isChecked()) {
+                    if (goal.getGoalEntry().getHasSucceeded()) {
                         if (!holder.soccerBallImage.isShown()) {
                             goal.getGoalEntry().setHasMoved(false);
                             layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
