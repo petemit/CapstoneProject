@@ -67,6 +67,9 @@
                 android:resource="@xml/time_goalie_widget_config" />
         </receiver>
 
+        <service android:name=".services.TimeGoalieForegroundService">
+
+        </service>
         <service
             android:name=".widget.TimeGoalieRvWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
