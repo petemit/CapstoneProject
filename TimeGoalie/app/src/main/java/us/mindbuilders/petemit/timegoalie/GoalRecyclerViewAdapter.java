@@ -146,8 +146,6 @@ public class GoalRecyclerViewAdapter extends
             goalEntryGoalCounter = new GoalEntryGoalCounter(goalCounter,
                     TimeGoalieDateUtils.getSqlDateString(BaseApplication.getActiveCalendarDate()));
 
-
-            //cursor.moveToPosition(position);
             holder.tv_goaltitle.setText(goal.getName());
             holder.tv_goaltitle.setContentDescription(goal.getName());
             if (holder.spinningBallAnim != null) {
@@ -324,23 +322,7 @@ public class GoalRecyclerViewAdapter extends
                             goal.getName())
                     );
                 }
-                holder.deleteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Animation fadeOut = new AlphaAnimation(1, 0);
-                        fadeOut.setInterpolator(new AccelerateInterpolator());
-                        fadeOut.setStartOffset(500);
-                        fadeOut.setDuration(500);
-                        holder.cardView.setAnimation(fadeOut);
-                        goalArrayList.remove(position);
-                        justARefresh = true;
-                        notifyItemRangeChanged(position, getItemCount());
-                        notifyItemRemoved(position);
 
-                        new DeleteGoal(context, goalEntryGoalCounter).execute(goal);
-
-                    }
-                });
             }
             //get the initial goal count.
             new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
@@ -355,7 +337,7 @@ public class GoalRecyclerViewAdapter extends
         spinningBallAnim.start();
         //Start the Goal!!
         goal.getGoalEntry().setRunning(true);
-        Log.e("mindbuilders4", goal.getName() + " tick " +
+        Log.i("mindbuilders4", goal.getName() + " tick " +
                 goal.getGoalEntry().getSecondsElapsed());
         new InsertNewGoalEntry(
                 context).execute(goal.getGoalEntry());
@@ -399,7 +381,7 @@ public class GoalRecyclerViewAdapter extends
             //                   TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context, goal);
             //timeGoalieAlarmObject.setRunning(false);
             goal.getGoalEntry().setRunning(false);
-            Log.e("mindbuilders5", goal.getName() + " tick " +
+            Log.i("mindbuilders5", goal.getName() + " tick " +
                     goal.getGoalEntry().getSecondsElapsed());
             new InsertNewGoalEntry(
                     context).execute(goal.getGoalEntry());
@@ -479,6 +461,25 @@ public class GoalRecyclerViewAdapter extends
             cardView = view.findViewById(R.id.card_layout);
             RotateDrawable rt;
 
+            if (deleteButton != null) {
+                deleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Animation fadeOut = new AlphaAnimation(1, 0);
+                        fadeOut.setInterpolator(new AccelerateInterpolator());
+                        fadeOut.setStartOffset(500);
+                        fadeOut.setDuration(500);
+                        cardView.setAnimation(fadeOut);
+                        goalArrayList.remove(getLayoutPosition());
+                        justARefresh = true;
+                        notifyItemRangeChanged(getLayoutPosition(), getItemCount());
+                        notifyItemRemoved(getLayoutPosition());
+                        Goal goal = goalArrayList.get(getLayoutPosition());
+                        new DeleteGoal(context, goalEntryGoalCounter).execute(goal);
+
+                    }
+                });
+            }
 
             if (pencil != null) {
                 pencil.setOnClickListener(new View.OnClickListener() {
@@ -535,7 +536,7 @@ public class GoalRecyclerViewAdapter extends
                                 float percentage = (float) i / 10000;
                                 int secondsElapsed = (int) (goal.getGoalSeconds() * percentage);
                                 goal.getGoalEntry().setSecondsElapsed(secondsElapsed);
-                                Log.e("mindbuilders", secondsElapsed + " seconds elapsed " +
+                                Log.i("mindbuilders", secondsElapsed + " seconds elapsed " +
                                         "calculation.  Out of " + goal.getGoalSeconds() + " perc " +
                                         percentage + " progress int " + i);
                                 TimeGoalieUtils.setTimeTextLabel(goal, time_tv, tv_timeOutOf);
@@ -617,7 +618,7 @@ public class GoalRecyclerViewAdapter extends
                         @Override
                         public void onClick(View view) {
                             Goal goal = goalArrayList.get(getLayoutPosition());
-                            final TimeGoalieAlarmObject timeGoalieAlarmObject =
+                            TimeGoalieAlarmObject timeGoalieAlarmObject =
                                     BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
 
                             if (timeGoalieAlarmObject != null) {
@@ -698,7 +699,7 @@ public class GoalRecyclerViewAdapter extends
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                         Goal goal = goalArrayList.get(getLayoutPosition());
-                        Log.e("mindbuilders3", goal.getName() + " tick " +
+                        Log.i("mindbuilders3", goal.getName() + " tick " +
                                 goal.getGoalEntry().getSecondsElapsed());
 
                         long newtime = goal.getGoalSeconds();

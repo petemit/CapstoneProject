@@ -214,29 +214,40 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                                             context.getString(R.string.done_with_goal));
                                     if (goalEntry != null) {
                                         goalEntry.setHasSucceeded(1);
+                                        //todo not a bad idea... need to make this work
+                                        //goalEntry.setSecondsElapsed((int)goal.getGoalSeconds()+goalEntry.getGoalAugment());
+                                        goalEntry.setRunning(false);
+
                                     }
                                 } else if (goal.getGoalTypeId() == 1) {
                                     TimeGoalieNotifications.createNotification(context, intent,
                                             context.getString(R.string.ran_out_of_time));
                                     if (goalEntry != null) {
                                         goalEntry.setHasSucceeded(0);
+                                        //todo not a bad idea... need to make this work
+                                       // goalEntry.setSecondsElapsed((int)goal.getGoalSeconds()+goalEntry.getGoalAugment());
+                                        goalEntry.setRunning(false);
                                     }
                                 }
                             }
 
-                            Intent killGoalIntent = createKillGoalTimeGoalieAlarmIntent(context,
-                                    context.getString(R.string.stopping_inactive_goal), (int) goal.getGoalId());
+                            //TODO do I still need to do a kill goal?  I think maybe it's okay to just end it
+//                            Intent killGoalIntent = createKillGoalTimeGoalieAlarmIntent(context,
+//                                    context.getString(R.string.stopping_inactive_goal), (int) goal.getGoalId());
 
-                            PendingIntent killGoalPi = createKillGoalSafetyPendingIntent(context,
-                                    killGoalIntent, (int) goal.getGoalId());
+//                            PendingIntent killGoalPi = createKillGoalSafetyPendingIntent(context,
+//                                    killGoalIntent, (int) goal.getGoalId());
 
-                            TimeGoalieAlarmManager.setTimeGoalAlarm(TimeGoalieDateUtils.
-                                            createTargetSecondlyCalendarTime(
-                                                    (int) KILLGOAL_TIMER / 1000)
-                                    , context, null,
-                                    killGoalPi);
+//                            TimeGoalieAlarmManager.setTimeGoalAlarm(TimeGoalieDateUtils.
+//                                            createTargetSecondlyCalendarTime(
+//                                                    (int) KILLGOAL_TIMER / 1000)
+//                                    , context, null,
+//                                    killGoalPi);
 
-                            break;
+           //                 break;
+
+
+
                         case GOAL_ONE_MINUTE_WARNING:
                             TimeGoalieNotifications.createNotification(context, intent,
                                     context.getString(R.string.hurry_up) +

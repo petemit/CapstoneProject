@@ -8,6 +8,7 @@
     <ListView
         android:id="@+id/time_goalie_widget"
         android:layout_width="match_parent"
+        android:nestedScrollingEnabled="false"
         android:layout_height="match_parent" />
 
     <TextView
