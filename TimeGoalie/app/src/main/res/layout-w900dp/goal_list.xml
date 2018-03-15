@@ -22,6 +22,7 @@
         android:id="@+id/goal_list"
         android:name="us.mindbuilders.petemit.timegoalie.GoalListFragment"
         android:layout_width="0dp"
+        android:nestedScrollingEnabled="false"
         android:layout_height="match_parent"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
