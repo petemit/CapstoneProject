@@ -19,7 +19,12 @@ public class TimeGoalieDateUtils {
     private static GregorianCalendar gcal = new GregorianCalendar();
 
     public static long getDayIdFromToday() {
-        return gcal.get(Calendar.DAY_OF_WEEK) - 1;
+        if (gcal.get(Calendar.DAY_OF_WEEK)-1==0) {
+            return 7;
+        }
+         else {
+            return gcal.get(Calendar.DAY_OF_WEEK) - 1;
+        }
     }
 
     public static String getSqlDateString() {

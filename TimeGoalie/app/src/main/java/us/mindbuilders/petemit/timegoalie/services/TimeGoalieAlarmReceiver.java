@@ -250,7 +250,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
 
                         case GOAL_ONE_MINUTE_WARNING:
                             TimeGoalieNotifications.createNotification(context, intent,
-                                    context.getString(R.string.hurry_up) +
+                                    context.getString(R.string.hurry_up) + " " +
                                             context.getString(R.string.one_minute_warning));
                             id = intent.getIntExtra(context.getString(R.string.goal_id_key), -1);
                             if (id != -1) {
