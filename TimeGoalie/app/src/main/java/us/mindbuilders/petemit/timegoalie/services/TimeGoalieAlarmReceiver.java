@@ -256,10 +256,11 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                             if (id != -1) {
                                 //  BaseApplication.getTimeGoalieAlarmObjectById(id).setRunning(false);
                                 if (goalEntry.getDate() != null) {
-                                    if (BaseApplication.getTimeGoalieAlarmObjectById(id,
-                                            goalEntry.getDate()) != null) {
-                                        BaseApplication.getTimeGoalieAlarmObjectById(id).setHasBeenWarned(true);
-                                    }
+                                    //todo figure out what this did
+//                                    if (BaseApplication.getTimeGoalieAlarmObjectById(id,
+//                                            goalEntry.getDate()) != null) {
+//                                        BaseApplication.getTimeGoalieAlarmObjectById(id).setHasBeenWarned(true);
+//                                    }
                                 }
                             }
 

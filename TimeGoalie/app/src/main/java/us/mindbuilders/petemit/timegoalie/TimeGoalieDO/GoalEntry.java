@@ -33,8 +33,8 @@ public class GoalEntry implements Parcelable {
     private int hasSucceeded;
     private int isRunning;
     private long targetTime;
+    private long startedTime;
     private int isFinished;
-    private boolean needsSecondsUpdate;
     private boolean hasMoved;
 
 
@@ -60,6 +60,7 @@ public class GoalEntry implements Parcelable {
         hasSucceeded = in.readInt();
         isRunning = in.readInt();
         targetTime = in.readLong();
+        setStartedTime(in.readLong());
     }
 
     public static ArrayList<GoalEntry> makeGoalEntryListFromCursor(Cursor cursor) {
@@ -133,75 +134,25 @@ public class GoalEntry implements Parcelable {
 
     public int getSecondsElapsed() {
 
-//        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
-//            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).getSecondsElapsed();
-//        }
-//        return 0;
-        //return secondsElapsed;
-
         return secondsElapsed;
 
     }
 
     public void setSecondsElapsed(int secondsElapsed) {
-//        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
-//        } else {
-//            TimeGoalieAlarmObject timeGoalieAlarmObject = new TimeGoalieAlarmObject(goal_id, date);
-//            timeGoalieAlarmObject.setSecondsElapsed(secondsElapsed);
-//            timeGoalieAlarmObject.setGoal_id(goal_id);
-//            BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject
-//            );
-//        }
         this.secondsElapsed = secondsElapsed;
 
     }
 
     public void addSecondElapsed() {
-//        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date) != null) {
-//            BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date ).setSecondsElapsed(
-//                    BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date).getSecondsElapsed() + 1
-//            );
-//        }
-
         setSecondsElapsed(getSecondsElapsed() + 1);
     }
 
     public void setSecondsElapsed(int secondsElapsed, boolean isAlarm) {
-//        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date) != null) {
-//            if (isAlarm) {
-//                TimeGoalieAlarmObject timeGoalieAlarmObject =
-//                        BaseApplication.getTimeGoalieAlarmObjectById(goal_id,date);
-//                timeGoalieAlarmObject.setSecondsElapsed(secondsElapsed);
-//            }
-//        } else {
-//            TimeGoalieAlarmObject timeGoalieAlarmObject = new TimeGoalieAlarmObject(goal_id, date);
-//            timeGoalieAlarmObject.setSecondsElapsed(secondsElapsed);
-//            BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject
-//            );
-//        }
         this.secondsElapsed = secondsElapsed;
     }
 
     public long getGoal_id() {
         return goal_id;
-    }
-
-//    public boolean isHasFinished() {
-//        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date) != null) {
-//            return BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date).isHasFinished();
-//        }
-//
-//        return hasFinished;
-//    }
-//
-//    public void setHasFinished(boolean hasFinished) {
-//        if (BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date) != null) {
-//            BaseApplication.getTimeGoalieAlarmObjectById(goal_id, date).setHasFinished(hasFinished);
-//        }
-//    }
-
-    public void setGoal_id(long goal_id) {
-        this.goal_id = goal_id;
     }
 
     public long getId() {
@@ -268,6 +219,7 @@ public class GoalEntry implements Parcelable {
         dest.writeInt(hasSucceeded);
         dest.writeInt(isRunning);
         dest.writeLong(targetTime);
+        dest.writeLong(getStartedTime());
     }
 
     public boolean isRunning() {
@@ -294,13 +246,6 @@ public class GoalEntry implements Parcelable {
         this.targetTime = targetTime;
     }
 
-    public boolean isNeedsSecondsUpdate() {
-        return needsSecondsUpdate;
-    }
-
-    public void setNeedsSecondsUpdate(boolean needsSecondsUpdate) {
-        this.needsSecondsUpdate = needsSecondsUpdate;
-    }
 
     public boolean isHasMoved() {
         return hasMoved;
@@ -308,5 +253,13 @@ public class GoalEntry implements Parcelable {
 
     public void setHasMoved(boolean hasMoved) {
         this.hasMoved = hasMoved;
+    }
+
+    public long getStartedTime() {
+        return startedTime;
+    }
+
+    public void setStartedTime(long startedTime) {
+        this.startedTime = startedTime;
     }
 }

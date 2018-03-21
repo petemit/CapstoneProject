@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 import us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider;
@@ -42,7 +41,7 @@ adb shell setprop debug.firebase.analytics.app .none.
  */
 public class GoalListActivity extends AppCompatActivity implements View.OnClickListener,
         LoaderManager.LoaderCallbacks<Cursor>, DatePickerDialog.OnDateSetListener,
-        GoalRecyclerViewAdapter.GoalCounter {
+        GoalRecyclerViewAdapter.GoalCounter, GoalListViewCallback {
     private static final int GOAL_LOADER_ID = 4;
     private static final String noDateString = "NODATE";
     Spinner datespinner;
@@ -75,6 +74,8 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         }
 
     }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,6 +147,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onResume() {
         super.onResume();
+        BaseApplication.getGoalEntryController().setGoalListViewCallback(this);
         getSupportLoaderManager().restartLoader(GOAL_LOADER_ID, null, this);
         rvAdapter.notifyDataSetChanged();
     }
@@ -153,10 +155,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onPause() {
         super.onPause();
-        for (TimeGoalieAlarmObject tgoal : BaseApplication.getTimeGoalieAlarmObjects()) {
-            if (tgoal.getCountDownTimer() != null)
-                tgoal.getCountDownTimer().cancel();
-        }
+        BaseApplication.getGoalEntryController().setGoalListViewCallback(null);
     }
 
     @Override
@@ -295,10 +294,6 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        for (TimeGoalieAlarmObject tgoal : BaseApplication.getTimeGoalieAlarmObjects()) {
-            if (tgoal.getCountDownTimer() != null)
-                tgoal.getCountDownTimer().cancel();
-        }
         rvAdapter.swapCursor(null);
     }
 
@@ -331,6 +326,11 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         if (timeGoalieReportUpdater != null) {
             timeGoalieReportUpdater.updateReport();
         }
+    }
+
+    @Override
+    public void update() {
+
     }
 
     public interface TimeGoalieReportUpdater {

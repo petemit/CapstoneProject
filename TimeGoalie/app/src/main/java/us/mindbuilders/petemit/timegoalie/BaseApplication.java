@@ -14,10 +14,10 @@ import java.util.Calendar;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Day;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoal;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
+import us.mindbuilders.petemit.timegoalie.services.TimeGoalieGoalEntryController;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 import us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider;
 
@@ -28,7 +28,6 @@ import us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider;
  */
 
 public class BaseApplication extends Application {
-    private static ArrayList<TimeGoalieAlarmObject> timeGoalieAlarmObjects;
     private static Calendar activeCalendarDate = Calendar.getInstance();
     private static Context context;
     private static GoalActivityListListener goalActivityListListener;
@@ -36,6 +35,7 @@ public class BaseApplication extends Application {
     private static Handler secondlyHandler;
     private static Runnable runnable;
     private static boolean handlerRunning;
+    private static TimeGoalieGoalEntryController goalEntryController;
 
     public static void createHandler(final long millis) {
         secondlyHandler = new Handler();
@@ -101,13 +101,6 @@ public class BaseApplication extends Application {
         secondlyHandler = null;
     }
 
-    public static ArrayList<TimeGoalieAlarmObject> getTimeGoalieAlarmObjects() {
-        return timeGoalieAlarmObjects;
-    }
-
-    public static void setTimeGoalieAlarmObjects(ArrayList<TimeGoalieAlarmObject> timeGoalieAlarmObjects) {
-        BaseApplication.timeGoalieAlarmObjects = timeGoalieAlarmObjects;
-    }
 
     public static GoalActivityListListener getGoalActivityListListener() {
         return goalActivityListListener;
@@ -154,31 +147,18 @@ public class BaseApplication extends Application {
 
     }
 
-    public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id) {
-        for (int i = 0; i < timeGoalieAlarmObjects.size(); i++) {
-            if (timeGoalieAlarmObjects.get(i).getGoal_id() == goal_id) {
-                Log.e("check", goal_id + "");
-                return timeGoalieAlarmObjects.get(i);
 
-            }
-        }
-        return null;
-    }
-
-    public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id, String date) {
-        for (int i = 0; i < timeGoalieAlarmObjects.size(); i++) {
-            if (timeGoalieAlarmObjects.get(i).getGoal_id() == goal_id &&
-                    timeGoalieAlarmObjects.get(i).getDate().equals(date)) {
-                Log.e("check", goal_id + "");
-                return timeGoalieAlarmObjects.get(i);
-
-            }
-        }
-        return null;
-    }
 
     public static Context getContext() {
         return context;
+    }
+
+    public static TimeGoalieGoalEntryController getGoalEntryController() {
+        return goalEntryController;
+    }
+
+    public static void setGoalEntryController(TimeGoalieGoalEntryController goalEntryController) {
+        BaseApplication.goalEntryController = goalEntryController;
     }
 
     public void setContext(Context context) {
@@ -188,9 +168,12 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        setContext(getBaseContext());
-        setTimeGoalieAlarmObjects(new ArrayList<TimeGoalieAlarmObject>());
 
+        //Get the logic engine ready
+        goalEntryController = new TimeGoalieGoalEntryController();
+
+
+        setContext(getBaseContext());
 
         //Only do this if we are in the debug build
         if (BuildConfig.DEBUG) {
