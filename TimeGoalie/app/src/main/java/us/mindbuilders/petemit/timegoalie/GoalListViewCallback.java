@@ -5,5 +5,5 @@ package us.mindbuilders.petemit.timegoalie;
  */
 
 public interface GoalListViewCallback {
-        void update();
+        void update(int position);
 }

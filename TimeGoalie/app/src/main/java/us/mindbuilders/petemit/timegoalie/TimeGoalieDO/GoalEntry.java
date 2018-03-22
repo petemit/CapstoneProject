@@ -95,6 +95,8 @@ public class GoalEntry implements Parcelable {
 
                 goalEntry.setTargetTime((cursor.getLong(cursor.getColumnIndex(TimeGoalieContract.
                         GoalEntries.GOALENTRIES_COLUMN_TARGETTIME))));
+                goalEntry.setStartedTime(cursor.getLong(cursor.getColumnIndex(TimeGoalieContract.
+                        GoalEntries.GOALENTRIES_COLUMN_STARTEDTIME)));
                 goalEntries.add(goalEntry);
             }
         }

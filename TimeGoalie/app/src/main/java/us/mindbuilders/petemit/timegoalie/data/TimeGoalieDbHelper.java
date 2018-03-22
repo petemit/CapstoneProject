@@ -12,7 +12,7 @@ import us.mindbuilders.petemit.timegoalie.R;
  */
 
 public class TimeGoalieDbHelper extends SQLiteOpenHelper {
-    public static final int DB_VERSION = 1;
+    public static final int DB_VERSION = 2;
     public static String DB_NAME = "timeGoalie.db";
     private Context context;
 
@@ -50,6 +50,7 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISRUNNING + " INTEGER, " +
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_ISFINISHED + " INTEGER, " +
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_TARGETTIME + " INTEGER, " +
+                TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_STARTEDTIME + " INTEGER, " +
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_GOAL_ID + " INTEGER NOT NULL, " +
                 TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_DATETIME + " TEXT NOT NULL, " +
                 " UNIQUE(" +
@@ -222,7 +223,7 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
+    public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
         if (BuildConfig.DEBUG) {
             //todo implement upgrade logic
             db.execSQL("DROP TABLE IF EXISTS " + TimeGoalieContract.Goals.GOALS_TABLE_NAME);
@@ -232,6 +233,10 @@ public class TimeGoalieDbHelper extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS " +
                     TimeGoalieContract.GoalsDatesAccomplished.GOALS_DATES_ACCOMPLISHED_TABLE_NAME);
             onCreate(db);
+        }
+
+        if (newV > oldV) {
+            db.execSQL("ALTER TABLE " + TimeGoalieContract.GoalEntries.GOALENTRIES_TABLE_NAME + " ADD COLUMN " + TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_STARTEDTIME + " INTEGER");
         }
 
     }

@@ -37,6 +37,8 @@ public class InsertNewGoalEntry extends AsyncTask<GoalEntry, Void, Void> {
                     (goalEntries[i].isHasFinished()) ? 1 : 0);
             goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_TARGETTIME,
                     goalEntries[i].getTargetTime());
+            goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_STARTEDTIME,
+                    goalEntries[i].getStartedTime());
 //            if (goalEntries[0].isNeedsSecondsUpdate()){
             goalEntries_cv.put(TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SECONDSELAPSED,
                     goalEntries[i].getSecondsElapsed());

@@ -18,7 +18,6 @@ import us.mindbuilders.petemit.timegoalie.BaseApplication;
 import us.mindbuilders.petemit.timegoalie.GoalRecyclerViewAdapter;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntryGoalCounter;
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.GetSuccessfulGoalCount;
 import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
 
@@ -108,24 +107,7 @@ public class TimeGoalieAlarmManager {
 
                         new GetSuccessfulGoalCount(tv.getContext()).execute(goalEntryGoalCounter);
 
-                        if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalEntry()
-                                .getGoal_id()) != null) {
-                            TimeGoalieAlarmObject timeGoalieAlarmObject =
-                                    BaseApplication.getTimeGoalieAlarmObjectById(
-                                            goal.getGoalEntry().getGoal_id());
-                            timeGoalieAlarmObject.getCountDownTimer().cancel();
-                            if (goal.getGoalEntry().getDate().equals(TimeGoalieDateUtils
-                                    .getSqlDateString())) {
-                                timeGoalieAlarmObject.setCountDownTimer(makeCountdownTimer(goalCounter,
-                                        1000,
-                                        intervalInSeconds,
-                                        totalSeconds,
-                                        tv,
-                                        goal,
-                                        goalType,
-                                        seekbar).start());
-                            }
-                        }
+
 
                         //  makeCountdownTimer(1000,intervalInSeconds,totalSeconds,tv,goalEntry,goalType,seekbar).start();
                         //  tv.setText("00:00:00");
@@ -141,23 +123,6 @@ public class TimeGoalieAlarmManager {
                         goalEntryGoalCounter.setGoalEntry(goal.getGoalEntry());
 
                         new GetSuccessfulGoalCount(tv.getContext()).execute(goalEntryGoalCounter);
-                        if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalEntry().getGoal_id()) != null) {
-                            TimeGoalieAlarmObject timeGoalieAlarmObject =
-                                    BaseApplication.getTimeGoalieAlarmObjectById(
-                                            goal.getGoalEntry().getGoal_id());
-                            timeGoalieAlarmObject.getCountDownTimer().cancel();
-                            if (goal.getGoalEntry().getDate().equals(TimeGoalieDateUtils.getSqlDateString())) {
-                                timeGoalieAlarmObject.setCountDownTimer(makeCountdownTimer(goalCounter,
-                                        1000,
-                                        intervalInSeconds,
-                                        totalSeconds,
-                                        tv,
-                                        goal,
-                                        goalType,
-                                        seekbar).start());
-                            }
-                        }
-
                         break;
                 }
 
@@ -195,45 +160,11 @@ public class TimeGoalieAlarmManager {
         if (goal.getGoalEntry().getDate() == null) {
             goal.getGoalEntry().setDate(TimeGoalieDateUtils.getSqlDateString());
         }
-        TimeGoalieAlarmObject timeGoalieAlarmObject =
-                BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
+
 
         long remainingSeconds = totalSeconds;// - secondsElapsed;
         Log.e("Mindbuilders", "remainingseconds: " + remainingSeconds);
-        if (timeGoalieAlarmObject != null) {
-            if (seekbar != null) {
-                timeGoalieAlarmObject.setCountDownTimer(
-                        TimeGoalieAlarmManager.makeCountdownTimer(goalCounter,
-                                remainingSeconds,
-                                1,
-                                goal.getGoalSeconds(),
-                                time_tv,
-                                goal,
-                                (int) goal.getGoalTypeId(),
-                                seekbar));
-                timeGoalieAlarmObject.getCountDownTimer().start();
-            }
-            goal.getGoalEntry().setRunning(true);
 
-        } else {
-            if (seekbar != null) {
-                timeGoalieAlarmObject = new TimeGoalieAlarmObject(goal.getGoalId(),
-                        TimeGoalieDateUtils.getSqlDateString());
-                timeGoalieAlarmObject.setCountDownTimer(
-                        TimeGoalieAlarmManager.makeCountdownTimer(goalCounter,
-                                remainingSeconds,
-                                1,
-                                goal.getGoalSeconds(),
-                                time_tv,
-                                goal,
-                                (int) goal.getGoalTypeId(),
-                                seekbar));
-                timeGoalieAlarmObject.getCountDownTimer().start();
-            }
-            goal.getGoalEntry().setRunning(true);
-
-            BaseApplication.getTimeGoalieAlarmObjects().add(timeGoalieAlarmObject);
-        }
 
         //     new InsertNewGoalEntry(time_tv.getContext()).execute(goal.getGoalEntry());
 
@@ -242,15 +173,6 @@ public class TimeGoalieAlarmManager {
 
         // preemptively cancel secondly
         //  TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context,goal);
-
-        if (timeGoalieAlarmObject != null && timeGoalieAlarmObject.getAlarmDonePendingIntent() == null &&
-                !goal.getGoalEntry().isHasFinished()) {
-            timeGoalieAlarmObject.setAlarmDonePendingIntent(TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
-                    context, TimeGoalieAlarmReceiver.createAlarmDoneTimeGoalieAlarmIntent
-                            (context,
-                                    goal.getName(),
-                                    (int) goal.getGoalId()
-                            ), (int) goal.getGoalId()));
 
 
             long hours = remainingSeconds / (60 * 60);
@@ -277,12 +199,6 @@ public class TimeGoalieAlarmManager {
                 goal.getGoalEntry().setTargetTime(targetTime);
             }
 
-            if (!goal.getGoalEntry().isHasFinished()) {
-                TimeGoalieAlarmManager.setTimeGoalAlarm(
-                        targetTime,
-                        context, null,
-                        timeGoalieAlarmObject.getAlarmDonePendingIntent());
-            }
 
 
             if (BaseApplication.getSecondlyHandler() != null) {
@@ -302,31 +218,9 @@ public class TimeGoalieAlarmManager {
 
             //Sets up the running out of time alert
             //will not fire if it has been fired already for a goal.
-            if (goal.getGoalTypeId() == 1 && !timeGoalieAlarmObject.isHasBeenWarned()) { //Limit Goal Type
-                timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(TimeGoalieAlarmReceiver.
-                        createTimeGoaliePendingIntent(context,
-                                TimeGoalieAlarmReceiver.createOneMinuteWarningTimeGoalieAlarmIntent(
-                                        context,
-                                        goal.getName(),
-                                        (int) goal.getGoalId()
-                                ),
-                                (int) goal.getGoalId()));
 
-                long targetTimeLimitGoal = TimeGoalieDateUtils.createTargetCalendarTime(
-                        (int) hours,
-                        (int) minutes,
-                        (int) seconds - ONE_MINUTE_WARNING_TIME * 60);
 
-                if (timeGoalieAlarmObject.getOneMinuteWarningPendingIntent() != null) {
-                    TimeGoalieAlarmManager.setTimeGoalAlarm(
-                            targetTimeLimitGoal,
-                            context, null,
-                            timeGoalieAlarmObject.getOneMinuteWarningPendingIntent());
-                }
 
-            }
-
-        }
     }
 
 }

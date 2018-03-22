@@ -6,7 +6,7 @@ import android.widget.TextView;
 import us.mindbuilders.petemit.timegoalie.BaseApplication;
 import us.mindbuilders.petemit.timegoalie.R;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
+
 
 /**
  * Created by Peter on 10/12/2017.
@@ -14,23 +14,6 @@ import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 
 public class TimeGoalieUtils {
 
-    public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectByDate(Goal goal) {
-
-        if (BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId(),
-                TimeGoalieDateUtils.getSqlDateString(
-                        BaseApplication.getActiveCalendarDate())) != null) {
-            TimeGoalieAlarmObject timeGoalieAlarmObj =
-                    BaseApplication.getTimeGoalieAlarmObjectById(goal.getGoalId(),
-                            TimeGoalieDateUtils.
-                                    getSqlDateString(BaseApplication.getActiveCalendarDate()));
-            return timeGoalieAlarmObj;
-        } else {
-
-
-            return null;
-        }
-
-    }
 
     public static long getRemainingSeconds(Goal goal) {
         long onBindElapsedSeconds = 0;

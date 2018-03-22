@@ -329,7 +329,8 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
-    public void update() {
+    public void update(int position) {
+        recyclerView.getAdapter().notifyItemChanged(position);
 
     }
 
