@@ -272,87 +272,87 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
 
                 {
                     new InsertNewGoalEntry(context).execute(goalEntry);
-                } else { //if a secondly goal
-
-                    Intent updateWidgetintent = new Intent(context,
-                            TimeGoalieWidgetProvider.class);
-                    //updateWidgetintent.setAction(TimeGoalieWidgetProvider.
-                    //        ACTION_GET_GOALS_FOR_TODAY);
-                    updateWidgetintent.setAction(TimeGoalieWidgetProvider.
-                            ACTION_GET_GOALS_FOR_TODAY);
-                    context.sendBroadcast(updateWidgetintent);
-
-
-                    long diff = TimeGoalieDateUtils.getCurrentTimeInMillis() -
-                            BaseApplication.getLastTimeSecondUpdated();
-                    Log.e("mindy", diff + " diff");
-                    if (!BaseApplication.isHandlerRunning()) {
-                        if (diff >= SECONDLY_FREQUENCY) {
-
-                            long secondsElapsed = (int) (Math.floor(diff / 1000));
-
-                            if (cursor.getCount() > 0) {
-                                ArrayList<GoalEntry> goalEntries =
-                                        GoalEntry.makeGoalEntryListFromCursor(cursor);
-                                for (GoalEntry goalEntry : goalEntries
-                                        ) {
-
-                                    if (goalEntry.isRunning()) {
-
-                                        if (diff >= 10000000) {
-                                            goalEntry.addSecondElapsed();
-                                        }
-                                        if (diff <= 10000000 && diff >= 0) {
-                                            goalEntry.setSecondsElapsed(goalEntry.getSecondsElapsed()
-                                                    + (int) secondsElapsed);
-                                        }
-
-
-                                        if (BaseApplication.getGoalActivityListListener() != null) {
-                                            BaseApplication.getGoalActivityListListener()
-                                                    .notifyChanges(goalEntry);
-                                        }
-
-                                        new InsertNewGoalEntry(context).execute(goalEntry);
-
-
-                                        BaseApplication.setLastTimeSecondUpdated(
-                                                TimeGoalieDateUtils.getCurrentTimeInMillis());
-
-                                    }
-
-
-                                }//end for
-                                TimeGoalieAlarmManager.setTimeGoalAlarm(TimeGoalieDateUtils.createTargetSecondlyCalendarTime((int) (
-                                                TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY) / 1000),
-                                        context, null,
-                                        TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(context,
-                                                TimeGoalieAlarmReceiver.
-                                                        createEverySecondDbUpdateAlarmIntent(context)));
-
-                                cursor.close();
-                            }
-                        }///end if second has elapsed.
-                        else {
+//                } else { //if a secondly goal
+//
+//                    Intent updateWidgetintent = new Intent(context,
+//                            TimeGoalieWidgetProvider.class);
+//                    //updateWidgetintent.setAction(TimeGoalieWidgetProvider.
+//                    //        ACTION_GET_GOALS_FOR_TODAY);
+//                    updateWidgetintent.setAction(TimeGoalieWidgetProvider.
+//                            ACTION_GET_GOALS_FOR_TODAY);
+//                    context.sendBroadcast(updateWidgetintent);
+//
+//
+//                    long diff = TimeGoalieDateUtils.getCurrentTimeInMillis() -
+//                            BaseApplication.getLastTimeSecondUpdated();
+//                    Log.e("mindy", diff + " diff");
+//                    if (!BaseApplication.isHandlerRunning()) {
+//                        if (diff >= SECONDLY_FREQUENCY) {
+//
+//                            long secondsElapsed = (int) (Math.floor(diff / 1000));
+//
+//                            if (cursor.getCount() > 0) {
+//                                ArrayList<GoalEntry> goalEntries =
+//                                        GoalEntry.makeGoalEntryListFromCursor(cursor);
+//                                for (GoalEntry goalEntry : goalEntries
+//                                        ) {
+//
+//                                    if (goalEntry.isRunning()) {
+//
+//                                        if (diff >= 10000000) {
+//                                            goalEntry.addSecondElapsed();
+//                                        }
+//                                        if (diff <= 10000000 && diff >= 0) {
+//                                            goalEntry.setSecondsElapsed(goalEntry.getSecondsElapsed()
+//                                                    + (int) secondsElapsed);
+//                                        }
+//
+//
+//                                        if (BaseApplication.getGoalActivityListListener() != null) {
+//                                            BaseApplication.getGoalActivityListListener()
+//                                                    .notifyChanges(goalEntry);
+//                                        }
+//
+//                                        new InsertNewGoalEntry(context).execute(goalEntry);
+//
+//
+//                                        BaseApplication.setLastTimeSecondUpdated(
+//                                                TimeGoalieDateUtils.getCurrentTimeInMillis());
+//
+//                                    }
+//
+//
+//                                }//end for
+////                                TimeGoalieAlarmManager.setTimeGoalAlarm(TimeGoalieDateUtils.createTargetSecondlyCalendarTime((int) (
+////                                                TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY) / 1000),
+////                                        context, null,
+////                                        TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(context,
+////                                                TimeGoalieAlarmReceiver.
+////                                                        createEverySecondDbUpdateAlarmIntent(context)));
+//
+//                                cursor.close();
+//                            }
+                        //}///end if second has elapsed.
+                       // else {
                             //catch up
-                            TimeGoalieAlarmManager.setTimeGoalAlarm(TimeGoalieDateUtils.createTargetSecondlyCalendarTime((int) (
-                                            TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY - diff) / 1000),
-                                    context, null,
-                                    TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(context,
-                                            TimeGoalieAlarmReceiver.
-                                                    createEverySecondDbUpdateAlarmIntent(context)));
-                        }
-                    } else {
+//                            TimeGoalieAlarmManager.setTimeGoalAlarm(TimeGoalieDateUtils.createTargetSecondlyCalendarTime((int) (
+//                                            TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY - diff) / 1000),
+//                                    context, null,
+//                                    TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(context,
+//                                            TimeGoalieAlarmReceiver.
+//                                                    createEverySecondDbUpdateAlarmIntent(context)));
+                   //     }
+                //    } else {
                         //check back later
-                        PendingIntent pi = TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(context,
-                                TimeGoalieAlarmReceiver.
-                                        createEverySecondDbUpdateAlarmIntent(context));
-                        TimeGoalieAlarmManager.cancelTimeGoalAlarm(context, pi);
-                        TimeGoalieAlarmManager.setTimeGoalAlarm(TimeGoalieDateUtils.createTargetSecondlyCalendarTime((int)
-                                        DELAYINTENT_INTERVAL), context,
-                                null, pi);
+//                        PendingIntent pi = TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(context,
+//                                TimeGoalieAlarmReceiver.
+//                                        createEverySecondDbUpdateAlarmIntent(context));
+//                        TimeGoalieAlarmManager.cancelTimeGoalAlarm(context, pi);
+//                        TimeGoalieAlarmManager.setTimeGoalAlarm(TimeGoalieDateUtils.createTargetSecondlyCalendarTime((int)
+//                                        DELAYINTENT_INTERVAL), context,
+//                                null, pi);
 
-                    }
+             //       }
 
                 }//else SECONDLY
 

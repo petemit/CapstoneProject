@@ -36,6 +36,8 @@ public class TimeGoalieUtils {
         return remainingSeconds;
     }
 
+
+
     public static void setTimeTextLabel(Goal goal, TextView tv_timeText, TextView tv_timeOutOf) {
 
         if (goal.getGoalEntry() != null) {
@@ -54,8 +56,10 @@ public class TimeGoalieUtils {
 
                     //  holder.time_tv.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
                     if (goal.getGoalEntry() != null) {
+                        int secondsElapsed =  TimeGoalieDateUtils.calculateSecondsElapsed(goal.getGoalEntry().getStartedTime() ,
+                                goal.getGoalEntry().getSecondsElapsed());
                         tv_timeText.setText(TimeGoalieAlarmManager.
-                                makeTimeTextFromMillis(goal.getGoalEntry().getSecondsElapsed() * 1000));
+                                makeTimeTextFromMillis(secondsElapsed * 1000));
                     } else {
                         tv_timeText.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(0));
                     }
@@ -67,8 +71,10 @@ public class TimeGoalieUtils {
                     }
 
                     if (remainingSeconds < 0) {
+                        int secondsElapsed =  TimeGoalieDateUtils.calculateSecondsElapsed(goal.getGoalEntry().getStartedTime() ,
+                                goal.getGoalEntry().getSecondsElapsed());
                         tv_timeText.setText("-" + TimeGoalieAlarmManager.makeTimeTextFromMillis(-1 *
-                                (goal.getGoalSeconds() * 1000 - goal.getGoalEntry().getSecondsElapsed() * 1000)));
+                                (goal.getGoalSeconds() * 1000 - secondsElapsed * 1000)));
 
                     } else {
                         tv_timeText.setText(TimeGoalieAlarmManager.makeTimeTextFromMillis(remainingSeconds * 1000));

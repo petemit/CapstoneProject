@@ -150,7 +150,6 @@ public class TimeGoalieAlarmManager {
                 + ":" + String.format(Locale.US, "%02d", seconds));
     }
 
-
     public static void startTimer(GoalRecyclerViewAdapter.GoalCounter goalCounter,
                                   TextView time_tv,
                                   long totalSeconds,

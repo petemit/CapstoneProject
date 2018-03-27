@@ -138,9 +138,11 @@ public class GoalRecyclerViewAdapter extends
 
             holder.tv_goaltitle.setText(goal.getName());
             holder.tv_goaltitle.setContentDescription(goal.getName());
-            if (holder.spinningBallAnim != null) {
-                holder.spinningBallAnim.cancel();
-            }
+
+            //not sure why I need to cancel this:
+//            if (holder.spinningBallAnim != null) {
+//                holder.spinningBallAnim.cancel();
+//            }
 
             if (goal.getGoalTypeId() == 1) { // if this is GoalType Limit goal
                 if (goal.getGoalEntry() != null) {
@@ -164,7 +166,7 @@ public class GoalRecyclerViewAdapter extends
 
                 long remainingSeconds = TimeGoalieUtils.getRemainingSeconds(goal);
 
-                //Set initial Time Text labels:
+                //Set Time Text labels:
                 TimeGoalieUtils.setTimeTextLabel(goal, holder.time_tv, holder.tv_timeOutOf);
                 // if this is a more goal
                 if (goal.getGoalTypeId() == 0) {
@@ -189,18 +191,6 @@ public class GoalRecyclerViewAdapter extends
                     // wow... trying to change the time with the seekbar?  That sounds dangerous
 
                     holder.startStopTimer.setVisibility(View.VISIBLE);
-                    holder.startStopTimer.setChecked(goal.getGoalEntry().isRunning());
-
-
-                    if (goal.getGoalEntry() != null) {
-                        if (goal.getGoalEntry().isRunning()
-                                && goal.getGoalEntry().getDate()
-                                .equals(TimeGoalieDateUtils.getSqlDateString())) {
-                            holder.startStopTimer.setChecked(false);
-                            holder.startStopTimer.setChecked(true);
-                        }
-                    }
-
 
                 }// end start/stop
                 else {
@@ -328,9 +318,8 @@ public class GoalRecyclerViewAdapter extends
                 context, seekbar);
         spinningBallAnim.start();
         //Start the Goal!!
-        goal.getGoalEntry().setRunning(true);
-        new InsertNewGoalEntry(
-                context).execute(goal.getGoalEntry());
+        BaseApplication.getGoalEntryController().startEngine(goalArrayList);
+        BaseApplication.getGoalEntryController().startGoal(goal.getGoalEntry());
 
     }
 
@@ -350,11 +339,7 @@ public class GoalRecyclerViewAdapter extends
 
         //                   TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context, goal);
         //timeGoalieAlarmObject.setRunning(false);
-        goal.getGoalEntry().setRunning(false);
-        Log.i("mindbuilders5", goal.getName() + " tick " +
-                goal.getGoalEntry().getSecondsElapsed());
-        new InsertNewGoalEntry(
-                context).execute(goal.getGoalEntry());
+        BaseApplication.getGoalEntryController().stopGoal(goal.getGoalEntry());
 
         spinningBallAnim.cancel();
     }
@@ -550,7 +535,7 @@ public class GoalRecyclerViewAdapter extends
                             }
                             turnOnGoal(goal, context, time_tv, newtime, seekbar, spinningBallAnim);
                         } else {
-                            new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
+                         //   new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
                         }
                         new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
                     }

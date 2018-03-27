@@ -73,6 +73,8 @@ public class Goal {
 
                     goalEntry.setTargetTime((cursor.getLong(cursor.getColumnIndex(TimeGoalieContract.
                             GoalEntries.GOALENTRIES_COLUMN_TARGETTIME))));
+                    goalEntry.setStartedTime((cursor.getLong(cursor.getColumnIndex(TimeGoalieContract.
+                            GoalEntries.GOALENTRIES_COLUMN_STARTEDTIME))));
                     goal.goalEntry = goalEntry;
                     goalList.add(goal);
                 }

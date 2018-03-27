@@ -108,6 +108,8 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 
         recyclerView = findViewById(R.id.goal_list);
         if (recyclerView != null) {
+            //Todo is this going to break animations?
+            recyclerView.getItemAnimator().setChangeDuration(0);
             recyclerView.setAdapter(rvAdapter);
         //    recyclerView.getRecycledViewPool().setMaxRecycledViews(2,0);
         }
@@ -330,8 +332,9 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void update(int position) {
-        recyclerView.getAdapter().notifyItemChanged(position);
-
+        //todo find out why position isn't working
+        recyclerView.getAdapter().notifyDataSetChanged();
+     //   recyclerView.getAdapter().notifyItemChanged(position);
     }
 
     public interface TimeGoalieReportUpdater {

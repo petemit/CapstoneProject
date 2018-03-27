@@ -38,62 +38,62 @@ public class BaseApplication extends Application {
     private static TimeGoalieGoalEntryController goalEntryController;
 
     public static void createHandler(final long millis) {
-        secondlyHandler = new Handler();
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                handlerRunning = true;
-                Cursor cursor = context.getContentResolver().query
-                        (TimeGoalieContract.getRunningGoalEntriesThatHaveGoalEntryForToday(),
-                                null,
-                                null,
-                                new String[]{TimeGoalieDateUtils.
-                                        getSqlDateString(activeCalendarDate)},
-                                null);
-
-                if (cursor != null && cursor.getCount() > 0) {
-                    ArrayList<GoalEntry> goalEntries = GoalEntry.makeGoalEntryListFromCursor(cursor);
-                    for (GoalEntry goalEntry : goalEntries
-                            ) {
-
-                        if (goalEntry.isRunning()) {
-
-                            goalEntry.addSecondElapsed();
-
-                            if (BaseApplication.getGoalActivityListListener() != null) {
-                                BaseApplication.getGoalActivityListListener().notifyChanges(goalEntry);
-                            }
-
-                            new InsertNewGoalEntry(context).execute(goalEntry);
-
-                            Intent updateWidgetintent = new Intent(context,
-                                    TimeGoalieWidgetProvider.class);
-                            updateWidgetintent.setAction(
-                                    TimeGoalieWidgetProvider.ACTION_GET_GOALS_FOR_TODAY);
-                            context.sendBroadcast(updateWidgetintent);
-
-                            Log.e("alarm", goalEntry.getGoal_id() + " : "
-                                    + goalEntry.getSecondsElapsed() + "");
-
-                            BaseApplication.setLastTimeSecondUpdated(
-                                    TimeGoalieDateUtils.getCurrentTimeInMillis());
-
-                        }
-
-
-                    }//end for
-
-
-                }
-                ///end if second has elapsed.
-                else if (cursor == null || cursor.getCount() == 0) {
-                    secondlyHandler.removeCallbacks(this);
-                }
-                secondlyHandler.postDelayed(this, millis);
-                handlerRunning = false;
-            }
-        };
-        secondlyHandler.postDelayed(runnable, millis);
+//        secondlyHandler = new Handler();
+//        runnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                handlerRunning = true;
+//                Cursor cursor = context.getContentResolver().query
+//                        (TimeGoalieContract.getRunningGoalEntriesThatHaveGoalEntryForToday(),
+//                                null,
+//                                null,
+//                                new String[]{TimeGoalieDateUtils.
+//                                        getSqlDateString(activeCalendarDate)},
+//                                null);
+//
+//                if (cursor != null && cursor.getCount() > 0) {
+//                    ArrayList<GoalEntry> goalEntries = GoalEntry.makeGoalEntryListFromCursor(cursor);
+//                    for (GoalEntry goalEntry : goalEntries
+//                            ) {
+//
+//                        if (goalEntry.isRunning()) {
+//
+//                            goalEntry.addSecondElapsed();
+//
+//                            if (BaseApplication.getGoalActivityListListener() != null) {
+//                                BaseApplication.getGoalActivityListListener().notifyChanges(goalEntry);
+//                            }
+//
+//                            new InsertNewGoalEntry(context).execute(goalEntry);
+//
+//                            Intent updateWidgetintent = new Intent(context,
+//                                    TimeGoalieWidgetProvider.class);
+//                            updateWidgetintent.setAction(
+//                                    TimeGoalieWidgetProvider.ACTION_GET_GOALS_FOR_TODAY);
+//                            context.sendBroadcast(updateWidgetintent);
+//
+//                            Log.e("alarm", goalEntry.getGoal_id() + " : "
+//                                    + goalEntry.getSecondsElapsed() + "");
+//
+//                            BaseApplication.setLastTimeSecondUpdated(
+//                                    TimeGoalieDateUtils.getCurrentTimeInMillis());
+//
+//                        }
+//
+//
+//                    }//end for
+//
+//
+//                }
+//                ///end if second has elapsed.
+//                else if (cursor == null || cursor.getCount() == 0) {
+//                    secondlyHandler.removeCallbacks(this);
+//                }
+//                secondlyHandler.postDelayed(this, millis);
+//                handlerRunning = false;
+//            }
+//        };
+//        secondlyHandler.postDelayed(runnable, millis);
     }
 
     public static void destroyHandler() {
@@ -170,7 +170,9 @@ public class BaseApplication extends Application {
         super.onCreate();
 
         //Get the logic engine ready
-        goalEntryController = new TimeGoalieGoalEntryController();
+        if (goalEntryController == null) {
+            goalEntryController = new TimeGoalieGoalEntryController();
+        }
 
 
         setContext(getBaseContext());
