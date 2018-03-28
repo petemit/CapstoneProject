@@ -190,6 +190,14 @@ public class BaseApplication extends Application {
             goal.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
             goal.setIsDaily(0);
             goal.setIsWeekly(0);
+            Goal goal1 = new Goal();
+            goal1.setName("Today Only Goal2");
+            goal1.setHours(0);
+            goal1.setMinutes(1);
+            goal1.setGoalTypeId(0);
+            goal1.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
+            goal1.setIsDaily(0);
+            goal1.setIsWeekly(0);
             Goal goal2 = new Goal();
             goal2.setName("Thursday Only Goal");
             goal2.setHours(2);
@@ -239,6 +247,7 @@ public class BaseApplication extends Application {
 
 
             new InsertNewGoal(getBaseContext()).execute(goal);
+            new InsertNewGoal(getBaseContext()).execute(goal1);
             new InsertNewGoal(getBaseContext()).execute(goal2);
             new InsertNewGoal(getBaseContext()).execute(goal4);
             new InsertNewGoal(getBaseContext()).execute(goal3);

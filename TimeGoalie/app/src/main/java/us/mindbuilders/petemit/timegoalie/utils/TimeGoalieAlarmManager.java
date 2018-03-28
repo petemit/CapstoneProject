@@ -42,12 +42,6 @@ public class TimeGoalieAlarmManager {
         alarmMgr.cancel(alarmPendingIntent);
     }
 
-    public interface seekbarAnimation {
-        void stopAnimation(Goal goal);
-
-    }
-
-
     public static CountDownTimer makeCountdownTimer(final GoalRecyclerViewAdapter.GoalCounter goalCounter,
                                                     long secondsInFuture,
                                                     final long intervalInSeconds,
@@ -66,26 +60,7 @@ public class TimeGoalieAlarmManager {
                 Log.e("mindbuilders1", goal.getName() + " tick " + goal.getGoalEntry().getSecondsElapsed());
 
                 TimeGoalieUtils.setTimeTextLabel(goal, tv, null);
-                // TODO: 10/18/2017 am I really going to do this?
-                //  goalEntry.addSecondElapsed();
-                //     new InsertNewGoalEntry(tv.getContext()).execute(goalEntry);
 
-                //set Progress bar Progress
-//                if (seekbar != null && !goal.getGoalEntry().isHasFinished()) {
-//
-//                    ObjectAnimator animation = ObjectAnimator.ofInt(seekbar, "progress",
-//                            seekbar.getProgress(), (int)
-//                                    ((1 - ((double) (millisuntilfinished / 1000) / totalSeconds))
-//                                            * 100 * 100));
-//                    animation.setDuration(2000);
-//                    animation.setInterpolator(new LinearInterpolator());
-//                    goal.setSeekbarAnimation(animation);
-//
-//                    animation.start();
-//                }
-//                if (seekbar != null && goal.getGoalEntry().isHasFinished()) {
-//                    seekbar.setProgress(10000);
-//                }
                 Log.e("mindbuilders2", goal.getName() + " tick "
                         + goal.getGoalEntry().getSecondsElapsed());
             }
@@ -150,12 +125,9 @@ public class TimeGoalieAlarmManager {
                 + ":" + String.format(Locale.US, "%02d", seconds));
     }
 
-    public static void startTimer(GoalRecyclerViewAdapter.GoalCounter goalCounter,
-                                  TextView time_tv,
-                                  long totalSeconds,
+    public static void startTimer(long totalSeconds,
                                   Goal goal,
-                                  Context context,
-                                  SeekBar seekbar) {
+                                  Context context) {
         if (goal.getGoalEntry().getDate() == null) {
             goal.getGoalEntry().setDate(TimeGoalieDateUtils.getSqlDateString());
         }
@@ -174,45 +146,8 @@ public class TimeGoalieAlarmManager {
         //  TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context,goal);
 
 
-            long hours = remainingSeconds / (60 * 60);
-            long minutes = (remainingSeconds - (hours * 60 * 60)) / 60;
-            long seconds = (remainingSeconds - (hours * 60 * 60) - (minutes * 60));
-
-            Log.e("Mindbuilders", "hours: " + hours);
-            Log.e("Mindbuilders", "minutes: " + minutes);
-            Log.e("Mindbuilders", "seconds: " + seconds);
 
 
-            long targetTime = TimeGoalieDateUtils.createTargetCalendarTime(
-                    (int) hours,
-                    (int) minutes,
-                    (int) seconds);
-
-
-            //sound the alarm!!
-//            if (timeGoalieAlarmObject.getTargetTime() == 0) {
-//                timeGoalieAlarmObject.setTargetTime(targetTime);
-//            }
-
-            if (goal.getGoalEntry().getTargetTime() == 0) {
-                goal.getGoalEntry().setTargetTime(targetTime);
-            }
-
-
-
-            if (BaseApplication.getSecondlyHandler() != null) {
-                BaseApplication.destroyHandler();
-            }
-            BaseApplication.createHandler(TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY);
-
-            TimeGoalieAlarmManager.setTimeGoalAlarm(
-                    TimeGoalieDateUtils.createTargetSecondlyCalendarTime((int)
-                            TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY / 1000),
-                    context, null,
-                    TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(
-                            context,
-                            TimeGoalieAlarmReceiver.
-                                    createEverySecondDbUpdateAlarmIntent(context)));
 
 
             //Sets up the running out of time alert

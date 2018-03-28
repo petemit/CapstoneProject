@@ -34,6 +34,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
     public static final String GOAL_KILLED =
             "us.mindbuilders.petemit.timegoalie.GOAL_KILL_SAFETY";
     public static final long SECONDLY_FREQUENCY = 1000;
+    public static final long ONE_MINUTE_WARNING_MILLIS = 60000;
     public static final long KILLGOAL_TIMER = 36000;
     public static final int SECONDLY_ID = 10101;
     public static final int KILLGOAL = 1010101;
@@ -217,6 +218,9 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                                         //todo not a bad idea... need to make this work
                                         //goalEntry.setSecondsElapsed((int)goal.getGoalSeconds()+goalEntry.getGoalAugment());
                                         goalEntry.setRunning(false);
+                                        if (BaseApplication.getGoalEntryController() != null) {
+                                            BaseApplication.getGoalEntryController().stopGoal(goalEntry, goal);
+                                        }
 
                                     }
                                 } else if (goal.getGoalTypeId() == 1) {
@@ -227,6 +231,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                                         //todo not a bad idea... need to make this work
                                        // goalEntry.setSecondsElapsed((int)goal.getGoalSeconds()+goalEntry.getGoalAugment());
                                         goalEntry.setRunning(false);
+                                        BaseApplication.getGoalEntryController().stopGoal(goalEntry, goal);
                                     }
                                 }
                             }
@@ -244,17 +249,16 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
 //                                    , context, null,
 //                                    killGoalPi);
 
-           //                 break;
+                            break;
 
 
 
                         case GOAL_ONE_MINUTE_WARNING:
                             TimeGoalieNotifications.createNotification(context, intent,
-                                    context.getString(R.string.hurry_up) +
+                                    context.getString(R.string.hurry_up) +" "+
                                             context.getString(R.string.one_minute_warning));
                             id = intent.getIntExtra(context.getString(R.string.goal_id_key), -1);
                             if (id != -1) {
-                                //  BaseApplication.getTimeGoalieAlarmObjectById(id).setRunning(false);
                                 if (goalEntry.getDate() != null) {
                                     //todo figure out what this did
 //                                    if (BaseApplication.getTimeGoalieAlarmObjectById(id,

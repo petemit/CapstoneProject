@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.graphics.drawable.RotateDrawable;
 import android.support.transition.AutoTransition;
 import android.support.transition.TransitionManager;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -23,7 +22,6 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
@@ -38,7 +36,6 @@ import android.widget.ToggleButton;
 import java.util.ArrayList;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntryGoalCounter;
 
 import us.mindbuilders.petemit.timegoalie.data.DeleteGoal;
@@ -336,14 +333,20 @@ public class GoalRecyclerViewAdapter extends
     }//end BindViewHolder
 
 
-    public void turnOnGoal(Goal goal, Context context, TextView time_tv, long newtime,
-                           SeekBar seekbar, ObjectAnimator spinningBallAnim) {
-        TimeGoalieAlarmManager.startTimer(goalCounter, time_tv, newtime, goal,
-                context, seekbar);
+    public void turnOnGoal(Goal goal, Context context,
+                            ObjectAnimator spinningBallAnim) {
+
+        long newtime = goal.getGoalSeconds();
+        if (goal.getGoalEntry() != null) {
+            newtime = goal.getGoalSeconds() - TimeGoalieDateUtils.calculateSecondsElapsed(goal.getGoalEntry()
+                    .getStartedTime(),goal.getGoalEntry().getSecondsElapsed());
+        }
+        TimeGoalieAlarmManager.startTimer(newtime, goal,
+                context);
         spinningBallAnim.start();
         //Start the Goal!!
         BaseApplication.getGoalEntryController().startEngine(goalArrayList);
-        BaseApplication.getGoalEntryController().startGoal(goal.getGoalEntry());
+        BaseApplication.getGoalEntryController().startGoal(goal.getGoalEntry(), newtime, goal);
 
     }
 
@@ -363,7 +366,7 @@ public class GoalRecyclerViewAdapter extends
 
         //                   TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context, goal);
         //timeGoalieAlarmObject.setRunning(false);
-        BaseApplication.getGoalEntryController().stopGoal(goal.getGoalEntry());
+        BaseApplication.getGoalEntryController().stopGoal(goal.getGoalEntry(), goal);
 
         spinningBallAnim.cancel();
     }
@@ -407,7 +410,6 @@ public class GoalRecyclerViewAdapter extends
         private ObjectAnimator spinningBallAnim;
         private TextView tv_timeOutOf;
         private AppCompatCheckBox goalCheckBox;
-        private TranslateAnimation moveSoccerBallAnim;
         private ImageView soccerBallImage;
         private ToggleButton yes_no_pencil;
         private ImageButton deleteButton;
@@ -551,11 +553,8 @@ public class GoalRecyclerViewAdapter extends
                         //can't click seekbar when animation is going
                         if (startStopTimer.isChecked()) {
                             goal.getGoalEntry().setRunning(true);
-                            long newtime = goal.getGoalSeconds();
-                            if (goal.getGoalEntry() != null) {
-                                newtime = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
-                            }
-                            turnOnGoal(goal, context, time_tv, newtime, seekbar, spinningBallAnim);
+
+                            turnOnGoal(goal, context, spinningBallAnim);
                         } else {
                          //   new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
                         }
@@ -639,14 +638,10 @@ public class GoalRecyclerViewAdapter extends
                         Log.i("mindbuilders3", goal.getName() + " tick " +
                                 goal.getGoalEntry().getSecondsElapsed());
 
-                        long newtime = goal.getGoalSeconds();
-                        if (goal.getGoalEntry() != null) {
-                            newtime = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
-                        }
+
                         if (b && goal.getGoalEntry().getDate()
                                 .equals(TimeGoalieDateUtils.getSqlDateString())) {
-                            turnOnGoal(goal, context, time_tv, newtime, seekbar
-                                    , spinningBallAnim);
+                            turnOnGoal(goal, context, spinningBallAnim);
 
                         } else {
                             turnOffGoal(goal, context, spinningBallAnim);
