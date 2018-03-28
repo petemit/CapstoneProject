@@ -23,6 +23,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
@@ -53,8 +54,7 @@ import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieUtils;
  */
 
 public class GoalRecyclerViewAdapter extends
-        RecyclerView.Adapter<GoalRecyclerViewAdapter.GoalViewHolder>
-        implements BaseApplication.GoalActivityListListener {
+        RecyclerView.Adapter<GoalRecyclerViewAdapter.GoalViewHolder> {
 
     // private final List<DummyContent.DummyItem> mValues;
 
@@ -76,20 +76,6 @@ public class GoalRecyclerViewAdapter extends
         this.onClickListener = onClickListener;
         this.goalCounter = goalCounter;
         this.context = context;
-        BaseApplication.setGoalActivityListListener(this);
-    }
-
-    @Override
-    public void notifyChanges(GoalEntry goalEntry) {
-        if (goalArrayList != null) {
-            for (int i = 0; i < goalArrayList.size(); i++) {
-                if (goalEntry != null) {
-                    if (goalEntry.getGoal_id() == goalArrayList.get(i).getGoalId()) {
-                        goalArrayList.get(i).setGoalEntry(goalEntry);
-                    }
-                }
-            }
-        }
     }
 
     @Override
@@ -172,8 +158,32 @@ public class GoalRecyclerViewAdapter extends
                 if (goal.getGoalTypeId() == 0) {
 
                     if (holder.seekbar != null) {
-                        holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) /
-                                goal.getGoalSeconds())) * 100 * 100));
+//                        holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) /
+//                                goal.getGoalSeconds())) * 100 * 100));
+
+
+                        if (holder.seekbar != null && !goal.getGoalEntry().isHasFinished()) {
+//                            if (goal.getSeekbarAnimation() != null) {
+//                                goal.getSeekbarAnimation().cancel();
+//                            }
+
+                            ObjectAnimator animation = ObjectAnimator.ofInt(holder.seekbar, "progress",
+                                    holder.seekbar.getProgress(), (int)
+                                            ((1 - ((double) (remainingSeconds) /  goal.getGoalSeconds()))
+                                                    * 100 * 100));
+                            animation.setDuration(1000);
+                            animation.setAutoCancel(true);
+                            animation.setInterpolator(new LinearInterpolator());
+
+                            goal.setSeekbarAnimation(animation);
+
+                            animation.start();
+                        }
+                        if (holder.seekbar != null && goal.getGoalEntry().isHasFinished()) {
+                            holder.seekbar.setProgress(10000);
+                        }
+
+
                     }
 
                 } else {
@@ -182,8 +192,22 @@ public class GoalRecyclerViewAdapter extends
 
                         //set Progress bar Progress
                         if (holder.seekbar != null) {
-                            holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) /
-                                    goal.getGoalSeconds())) * 100 * 100));
+//                            holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) /
+//                                    goal.getGoalSeconds())) * 100 * 100));
+
+
+                                ObjectAnimator animation = ObjectAnimator.ofInt(holder.seekbar, "progress",
+                                        holder.seekbar.getProgress(), (int)
+                                                ((1 - ((double) (remainingSeconds) /  goal.getGoalSeconds()))
+                                                        * 100 * 100));
+                                animation.setDuration(1000);
+                                animation.setAutoCancel(true);
+                                animation.setInterpolator(new LinearInterpolator());
+
+                                goal.setSeekbarAnimation(animation);
+
+                                animation.start();
+
                         }
                     }
                 }
@@ -480,6 +504,7 @@ public class GoalRecyclerViewAdapter extends
                 // holder.seekbar.setOnTouchListener(null);
 
                 seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    
 
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
@@ -489,9 +514,6 @@ public class GoalRecyclerViewAdapter extends
                                 float percentage = (float) i / 10000;
                                 int secondsElapsed = (int) (goal.getGoalSeconds() * percentage);
                                 goal.getGoalEntry().setSecondsElapsed(secondsElapsed);
-                                Log.i("mindbuilders", secondsElapsed + " seconds elapsed " +
-                                        "calculation.  Out of " + goal.getGoalSeconds() + " perc " +
-                                        percentage + " progress int " + i);
                                 TimeGoalieUtils.setTimeTextLabel(goal, time_tv, tv_timeOutOf);
                             }
                         }
@@ -507,8 +529,8 @@ public class GoalRecyclerViewAdapter extends
                             if (goal.getSeekbarAnimation() != null) {
                                 goal.getSeekbarAnimation().setDuration(1);
                                 goal.getSeekbarAnimation().cancel();
+
                             }
-                            goal.getGoalEntry().setRunning(false);
                             goal.getGoalEntry().setHasFinished(false);
                             if (goal.getGoalTypeId() == 1) { //if this is a time limit goal
                                 goal.getGoalEntry().setHasSucceeded(true);

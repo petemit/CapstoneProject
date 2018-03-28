@@ -29,7 +29,8 @@ public class TimeGoalieUtils {
 //                        goal.getMinutes(),
 //                        goal.getGoalEntry().getGoalAugment())), true);
 //            }
-            onBindElapsedSeconds = (goal.getGoalEntry().getSecondsElapsed());
+            onBindElapsedSeconds =  TimeGoalieDateUtils.calculateSecondsElapsed(goal.getGoalEntry().getStartedTime() ,
+                    goal.getGoalEntry().getSecondsElapsed());
         }
         long remainingSeconds = (goal.getGoalSeconds() -
                 onBindElapsedSeconds);

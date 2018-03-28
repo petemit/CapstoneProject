@@ -71,21 +71,21 @@ public class TimeGoalieAlarmManager {
                 //     new InsertNewGoalEntry(tv.getContext()).execute(goalEntry);
 
                 //set Progress bar Progress
-                if (seekbar != null && !goal.getGoalEntry().isHasFinished()) {
-
-                    ObjectAnimator animation = ObjectAnimator.ofInt(seekbar, "progress",
-                            seekbar.getProgress(), (int)
-                                    ((1 - ((double) (millisuntilfinished / 1000) / totalSeconds))
-                                            * 100 * 100));
-                    animation.setDuration(2000);
-                    animation.setInterpolator(new LinearInterpolator());
-                    goal.setSeekbarAnimation(animation);
-
-                    animation.start();
-                }
-                if (seekbar != null && goal.getGoalEntry().isHasFinished()) {
-                    seekbar.setProgress(10000);
-                }
+//                if (seekbar != null && !goal.getGoalEntry().isHasFinished()) {
+//
+//                    ObjectAnimator animation = ObjectAnimator.ofInt(seekbar, "progress",
+//                            seekbar.getProgress(), (int)
+//                                    ((1 - ((double) (millisuntilfinished / 1000) / totalSeconds))
+//                                            * 100 * 100));
+//                    animation.setDuration(2000);
+//                    animation.setInterpolator(new LinearInterpolator());
+//                    goal.setSeekbarAnimation(animation);
+//
+//                    animation.start();
+//                }
+//                if (seekbar != null && goal.getGoalEntry().isHasFinished()) {
+//                    seekbar.setProgress(10000);
+//                }
                 Log.e("mindbuilders2", goal.getName() + " tick "
                         + goal.getGoalEntry().getSecondsElapsed());
             }
