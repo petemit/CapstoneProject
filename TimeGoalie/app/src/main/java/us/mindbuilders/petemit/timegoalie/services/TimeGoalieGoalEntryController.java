@@ -1,6 +1,7 @@
 package us.mindbuilders.petemit.timegoalie.services;
 
 import android.os.Handler;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -33,6 +34,7 @@ public class TimeGoalieGoalEntryController {
             }
             else {
                 engine.removeCallbacks(this);
+                isEngineRunning = false;
             }
         }
     };
@@ -45,7 +47,9 @@ public class TimeGoalieGoalEntryController {
 
     public void startEngine(ArrayList<Goal> goalList) {
         goals = goalList;
-        engine.post(runnable);
+        if (!isEngineRunning) {
+            engine.post(runnable);
+        }
     }
 
     synchronized public boolean updateGoalEntries (ArrayList<Goal> goals) {
@@ -65,13 +69,15 @@ public class TimeGoalieGoalEntryController {
 
             //First off.. is Goal Running?
             if (entry.isRunning()) {
+                Log.e("controller", String.valueOf(TimeGoalieDateUtils.getCurrentTimeInMillis()));
                 keepEngineRunning = true;
+
                 //Increment Goal
                 addSecondToGoal(entry, i);
+                break;
 
             }
         }
-        isEngineRunning = false;
         return keepEngineRunning;
     }
 
@@ -90,9 +96,6 @@ public class TimeGoalieGoalEntryController {
     public void startGoal(GoalEntry goalEntry, long newtime, Goal goal) {
         goalEntry.setRunning(true);
         goalEntry.setStartedTime(TimeGoalieDateUtils.getCurrentTimeInMillis());
-        if (!isEngineRunning) {
-            startEngine(goals);
-        }
 
 
 
@@ -179,7 +182,49 @@ public class TimeGoalieGoalEntryController {
                             BaseApplication.getContext(), goal.getName(), (int) goalEntry.getGoal_id()), (int) goalEntry.getGoal_id()
             ));
         }
-        //todo  make the GOAL STOP!!!!!
+        //todo make the GOAL STOP!!!!!
+
+
+
+    }
+
+    public void stopGoalById(int goalId) {
+        Goal goal = null;
+        GoalEntry goalEntry;
+        if (goals != null) {
+            for (Goal thisgoal: goals
+                 ) {
+                if (thisgoal.getGoalId()==goalId) {
+                    goal = thisgoal;
+                }
+            }
+        }
+        if (goal != null) {
+            goalEntry = goal.getGoalEntry();
+        }
+        else {
+        return;
+        }
+        goalEntry.setSecondsElapsed(TimeGoalieDateUtils.calculateSecondsElapsed(goalEntry.getStartedTime(),goalEntry.getSecondsElapsed()));
+        goalEntry.setStartedTime(0);
+        goalEntry.setRunning(false);
+        new InsertNewGoalEntry(BaseApplication.getContext()).execute(goalEntry);
+
+        //delete existing Finish Alarm
+        TimeGoalieAlarmManager.cancelTimeGoalAlarm(BaseApplication.getContext(),TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
+                BaseApplication.getContext(),TimeGoalieAlarmReceiver.createAlarmDoneTimeGoalieAlarmIntent(
+                        BaseApplication.getContext(), goal.getName() ,(int)goalEntry.getGoal_id()),(int)goalEntry.getGoal_id()
+        ));
+
+        if (goal.getGoalTypeId()==1) {//Time Limit Goal
+
+            //delete existing One Minute Warning Alarm
+            TimeGoalieAlarmManager.cancelTimeGoalAlarm(BaseApplication.getContext(), TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
+                    BaseApplication.getContext(), TimeGoalieAlarmReceiver.createOneMinuteWarningTimeGoalieAlarmIntent(
+                            BaseApplication.getContext(), goal.getName(), (int) goalEntry.getGoal_id()), (int) goalEntry.getGoal_id()
+            ));
+        }
+        //todo make the GOAL STOP!!!!!
 
 
 

@@ -154,15 +154,16 @@ public class GoalRecyclerViewAdapter extends
                 // if this is a more goal
                 if (goal.getGoalTypeId() == 0) {
 
-                    if (holder.seekbar != null) {
+
 //                        holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) /
 //                                goal.getGoalSeconds())) * 100 * 100));
 
 
-                        if (holder.seekbar != null && !goal.getGoalEntry().isHasFinished()) {
-//                            if (goal.getSeekbarAnimation() != null) {
-//                                goal.getSeekbarAnimation().cancel();
-//                            }
+
+                        if (holder.seekbar != null && !goal.getGoalEntry().isHasFinished() && !goal.isChangingSeekbar()){
+                            if (goal.getSeekbarAnimation() != null) {
+                                goal.getSeekbarAnimation().cancel();
+                            }
 
                             ObjectAnimator animation = ObjectAnimator.ofInt(holder.seekbar, "progress",
                                     holder.seekbar.getProgress(), (int)
@@ -181,16 +182,20 @@ public class GoalRecyclerViewAdapter extends
                         }
 
 
-                    }
+
 
                 } else {
                     if (remainingSeconds < 0) {
                     } else {
 
                         //set Progress bar Progress
-                        if (holder.seekbar != null) {
+                        if (holder.seekbar != null && !goal.isChangingSeekbar()) {
 //                            holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) /
 //                                    goal.getGoalSeconds())) * 100 * 100));
+
+                            if (goal.getSeekbarAnimation() != null) {
+                                goal.getSeekbarAnimation().cancel();
+                            }
 
 
                                 ObjectAnimator animation = ObjectAnimator.ofInt(holder.seekbar, "progress",
@@ -524,15 +529,16 @@ public class GoalRecyclerViewAdapter extends
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {
                         Goal goal = goalArrayList.get(getLayoutPosition());
+                        goal.setChangingSeekbar(true);
+                        if (goal.getSeekbarAnimation() != null) {
+                            goal.getSeekbarAnimation().cancel();
+
+                        }
                         //can't click seekbar when animation is going
                         if (goal.getGoalEntry().isRunning()) {
                             spinningBallAnim.cancel();
 
-                            if (goal.getSeekbarAnimation() != null) {
-                                goal.getSeekbarAnimation().setDuration(1);
-                                goal.getSeekbarAnimation().cancel();
 
-                            }
                             goal.getGoalEntry().setHasFinished(false);
                             if (goal.getGoalTypeId() == 1) { //if this is a time limit goal
                                 goal.getGoalEntry().setHasSucceeded(true);
@@ -550,6 +556,7 @@ public class GoalRecyclerViewAdapter extends
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
                         Goal goal = goalArrayList.get(getLayoutPosition());
+                        goal.setChangingSeekbar(false);
                         //can't click seekbar when animation is going
                         if (startStopTimer.isChecked()) {
                             goal.getGoalEntry().setRunning(true);

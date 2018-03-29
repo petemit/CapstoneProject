@@ -13,6 +13,8 @@ import android.support.v7.preference.PreferenceManager;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.io.File;
+
 import us.mindbuilders.petemit.timegoalie.GoalListActivity;
 import us.mindbuilders.petemit.timegoalie.R;
 
@@ -42,7 +44,9 @@ public class TimeGoalieNotifications {
             }
             NotificationManager notifyMgr = (NotificationManager)
                     context.getSystemService(Context.NOTIFICATION_SERVICE);
-            Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+
+            Uri soundUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.fun_charm);
+                    //RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
 
 
             NotificationCompat.Builder builder =

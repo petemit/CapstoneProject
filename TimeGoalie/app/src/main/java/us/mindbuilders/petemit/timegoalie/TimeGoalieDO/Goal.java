@@ -28,6 +28,7 @@ public class Goal {
     private GoalEntry goalEntry;
     private ArrayList<Day> goalDays;
     private ObjectAnimator seekbarAnimation;
+    private boolean changingSeekbar;
 
     public static ArrayList<Goal> createGoalListWithGoalEntriesFromCursor(Cursor cursor) {
         ArrayList<Goal> goalList = new ArrayList<Goal>();
@@ -221,5 +222,13 @@ public class Goal {
 
     public void setSeekbarAnimation(ObjectAnimator seekbarAnimation) {
         this.seekbarAnimation = seekbarAnimation;
+    }
+
+    public boolean isChangingSeekbar() {
+        return changingSeekbar;
+    }
+
+    public void setChangingSeekbar(boolean changingSeekbar) {
+        this.changingSeekbar = changingSeekbar;
     }
 }

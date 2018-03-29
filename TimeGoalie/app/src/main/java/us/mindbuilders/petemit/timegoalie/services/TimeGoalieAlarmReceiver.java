@@ -217,7 +217,6 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                                         goalEntry.setHasSucceeded(1);
                                         //todo not a bad idea... need to make this work
                                         //goalEntry.setSecondsElapsed((int)goal.getGoalSeconds()+goalEntry.getGoalAugment());
-                                        goalEntry.setRunning(false);
                                         if (BaseApplication.getGoalEntryController() != null) {
                                             BaseApplication.getGoalEntryController().stopGoal(goalEntry, goal);
                                         }
@@ -230,8 +229,9 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                                         goalEntry.setHasSucceeded(0);
                                         //todo not a bad idea... need to make this work
                                        // goalEntry.setSecondsElapsed((int)goal.getGoalSeconds()+goalEntry.getGoalAugment());
-                                        goalEntry.setRunning(false);
-                                        BaseApplication.getGoalEntryController().stopGoal(goalEntry, goal);
+                                        if (BaseApplication.getGoalEntryController() != null) {
+                                            BaseApplication.getGoalEntryController().stopGoal(goalEntry, goal);
+                                        }
                                     }
                                 }
                             }
