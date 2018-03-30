@@ -1,0 +1,5 @@
+//todo figure out notifications so they can resume goals or just dismiss
+//todo Make sure state can occur even if the app closes
+//todo Ensure goal counter is still working --this should be easier
+//todo remove all goal counter logic from the recyclerview, put it in the activity to just count what's there
+//todo

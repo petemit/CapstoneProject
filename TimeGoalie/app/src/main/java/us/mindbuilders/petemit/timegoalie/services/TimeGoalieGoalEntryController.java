@@ -95,6 +95,10 @@ public class TimeGoalieGoalEntryController {
     }
 
     public void startGoal(GoalEntry goalEntry, long newtime, Goal goal) {
+        if (goalEntry.isHasFinished()) {
+            resumeGoalAfterFinished(goalEntry, goal);
+            return;
+        }
         goalEntry.setRunning(true);
         goalEntry.setStartedTime(TimeGoalieDateUtils.getCurrentTimeInMillis());
 
@@ -176,10 +180,7 @@ public class TimeGoalieGoalEntryController {
             deleteExistingOneMinuteAlarm(goal);
         }
 
-        //todo just broad update. :(
-        if (viewCallback != null) {
-            viewCallback.update(0);
-        }
+
 
     }
 
@@ -214,6 +215,11 @@ public class TimeGoalieGoalEntryController {
             goalEntry.setHasFinished(true);
             goalEntry.setHasSucceeded(true);
             stopGoal(goalEntry, goal);
+            //todo just broad update. :(
+
+            if (viewCallback != null) {
+                viewCallback.update(0);
+            }
         }
     }
 
@@ -230,6 +236,11 @@ public class TimeGoalieGoalEntryController {
             }
             goalEntry.setHasFinished(true);
             stopGoal(goalEntry, goal);
+
+            //todo just broad update. :(
+            if (viewCallback != null) {
+                viewCallback.update(0);
+            }
         }
 
     }
@@ -249,8 +260,15 @@ public class TimeGoalieGoalEntryController {
 
     }
 
-    public void resumeGoalAfterFinished() {
+    public void resumeGoalAfterFinished(GoalEntry goalEntry, Goal goal) {
 
+        goalEntry.setRunning(true);
+        goalEntry.setStartedTime(TimeGoalieDateUtils.getCurrentTimeInMillis());
+        new InsertNewGoalEntry(BaseApplication.getContext()).execute(goalEntry);
+
+        if (!isEngineRunning) {
+            engine.post(runnable);
+        }
     }
 
     public void resumeGoalAfterFinishedWithElapsedTime() {
