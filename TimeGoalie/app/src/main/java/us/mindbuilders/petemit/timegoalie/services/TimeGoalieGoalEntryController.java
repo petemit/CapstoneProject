@@ -21,6 +21,7 @@ import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 
 public class TimeGoalieGoalEntryController {
 
+    private static final int SECONDS_BUFFER = 1; //This makes it end neatly on the time target.
     private GoalListViewCallback viewCallback;
     private Handler engine;
     private ArrayList<Goal> goals;
@@ -168,65 +169,109 @@ public class TimeGoalieGoalEntryController {
         goalEntry.setRunning(false);
         new InsertNewGoalEntry(BaseApplication.getContext()).execute(goalEntry);
 
-        //delete existing Finish Alarm
-        TimeGoalieAlarmManager.cancelTimeGoalAlarm(BaseApplication.getContext(),TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
-                BaseApplication.getContext(),TimeGoalieAlarmReceiver.createAlarmDoneTimeGoalieAlarmIntent(
-                        BaseApplication.getContext(), goal.getName() ,(int)goalEntry.getGoal_id()),(int)goalEntry.getGoal_id()
-        ));
+
+        deleteExistingFinishAlarm(goal);
 
         if (goal.getGoalTypeId()==1) {//Time Limit Goal
-
-            //delete existing One Minute Warning Alarm
-            TimeGoalieAlarmManager.cancelTimeGoalAlarm(BaseApplication.getContext(), TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
-                    BaseApplication.getContext(), TimeGoalieAlarmReceiver.createOneMinuteWarningTimeGoalieAlarmIntent(
-                            BaseApplication.getContext(), goal.getName(), (int) goalEntry.getGoal_id()), (int) goalEntry.getGoal_id()
-            ));
+            deleteExistingOneMinuteAlarm(goal);
         }
-        //todo make the GOAL STOP!!!!!
 
-
+        //todo just broad update. :(
+        if (viewCallback != null) {
+            viewCallback.update(0);
+        }
 
     }
 
-    public void stopGoalById(int goalId) {
+    private Goal findGoalInList(int goalId) {
         Goal goal = null;
-        GoalEntry goalEntry;
+
         if (goals != null) {
             for (Goal thisgoal: goals
-                 ) {
+                    ) {
                 if (thisgoal.getGoalId()==goalId) {
                     goal = thisgoal;
                 }
             }
         }
+        return goal;
+    }
+
+    private void fetchGoalList() {
+        //not implemented
+    }
+
+    public void succeedGoalById(int goalId) {
+        Goal goal = findGoalInList(goalId);
+        if (null != goal) {
+            GoalEntry goalEntry;
+            if (goal != null) {
+                goalEntry = goal.getGoalEntry();
+            }
+            else {
+                return;
+            }
+            goalEntry.setHasFinished(true);
+            goalEntry.setHasSucceeded(true);
+            stopGoal(goalEntry, goal);
+        }
+    }
+
+    public void finishGoalById(int goalId) {
+
+        Goal goal = findGoalInList(goalId);
+        if (null != goal) {
+            GoalEntry goalEntry;
+            if (goal != null) {
+                goalEntry = goal.getGoalEntry();
+            }
+            else {
+                return;
+            }
+            goalEntry.setHasFinished(true);
+            stopGoal(goalEntry, goal);
+        }
+
+    }
+
+    public void stopGoalById(int goalId) {
+
+        Goal goal = findGoalInList(goalId);
+        GoalEntry goalEntry;
         if (goal != null) {
             goalEntry = goal.getGoalEntry();
         }
         else {
-        return;
+            return;
         }
-        goalEntry.setSecondsElapsed(TimeGoalieDateUtils.calculateSecondsElapsed(goalEntry.getStartedTime(),goalEntry.getSecondsElapsed()));
-        goalEntry.setStartedTime(0);
-        goalEntry.setRunning(false);
-        new InsertNewGoalEntry(BaseApplication.getContext()).execute(goalEntry);
 
+        stopGoal(goalEntry, goal);
+
+    }
+
+    public void resumeGoalAfterFinished() {
+
+    }
+
+    public void resumeGoalAfterFinishedWithElapsedTime() {
+
+    }
+
+
+    public void deleteExistingFinishAlarm(Goal goal) {
         //delete existing Finish Alarm
         TimeGoalieAlarmManager.cancelTimeGoalAlarm(BaseApplication.getContext(),TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
                 BaseApplication.getContext(),TimeGoalieAlarmReceiver.createAlarmDoneTimeGoalieAlarmIntent(
-                        BaseApplication.getContext(), goal.getName() ,(int)goalEntry.getGoal_id()),(int)goalEntry.getGoal_id()
+                        BaseApplication.getContext(), goal.getName() ,(int)goal.getGoalId()),(int)goal.getGoalId()
         ));
-
-        if (goal.getGoalTypeId()==1) {//Time Limit Goal
-
-            //delete existing One Minute Warning Alarm
-            TimeGoalieAlarmManager.cancelTimeGoalAlarm(BaseApplication.getContext(), TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
-                    BaseApplication.getContext(), TimeGoalieAlarmReceiver.createOneMinuteWarningTimeGoalieAlarmIntent(
-                            BaseApplication.getContext(), goal.getName(), (int) goalEntry.getGoal_id()), (int) goalEntry.getGoal_id()
-            ));
-        }
-        //todo make the GOAL STOP!!!!!
-
-
-
     }
+
+    public void deleteExistingOneMinuteAlarm(Goal goal) {
+        //delete existing One Minute Warning Alarm
+        TimeGoalieAlarmManager.cancelTimeGoalAlarm(BaseApplication.getContext(), TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
+                BaseApplication.getContext(), TimeGoalieAlarmReceiver.createOneMinuteWarningTimeGoalieAlarmIntent(
+                        BaseApplication.getContext(), goal.getName(),(int)goal.getGoalId()),(int)goal.getGoalId()
+        ));
+    }
+
 }

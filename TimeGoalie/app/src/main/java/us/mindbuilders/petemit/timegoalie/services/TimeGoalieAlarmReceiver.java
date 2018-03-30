@@ -202,39 +202,29 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
 
                 if (goal != null && goalEntry != null) {
                     switch (action) {
+                        //Goal Killed todo can be removed
                         case GOAL_KILLED:
                             goalEntry.setRunning(false);
                             break;
                         case GOAL_FINISHED:
-
-
-                            goalEntry.setHasFinished(true);
-                            if (goalEntry.isHasFinished()) {
                                 if (goal.getGoalTypeId() == 0) { //goal to encourage
                                     TimeGoalieNotifications.createNotification(context, intent,
                                             context.getString(R.string.done_with_goal));
                                     if (goalEntry != null) {
-                                        goalEntry.setHasSucceeded(1);
-                                        //todo not a bad idea... need to make this work
-                                        //goalEntry.setSecondsElapsed((int)goal.getGoalSeconds()+goalEntry.getGoalAugment());
                                         if (BaseApplication.getGoalEntryController() != null) {
-                                            BaseApplication.getGoalEntryController().stopGoal(goalEntry, goal);
+                                            BaseApplication.getGoalEntryController().succeedGoalById(((int)goal.getGoalId()));
                                         }
-
                                     }
                                 } else if (goal.getGoalTypeId() == 1) {
                                     TimeGoalieNotifications.createNotification(context, intent,
                                             context.getString(R.string.ran_out_of_time));
                                     if (goalEntry != null) {
-                                        goalEntry.setHasSucceeded(0);
-                                        //todo not a bad idea... need to make this work
-                                       // goalEntry.setSecondsElapsed((int)goal.getGoalSeconds()+goalEntry.getGoalAugment());
                                         if (BaseApplication.getGoalEntryController() != null) {
-                                            BaseApplication.getGoalEntryController().stopGoal(goalEntry, goal);
+                                            BaseApplication.getGoalEntryController().finishGoalById((int)goal.getGoalId());
                                         }
                                     }
                                 }
-                            }
+
 
                             //TODO do I still need to do a kill goal?  I think maybe it's okay to just end it
 //                            Intent killGoalIntent = createKillGoalTimeGoalieAlarmIntent(context,

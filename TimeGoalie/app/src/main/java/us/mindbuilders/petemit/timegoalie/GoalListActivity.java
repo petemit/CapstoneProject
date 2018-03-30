@@ -4,6 +4,8 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -331,9 +333,22 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
-    public void update(int position) {
+    public void update(final int position) {
         //todo find out why position isn't working
-        recyclerView.getAdapter().notifyDataSetChanged();
+        if (!recyclerView.isComputingLayout()) {
+            recyclerView.getAdapter().notifyDataSetChanged();
+        }
+        else {
+            Handler handler = new Handler();
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    SystemClock.sleep(200);
+                    update(position);
+                }
+            };
+            handler.post(runnable);
+        }
      //   recyclerView.getAdapter().notifyItemChanged(position);
     }
 

@@ -147,18 +147,20 @@ public class GoalRecyclerViewAdapter extends
             //if statement checks to see if this is a time goal by the existence of a start/stop button
             if (holder.startStopTimer != null) {
 
+
                 long remainingSeconds = TimeGoalieUtils.getRemainingSeconds(goal);
+
+
+                // Reset start stop button to current state and stop the spinning ball
+                if (!goal.getGoalEntry().isRunning() && holder.startStopTimer.isChecked()) {
+                    holder.startStopTimer.setChecked(false);
+                    holder.spinningBallAnim.cancel();
+                }
 
                 //Set Time Text labels:
                 TimeGoalieUtils.setTimeTextLabel(goal, holder.time_tv, holder.tv_timeOutOf);
                 // if this is a more goal
                 if (goal.getGoalTypeId() == 0) {
-
-
-//                        holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) /
-//                                goal.getGoalSeconds())) * 100 * 100));
-
-
 
                         if (holder.seekbar != null && !goal.getGoalEntry().isHasFinished() && !goal.isChangingSeekbar()){
                             if (goal.getSeekbarAnimation() != null) {
@@ -180,7 +182,6 @@ public class GoalRecyclerViewAdapter extends
                         if (holder.seekbar != null && goal.getGoalEntry().isHasFinished()) {
                             holder.seekbar.setProgress(10000);
                         }
-
 
 
 
