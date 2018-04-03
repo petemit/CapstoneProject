@@ -15,6 +15,11 @@
         android:supportsRtl="true"
         android:theme="@style/TimeGoalTheme">
         <activity
+            android:name=".services.NotificationActivity"
+            android:taskAffinity=""
+            android:excludeFromRecents="true">
+        </activity>
+        <activity
             android:name=".GoalListActivity"
             android:label="@string/app_name"
             android:theme="@style/TimeGoalTheme.NoActionBar">

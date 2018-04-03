@@ -150,11 +150,18 @@ public class GoalRecyclerViewAdapter extends
 
                 long remainingSeconds = TimeGoalieUtils.getRemainingSeconds(goal);
 
-
                 // Reset start stop button to current state and stop the spinning ball
-                if (!goal.getGoalEntry().isRunning() && holder.startStopTimer.isChecked()) {
-                    holder.startStopTimer.setChecked(false);
+                if (!goal.getGoalEntry().isRunning()) {
                     holder.spinningBallAnim.cancel();
+                    if (holder.startStopTimer.isChecked()) {
+                        holder.startStopTimer.setChecked(false);
+                    }
+                }
+
+                // Start the spinning ball and activate the start button if the goal is running
+                if (goal.getGoalEntry().isRunning() && !holder.startStopTimer.isChecked()) {
+                    holder.startStopTimer.setChecked(true);
+                    holder.spinningBallAnim.start();
                 }
 
                 //Set Time Text labels:
@@ -560,7 +567,7 @@ public class GoalRecyclerViewAdapter extends
                         goal.setChangingSeekbar(false);
                         //can't click seekbar when animation is going
                         if (startStopTimer.isChecked()) {
-                            goal.getGoalEntry().setRunning(true);
+
 
                             turnOnGoal(goal, context, spinningBallAnim);
                         } else {

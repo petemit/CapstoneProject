@@ -192,6 +192,9 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                                 goalEntry.setHasSucceeded(goalEntryCursor.getInt(goalEntryCursor.getColumnIndex(
                                         TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_SUCCEEDED
                                 )));
+                                goalEntry.setStartedTime(goalEntryCursor.getLong(goalEntryCursor.getColumnIndex(
+                                        TimeGoalieContract.GoalEntries.GOALENTRIES_COLUMN_STARTEDTIME
+                                )));
 
                             }
                         }
@@ -204,7 +207,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                     switch (action) {
                         //Goal Killed todo can be removed
                         case GOAL_KILLED:
-                            goalEntry.setRunning(false);
+                        //    goalEntry.setRunning(false);
                             break;
                         case GOAL_FINISHED:
                                 if (goal.getGoalTypeId() == 0) { //goal to encourage
@@ -244,7 +247,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
 
 
                         case GOAL_ONE_MINUTE_WARNING:
-                            TimeGoalieNotifications.createNotification(context, intent,
+                            TimeGoalieNotifications.createOneMinuteNotification(context, intent,
                                     context.getString(R.string.hurry_up) +" "+
                                             context.getString(R.string.one_minute_warning));
                             id = intent.getIntExtra(context.getString(R.string.goal_id_key), -1);
@@ -265,7 +268,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                 if (goalEntry != null)
 
                 {
-                    new InsertNewGoalEntry(context).execute(goalEntry);
+              //      new InsertNewGoalEntry(context).execute(goalEntry);
 //                } else { //if a secondly goal
 //
 //                    Intent updateWidgetintent = new Intent(context,

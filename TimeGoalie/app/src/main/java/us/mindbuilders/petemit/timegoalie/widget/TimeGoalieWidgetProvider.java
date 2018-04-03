@@ -154,7 +154,7 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
                         goalEntry.setHasFinished(!goalEntry.isHasFinished());
                         goalEntry.setHasSucceeded(!goalEntry.getHasSucceeded());
                     } else {
-                        goalEntry.setRunning(!goalEntry.isRunning());
+                    //   goalEntry.setRunning(!goalEntry.isRunning());
 
                         BaseApplication.setLastTimeSecondUpdated(0);
 

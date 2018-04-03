@@ -282,6 +282,19 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         tv_successfulGoalCount.setText(String.valueOf(successfulGoalCount));
         //creates arraylist of goals
         goalArrayList = (Goal.createGoalListWithGoalEntriesFromCursor(data));
+        boolean startEngine = false;
+        for (int i = 0; i < goalArrayList.size(); i++) {
+            if (goalArrayList.get(i).getGoalEntry() != null) {
+                if (goalArrayList.get(i).getGoalEntry().isRunning()){
+                    startEngine = true;
+                    break;
+                }
+            }
+        }
+        if (startEngine) {
+            BaseApplication.getGoalEntryController().setGoalListViewCallback(this);
+            BaseApplication.getGoalEntryController().startEngine(goalArrayList);
+        }
         rvAdapter.swapCursor(goalArrayList, isToday);
         rvAdapter.notifyDataSetChanged();
         if (goalArrayList.size() > 0) {

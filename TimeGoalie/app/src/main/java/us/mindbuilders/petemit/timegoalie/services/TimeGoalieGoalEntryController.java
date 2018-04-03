@@ -99,10 +99,10 @@ public class TimeGoalieGoalEntryController {
             resumeGoalAfterFinished(goalEntry, goal);
             return;
         }
-        goalEntry.setRunning(true);
-        goalEntry.setStartedTime(TimeGoalieDateUtils.getCurrentTimeInMillis());
-
-
+        if (!goalEntry.isRunning()) {
+            goalEntry.setRunning(true);
+            goalEntry.setStartedTime(TimeGoalieDateUtils.getCurrentTimeInMillis());
+        }
 
         //Create the target time:
 
@@ -263,6 +263,7 @@ public class TimeGoalieGoalEntryController {
     public void resumeGoalAfterFinished(GoalEntry goalEntry, Goal goal) {
 
         goalEntry.setRunning(true);
+        goalEntry.setSecondsElapsed(TimeGoalieDateUtils.calculateSecondsElapsed(goalEntry.getStartedTime(),goalEntry.getSecondsElapsed()));
         goalEntry.setStartedTime(TimeGoalieDateUtils.getCurrentTimeInMillis());
         new InsertNewGoalEntry(BaseApplication.getContext()).execute(goalEntry);
 
