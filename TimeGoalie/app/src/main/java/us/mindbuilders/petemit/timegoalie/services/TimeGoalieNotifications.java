@@ -21,6 +21,8 @@ import us.mindbuilders.petemit.timegoalie.R;
 
 public class TimeGoalieNotifications {
     public static final int NOTIFICATIONID = 50000;
+    public static final int RESUME_ID = 1;
+    public static final int STOP_ID = 2;
     public static final int ONE_MINUTE_NOTIFICATIONID = 4000;
     private static final int CANCELLATION_TIMEOUT = 2000;
     private static boolean isSilent;
@@ -54,6 +56,7 @@ public class TimeGoalieNotifications {
             }
 
             int notification_id = NOTIFICATIONID + goal_id;
+            int resume_id = Integer.valueOf("" + RESUME_ID + NOTIFICATIONID);
 
             NotificationCompat.Builder builder =
                     new NotificationCompat.Builder(context, null)
@@ -62,7 +65,7 @@ public class TimeGoalieNotifications {
                             .setTimeoutAfter(CANCELLATION_TIMEOUT)
                             .setAutoCancel(true)
                             .addAction(R.drawable.ic_goalie_with_ball_grey, "Dismiss", NotificationActivity.getDismissIntent(notification_id,context))
-                            .addAction(R.drawable.ic_goalie_with_ball_grey, "Resume Goal",null)
+                            .addAction(R.drawable.ic_goalie_with_ball_grey, "Resume Goal",NotificationActivity.getResumeIntent(resume_id,context,goal_id))
                             .setContentText(injectedMessage);
 
             setSoundForBuilder(builder);
@@ -84,6 +87,7 @@ public class TimeGoalieNotifications {
             }
 
             int notification_id = ONE_MINUTE_NOTIFICATIONID + goal_id;
+            int stop_id = Integer.valueOf("" + STOP_ID + ONE_MINUTE_NOTIFICATIONID);
 
             NotificationCompat.Builder builder =
                     new NotificationCompat.Builder(context, null)
@@ -91,7 +95,7 @@ public class TimeGoalieNotifications {
                             .setContentTitle(message)
                             .setTimeoutAfter(CANCELLATION_TIMEOUT)
                             .setAutoCancel(true)
-                            .addAction(R.drawable.ic_goalie_with_ball_grey, "Stop Timer", null)
+                            .addAction(R.drawable.ic_goalie_with_ball_grey, "Stop Timer", NotificationActivity.getStopIntent(stop_id,context,goal_id))
                             .addAction(R.drawable.ic_goalie_with_ball_grey, "Keep Timer Going", NotificationActivity.getDismissIntent(notification_id,context))
                             .setContentText(injectedMessage);
 

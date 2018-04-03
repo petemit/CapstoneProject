@@ -272,8 +272,15 @@ public class TimeGoalieGoalEntryController {
         }
     }
 
-    public void resumeGoalAfterFinishedWithElapsedTime() {
+    public void resumeGoalAfterFinishedWithElapsedTime(int goalId) {
+        Goal goal = findGoalInList(goalId);
+        goal.getGoalEntry().setRunning(true);
+        goal.getGoalEntry().setSecondsElapsed(TimeGoalieDateUtils.calculateSecondsElapsed(TimeGoalieDateUtils.getCurrentTimeInMillis()-goal.getGoalEntry().getTargetTime(), goal.getGoalEntry().getSecondsElapsed()));
+        new InsertNewGoalEntry(BaseApplication.getContext()).execute(goal.getGoalEntry());
 
+        if (!isEngineRunning) {
+            engine.post(runnable);
+        }
     }
 
 
