@@ -1,9 +1,11 @@
 package us.mindbuilders.petemit.timegoalie.services;
 
+import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import us.mindbuilders.petemit.timegoalie.BaseApplication;
 import us.mindbuilders.petemit.timegoalie.GoalListViewCallback;
@@ -26,6 +28,7 @@ public class TimeGoalieGoalEntryController {
     private Handler engine;
     private ArrayList<Goal> goals;
     private boolean isEngineRunning = false;
+    private RunQueue queue = new RunQueue();
     Runnable runnable =  new Runnable() {
         @Override
         public void run() {
@@ -42,6 +45,7 @@ public class TimeGoalieGoalEntryController {
     private static int tick = 1000;
 
 
+
     public TimeGoalieGoalEntryController() {
         engine = new Handler();
     }
@@ -49,6 +53,8 @@ public class TimeGoalieGoalEntryController {
     public void startEngine(ArrayList<Goal> goalList) {
         goals = goalList;
         if (!isEngineRunning) {
+//            queue.queue(runnable);
+//            engine.post(queue);
             engine.post(runnable);
         }
     }
@@ -95,10 +101,20 @@ public class TimeGoalieGoalEntryController {
     }
 
     public void startGoal(GoalEntry goalEntry, long newtime, Goal goal) {
-        if (goalEntry.isHasFinished()) {
+        if (TimeGoalieDateUtils.calculateSecondsElapsed(goalEntry.getStartedTime(),goalEntry.getSecondsElapsed()) >= goal.getGoalSeconds()) {
             resumeGoalAfterFinished(goalEntry, goal);
             return;
         }
+        else {
+            goalEntry.setHasFinished(0);
+            if (goal.getGoalTypeId() == 0) {
+                goalEntry.setHasSucceeded(false);
+            }
+            if (goal.getGoalTypeId() == 1) {
+                goalEntry.setHasSucceeded(true);
+            }
+        }
+
         if (!goalEntry.isRunning()) {
             goalEntry.setRunning(true);
             goalEntry.setStartedTime(TimeGoalieDateUtils.getCurrentTimeInMillis());
@@ -116,9 +132,9 @@ public class TimeGoalieGoalEntryController {
                 (int) seconds);
 
 
-        if (goalEntry.getTargetTime() == 0) {
+       // if (goalEntry.getTargetTime() == 0) {
             goalEntry.setTargetTime(targetTime);
-        }
+        //}
 
         //delete existing Alarm
         TimeGoalieAlarmManager.cancelTimeGoalAlarm(BaseApplication.getContext(),TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
@@ -260,6 +276,10 @@ public class TimeGoalieGoalEntryController {
 
     }
 
+    public void updateGoal(Context context, GoalEntry goalEntry) {
+        new InsertNewGoalEntry(context).execute(goalEntry);
+    }
+
     public void resumeGoalAfterFinished(GoalEntry goalEntry, Goal goal) {
 
         goalEntry.setRunning(true);
@@ -275,7 +295,7 @@ public class TimeGoalieGoalEntryController {
     public void resumeGoalAfterFinishedWithElapsedTime(int goalId) {
         Goal goal = findGoalInList(goalId);
         goal.getGoalEntry().setRunning(true);
-        goal.getGoalEntry().setSecondsElapsed(TimeGoalieDateUtils.calculateSecondsElapsed(TimeGoalieDateUtils.getCurrentTimeInMillis()-goal.getGoalEntry().getTargetTime(), goal.getGoalEntry().getSecondsElapsed()));
+        goal.getGoalEntry().setSecondsElapsed((int)(goal.getGoalEntry().getSecondsElapsed()+((TimeGoalieDateUtils.getCurrentTimeInMillis()-goal.getGoalEntry().getTargetTime())/1000)));
         new InsertNewGoalEntry(BaseApplication.getContext()).execute(goal.getGoalEntry());
 
         if (!isEngineRunning) {
@@ -300,4 +320,25 @@ public class TimeGoalieGoalEntryController {
         ));
     }
 
+    class RunQueue implements Runnable{
+
+
+        private List list = new ArrayList();
+
+        public void queue(Runnable task)
+        {
+            list.add(task);
+        }
+        @Override
+        public void run()
+        {
+            while(list.size() > 0)
+            {
+                Runnable task = (Runnable)list.get(0);
+
+                list.remove(0);
+                task.run();
+            }
+        }
+    }
 }

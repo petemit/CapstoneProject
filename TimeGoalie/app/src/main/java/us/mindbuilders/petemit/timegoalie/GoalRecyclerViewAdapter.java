@@ -153,6 +153,7 @@ public class GoalRecyclerViewAdapter extends
                 // Reset start stop button to current state and stop the spinning ball
                 if (!goal.getGoalEntry().isRunning()) {
                     holder.spinningBallAnim.cancel();
+                    Log.e("controller",goal.getName() + "check1");
                     if (holder.startStopTimer.isChecked()) {
                         holder.startStopTimer.setChecked(false);
                     }
@@ -161,6 +162,7 @@ public class GoalRecyclerViewAdapter extends
                 // Start the spinning ball and activate the start button if the goal is running
                 if (goal.getGoalEntry().isRunning() && !holder.startStopTimer.isChecked()) {
                     holder.startStopTimer.setChecked(true);
+                    Log.e("controller",goal.getName() + "check2");
                     holder.spinningBallAnim.start();
                 }
 
@@ -186,7 +188,9 @@ public class GoalRecyclerViewAdapter extends
 
                             animation.start();
                         }
-                        if (holder.seekbar != null && goal.getGoalEntry().isHasFinished()) {
+                        if (holder.seekbar != null &&
+                                TimeGoalieDateUtils.calculateSecondsElapsed(goal.getGoalEntry().getStartedTime(),
+                                        goal.getGoalEntry().getSecondsElapsed()) >= goal.getGoalSeconds()) {
                             holder.seekbar.setProgress(10000);
                         }
 
@@ -567,11 +571,9 @@ public class GoalRecyclerViewAdapter extends
                         goal.setChangingSeekbar(false);
                         //can't click seekbar when animation is going
                         if (startStopTimer.isChecked()) {
-
-
                             turnOnGoal(goal, context, spinningBallAnim);
                         } else {
-                         //   new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
+                            BaseApplication.getGoalEntryController().updateGoal(context,goal.getGoalEntry());
                         }
                         new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
                     }

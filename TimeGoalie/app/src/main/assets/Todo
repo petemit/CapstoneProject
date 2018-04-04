@@ -1,6 +1,11 @@
-//todo finish notifications so they can resume goals or just dismiss
+
 //todo Make sure state can occur even if the app closes--close to done... need time and testing.
 //todo Ensure goal counter is still working --this should be easier
 //todo remove all goal counter logic from the recyclerview, put it in the activity to just count what's there
-//todo Man I'm tired...
+//todo Figure out how to get the handler to not do duplicate runnables. *grumble*
+//todo figure out how to get timers to start again if you start it from an intent.
+
+
+//todo figure out why moving a stopped goal doesn't reset the progress bar.
+//todo finish notifications so they can resume goals or just dismiss
 

@@ -177,7 +177,7 @@ public class BaseApplication extends Application {
 
         setContext(getBaseContext());
 
-        //Only do this if we are in the debug build
+       // Only do this if we are in the debug build
 //        if (BuildConfig.DEBUG) {
 //            //StethoEnabler
 //            getDatabasePath("timeGoalie.db").delete();
