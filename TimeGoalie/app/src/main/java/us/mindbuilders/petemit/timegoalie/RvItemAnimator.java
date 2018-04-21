@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Peter on 4/21/2018.
+ * This class isn't doing anything... but it might someday.
  */
 
 public class RvItemAnimator extends DefaultItemAnimator {

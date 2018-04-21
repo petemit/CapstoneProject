@@ -55,7 +55,7 @@ public class TimeGoalieNotifications {
                 message = context.getString(R.string.goal_finished);
             }
 
-            int notification_id = NOTIFICATIONID + goal_id;
+            int notification_id = goal_id;
             int resume_id = Integer.valueOf("" + RESUME_ID + NOTIFICATIONID);
 
             NotificationCompat.Builder builder =
@@ -86,7 +86,7 @@ public class TimeGoalieNotifications {
                 message = context.getString(R.string.goal_finished);
             }
 
-            int notification_id = ONE_MINUTE_NOTIFICATIONID + goal_id;
+            int notification_id = goal_id;
             int stop_id = Integer.valueOf("" + STOP_ID + goal_id);
 
             NotificationCompat.Builder builder =
