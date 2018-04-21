@@ -154,6 +154,9 @@ public class BaseApplication extends Application {
     }
 
     public static TimeGoalieGoalEntryController getGoalEntryController() {
+        if (goalEntryController == null) {
+            goalEntryController = new TimeGoalieGoalEntryController();
+        }
         return goalEntryController;
     }
 
@@ -177,8 +180,8 @@ public class BaseApplication extends Application {
 
         setContext(getBaseContext());
 
-       // Only do this if we are in the debug build
-//        if (BuildConfig.DEBUG) {
+      //  Only do this if we are in the debug build
+        if (BuildConfig.DEBUG) {
 //            //StethoEnabler
 //            getDatabasePath("timeGoalie.db").delete();
 //            //dummy goal
@@ -254,7 +257,7 @@ public class BaseApplication extends Application {
 //            new InsertNewGoal(getBaseContext()).execute(goal5);
 //            new InsertNewGoal(getBaseContext()).execute(goal6);
 //            new InsertNewGoal(getBaseContext()).execute(goal7);
-//        }
+        }
 
         StethoEnabler.enable(this);
     }

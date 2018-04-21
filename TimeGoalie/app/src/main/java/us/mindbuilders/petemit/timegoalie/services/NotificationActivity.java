@@ -64,7 +64,7 @@ public class NotificationActivity extends Activity {
         intent.putExtra(NOTIFICATION_ID, notificationId);
         intent.putExtra("action", RESUME_ACTION);
         intent.putExtra("goal_id", goalId);
-        PendingIntent resumeIntent = PendingIntent.getActivity(context, notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent resumeIntent = PendingIntent.getActivity(context, notificationId+40000, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         return resumeIntent;
     }
 
@@ -74,7 +74,8 @@ public class NotificationActivity extends Activity {
         intent.putExtra(NOTIFICATION_ID, notificationId);
         intent.putExtra("action", STOP_ACTION);
         intent.putExtra("goal_id", goalId);
-        PendingIntent stopIntent = PendingIntent.getActivity(context, notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        //offset the notification id to keep it unique but allow it to be cancelled
+        PendingIntent stopIntent = PendingIntent.getActivity(context, notificationId+50000, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         return stopIntent;
     }
 

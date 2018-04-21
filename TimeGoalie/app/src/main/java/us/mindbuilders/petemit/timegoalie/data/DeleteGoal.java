@@ -40,6 +40,6 @@ public class DeleteGoal extends AsyncTask<Goal, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
+
     }
 }

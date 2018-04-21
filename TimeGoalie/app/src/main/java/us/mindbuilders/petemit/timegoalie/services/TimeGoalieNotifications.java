@@ -65,7 +65,7 @@ public class TimeGoalieNotifications {
                             .setTimeoutAfter(CANCELLATION_TIMEOUT)
                             .setAutoCancel(true)
                             .addAction(R.drawable.ic_goalie_with_ball_grey, "Dismiss", NotificationActivity.getDismissIntent(notification_id,context))
-                            .addAction(R.drawable.ic_goalie_with_ball_grey, "Resume Goal",NotificationActivity.getResumeIntent(resume_id,context,goal_id))
+                            .addAction(R.drawable.ic_goalie_with_ball_grey, "Resume Goal",NotificationActivity.getResumeIntent(notification_id,context,goal_id))
                             .setContentText(injectedMessage);
 
             setSoundForBuilder(builder);
@@ -87,7 +87,7 @@ public class TimeGoalieNotifications {
             }
 
             int notification_id = ONE_MINUTE_NOTIFICATIONID + goal_id;
-            int stop_id = Integer.valueOf("" + STOP_ID + ONE_MINUTE_NOTIFICATIONID);
+            int stop_id = Integer.valueOf("" + STOP_ID + goal_id);
 
             NotificationCompat.Builder builder =
                     new NotificationCompat.Builder(context, null)
@@ -95,14 +95,13 @@ public class TimeGoalieNotifications {
                             .setContentTitle(message)
                             .setTimeoutAfter(CANCELLATION_TIMEOUT)
                             .setAutoCancel(true)
-                            .addAction(R.drawable.ic_goalie_with_ball_grey, "Stop Timer", NotificationActivity.getStopIntent(stop_id,context,goal_id))
+                            .addAction(R.drawable.ic_goalie_with_ball_grey, "Stop Timer", NotificationActivity.getStopIntent(notification_id,context,goal_id))
                             .addAction(R.drawable.ic_goalie_with_ball_grey, "Keep Timer Going", NotificationActivity.getDismissIntent(notification_id,context))
                             .setContentText(injectedMessage);
 
             setSoundForBuilder(builder);
             setContentIntentForBuilder(context, builder);
-
-            notifyMgr.notify(notification_id, builder.build());
+            notifyMgr.notify(notification_id, (builder.build()));
         }
     }
 

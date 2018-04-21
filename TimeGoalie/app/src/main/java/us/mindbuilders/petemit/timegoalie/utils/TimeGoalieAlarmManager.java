@@ -80,8 +80,6 @@ public class TimeGoalieAlarmManager {
                         goal.getGoalEntry().setHasFinished(true);
                         goalEntryGoalCounter.setGoalEntry(goal.getGoalEntry());
 
-                        new GetSuccessfulGoalCount(tv.getContext()).execute(goalEntryGoalCounter);
-
 
 
                         //  makeCountdownTimer(1000,intervalInSeconds,totalSeconds,tv,goalEntry,goalType,seekbar).start();
@@ -97,7 +95,6 @@ public class TimeGoalieAlarmManager {
                         goal.getGoalEntry().setHasFinished(true);
                         goalEntryGoalCounter.setGoalEntry(goal.getGoalEntry());
 
-                        new GetSuccessfulGoalCount(tv.getContext()).execute(goalEntryGoalCounter);
                         break;
                 }
 

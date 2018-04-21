@@ -63,6 +63,7 @@ public class GoalRecyclerViewAdapter extends
     private Context context;
     private GoalEntryGoalCounter goalEntryGoalCounter;
     private boolean justARefresh;
+    public static String checkBoxStateKey;
 
     //    public GoalRecyclerViewAdapter(List<DummyContent.DummyItem> items, View.OnClickListener onClickListener) {
 //        mValues = items;
@@ -136,10 +137,12 @@ public class GoalRecyclerViewAdapter extends
                     holder.seekbar.setProgressDrawable(holder.seekbar.getResources().
                             getDrawable(R.drawable.seekbar_reverse, null));
                 }
-            } else if (goal.getGoalTypeId() == 2) { // yes no
+            } else if (goal.getGoalTypeId() == 2 && !goal.getGoalEntry().isHasMoved()) { // yes no
                 if (goal.getGoalEntry().getHasSucceeded()) {
+                    goal.getGoalEntry().setHasMoved(true);
                     holder.goalCheckBox.setChecked(true);
                 } else {
+                    goal.getGoalEntry().setHasMoved(true);
                     holder.goalCheckBox.setChecked(false);
                 }
             }
@@ -278,29 +281,7 @@ public class GoalRecyclerViewAdapter extends
                                         holder.soccerBallImage.animate().translationX(distance)
                                                 .setDuration(1000)
                                                 .setInterpolator(new AccelerateDecelerateInterpolator())
-                                                .setListener(new Animator.AnimatorListener() {
-                                                    @Override
-                                                    public void onAnimationStart(Animator animator) {
-                                                        holder.spinningBallAnim.start();
-
-                                                    }
-
-                                                    @Override
-                                                    public void onAnimationEnd(Animator animator) {
-                                                        holder.spinningBallAnim.cancel();
-
-                                                    }
-
-                                                    @Override
-                                                    public void onAnimationCancel(Animator animator) {
-                                                        holder.spinningBallAnim.cancel();
-                                                    }
-
-                                                    @Override
-                                                    public void onAnimationRepeat(Animator animator) {
-
-                                                    }
-                                                });
+                                                .setListener(new spinningBallAnimListener(holder.spinningBallAnim));
                                         holder.goalCheckBox.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
                                         goal.getGoalEntry().setHasMoved(true);
                                     }
@@ -330,7 +311,7 @@ public class GoalRecyclerViewAdapter extends
                         goal.getGoalEntry().setHasSucceeded(0);
                     }
                 }
-                new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
+
             }
 
             //Let's do the delete button
@@ -344,9 +325,10 @@ public class GoalRecyclerViewAdapter extends
                 }
 
             }
-            //get the initial goal count.
-            new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
+
         } //end if itemviewcount
+
+        new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
     }//end BindViewHolder
 
 
@@ -433,6 +415,7 @@ public class GoalRecyclerViewAdapter extends
         private CardView cardView;
 
 
+
         public GoalViewHolder(View view) {
             super(view);
             mView = view;
@@ -466,11 +449,12 @@ public class GoalRecyclerViewAdapter extends
                         fadeOut.setStartOffset(500);
                         fadeOut.setDuration(500);
                         cardView.setAnimation(fadeOut);
+                        Goal goal = goalArrayList.get(getLayoutPosition());
                         goalArrayList.remove(getLayoutPosition());
                         justARefresh = true;
                         notifyItemRangeChanged(getLayoutPosition(), getItemCount());
                         notifyItemRemoved(getLayoutPosition());
-                        Goal goal = goalArrayList.get(getLayoutPosition());
+
                         new DeleteGoal(context, goalEntryGoalCounter).execute(goal);
 
                     }
@@ -527,7 +511,7 @@ public class GoalRecyclerViewAdapter extends
 
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
-                        if (getLayoutPosition() > -1) {
+                        if (getLayoutPosition() > -1 && !(getLayoutPosition() > goalArrayList.size()-1)) {
                             Goal goal = goalArrayList.get(getLayoutPosition());
                             if (fromUser) {
                                 float percentage = (float) i / 10000;
@@ -575,7 +559,6 @@ public class GoalRecyclerViewAdapter extends
                         } else {
                             BaseApplication.getGoalEntryController().updateGoal(context,goal.getGoalEntry());
                         }
-                        new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
                     }
                 });
 
@@ -684,7 +667,6 @@ public class GoalRecyclerViewAdapter extends
                                 new InsertNewGoalEntry(compoundButton.getContext())
                                         .execute(goal.getGoalEntry());
                                 new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
-                                new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
 
 
                                 //get the distance properly
@@ -698,29 +680,7 @@ public class GoalRecyclerViewAdapter extends
                                 soccerBallImage.animate().translationX(distance)
                                         .setDuration(1000)
                                         .setInterpolator(new AccelerateDecelerateInterpolator())
-                                        .setListener(new Animator.AnimatorListener() {
-                                            @Override
-                                            public void onAnimationStart(Animator animator) {
-                                                spinningBallAnim.start();
-
-                                            }
-
-                                            @Override
-                                            public void onAnimationEnd(Animator animator) {
-                                                spinningBallAnim.cancel();
-
-                                            }
-
-                                            @Override
-                                            public void onAnimationCancel(Animator animator) {
-                                                spinningBallAnim.cancel();
-                                            }
-
-                                            @Override
-                                            public void onAnimationRepeat(Animator animator) {
-
-                                            }
-                                        });
+                                        .setListener(new spinningBallAnimListener(spinningBallAnim));
                             }
                         } else {
 
@@ -730,36 +690,15 @@ public class GoalRecyclerViewAdapter extends
                                 new InsertNewGoalEntry(compoundButton.getContext())
                                         .execute(goal.getGoalEntry());
                                 new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
-                                new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
+
                                 soccerBallImage.animate().translationX(0)
                                         .setDuration(1000)
                                         .setInterpolator(new AccelerateDecelerateInterpolator())
-                                        .setListener(new Animator.AnimatorListener() {
-                                            @Override
-                                            public void onAnimationStart(Animator animator) {
-                                                spinningBallAnim.start();
-                                            }
-
-                                            @Override
-                                            public void onAnimationEnd(Animator animator) {
-
-                                                spinningBallAnim.cancel();
-
-                                            }
-
-                                            @Override
-                                            public void onAnimationCancel(Animator animator) {
-                                                spinningBallAnim.cancel();
-                                            }
-
-                                            @Override
-                                            public void onAnimationRepeat(Animator animator) {
-
-                                            }
-                                        });
+                                        .setListener(new spinningBallAnimListener(spinningBallAnim));
                             }
 
                         }
+                        new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
                     }
                 });
 
@@ -773,6 +712,38 @@ public class GoalRecyclerViewAdapter extends
         @Override
         public String toString() {
             return super.toString() + " '" + tv_goaltitle.getText() + "'";
+        }
+    }
+
+    private class spinningBallAnimListener implements Animator.AnimatorListener {
+
+        ObjectAnimator spinningBallAnim;
+
+        spinningBallAnimListener(ObjectAnimator spinningBallAnim) {
+            this.spinningBallAnim = spinningBallAnim;
+
+        }
+
+        @Override
+        public void onAnimationStart(Animator animator) {
+            spinningBallAnim.start();
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animator) {
+
+            spinningBallAnim.cancel();
+
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animator) {
+            spinningBallAnim.cancel();
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animator) {
+
         }
     }
 }

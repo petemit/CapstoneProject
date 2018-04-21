@@ -1,16 +1,20 @@
 package us.mindbuilders.petemit.timegoalie.services;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import us.mindbuilders.petemit.timegoalie.BaseApplication;
 import us.mindbuilders.petemit.timegoalie.GoalListViewCallback;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
+import us.mindbuilders.petemit.timegoalie.data.GetRunningGoalEntriesThatHaveGoalEntryForToday;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieAlarmManager;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
@@ -28,20 +32,7 @@ public class TimeGoalieGoalEntryController {
     private Handler engine;
     private ArrayList<Goal> goals;
     private boolean isEngineRunning = false;
-    private RunQueue queue = new RunQueue();
-    Runnable runnable =  new Runnable() {
-        @Override
-        public void run() {
-            // Run every second until there are no goal entries running
-            if (updateGoalEntries(goals)) {
-                engine.postDelayed(this, tick);
-            }
-            else {
-                engine.removeCallbacks(this);
-                isEngineRunning = false;
-            }
-        }
-    };
+    Runnable currentRunnable = null;
     private static int tick = 1000;
 
 
@@ -52,10 +43,23 @@ public class TimeGoalieGoalEntryController {
 
     public void startEngine(ArrayList<Goal> goalList) {
         goals = goalList;
+
+        if (goals == null) {
+            AsyncTask task = new GetRunningGoalEntriesThatHaveGoalEntryForToday(BaseApplication.getContext(), null);
+            try {
+                goals = Goal.createGoalListFromCursor((Cursor)task.get());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        } //hopefully this is never run.
+
         if (!isEngineRunning) {
-//            queue.queue(runnable);
-//            engine.post(queue);
-            engine.post(runnable);
+            if (currentRunnable == null) {
+                currentRunnable = new TimeGoalieRunnable();
+                engine.post(currentRunnable);
+            }
         }
     }
 
@@ -81,8 +85,6 @@ public class TimeGoalieGoalEntryController {
 
                 //Increment Goal
                 addSecondToGoal(entry, i);
-                break;
-
             }
         }
         return keepEngineRunning;
@@ -100,19 +102,33 @@ public class TimeGoalieGoalEntryController {
         }
     }
 
+    public void judgeOverTimeGoal(GoalEntry goalEntry, Goal goal) {
+        if (goal.getGoalTypeId() == 0) {
+            goalEntry.setHasSucceeded(true);
+        }
+        if (goal.getGoalTypeId() == 1) {
+            goalEntry.setHasSucceeded(false);
+        }
+    }
+    public void judgeUnderTimeGoal(GoalEntry goalEntry, Goal goal) {
+        if (goal.getGoalTypeId() == 0) {
+            goalEntry.setHasSucceeded(false);
+        }
+        if (goal.getGoalTypeId() == 1) {
+            goalEntry.setHasSucceeded(true);
+        }
+
+    }
+
     public void startGoal(GoalEntry goalEntry, long newtime, Goal goal) {
         if (TimeGoalieDateUtils.calculateSecondsElapsed(goalEntry.getStartedTime(),goalEntry.getSecondsElapsed()) >= goal.getGoalSeconds()) {
             resumeGoalAfterFinished(goalEntry, goal);
+            judgeOverTimeGoal(goalEntry, goal);
             return;
         }
         else {
             goalEntry.setHasFinished(0);
-            if (goal.getGoalTypeId() == 0) {
-                goalEntry.setHasSucceeded(false);
-            }
-            if (goal.getGoalTypeId() == 1) {
-                goalEntry.setHasSucceeded(true);
-            }
+            judgeUnderTimeGoal(goalEntry, goal);
         }
 
         if (!goalEntry.isRunning()) {
@@ -234,7 +250,7 @@ public class TimeGoalieGoalEntryController {
             //todo just broad update. :(
 
             if (viewCallback != null) {
-                viewCallback.update(0);
+                viewCallback.update(goals.indexOf(goal));
             }
         }
     }
@@ -253,9 +269,9 @@ public class TimeGoalieGoalEntryController {
             goalEntry.setHasFinished(true);
             stopGoal(goalEntry, goal);
 
-            //todo just broad update. :(
+
             if (viewCallback != null) {
-                viewCallback.update(0);
+                viewCallback.update(goals.indexOf(goal));
             }
         }
 
@@ -281,26 +297,30 @@ public class TimeGoalieGoalEntryController {
     }
 
     public void resumeGoalAfterFinished(GoalEntry goalEntry, Goal goal) {
-
+        startEngine(goals);
         goalEntry.setRunning(true);
         goalEntry.setSecondsElapsed(TimeGoalieDateUtils.calculateSecondsElapsed(goalEntry.getStartedTime(),goalEntry.getSecondsElapsed()));
         goalEntry.setStartedTime(TimeGoalieDateUtils.getCurrentTimeInMillis());
         new InsertNewGoalEntry(BaseApplication.getContext()).execute(goalEntry);
 
-        if (!isEngineRunning) {
-            engine.post(runnable);
-        }
+//        if (!isEngineRunning) {
+//            engine.post(currentRunnable);
+//        }
+        startEngine(goals);
     }
 
     public void resumeGoalAfterFinishedWithElapsedTime(int goalId) {
+        startEngine(goals);
         Goal goal = findGoalInList(goalId);
         goal.getGoalEntry().setRunning(true);
         goal.getGoalEntry().setSecondsElapsed((int)(goal.getGoalEntry().getSecondsElapsed()+((TimeGoalieDateUtils.getCurrentTimeInMillis()-goal.getGoalEntry().getTargetTime())/1000)));
+        goal.getGoalEntry().setStartedTime(TimeGoalieDateUtils.getCurrentTimeInMillis());
         new InsertNewGoalEntry(BaseApplication.getContext()).execute(goal.getGoalEntry());
 
-        if (!isEngineRunning) {
-            engine.post(runnable);
-        }
+//        if (!isEngineRunning) {
+//            engine.post(currentRunnable);
+//        }
+        startEngine(goals);
     }
 
 
@@ -320,25 +340,18 @@ public class TimeGoalieGoalEntryController {
         ));
     }
 
-    class RunQueue implements Runnable{
-
-
-        private List list = new ArrayList();
-
-        public void queue(Runnable task)
-        {
-            list.add(task);
-        }
+    private class TimeGoalieRunnable implements Runnable {
         @Override
-        public void run()
-        {
-            while(list.size() > 0)
-            {
-                Runnable task = (Runnable)list.get(0);
-
-                list.remove(0);
-                task.run();
+        public void run() {
+            // Run every second until there are no goal entries running
+            if (updateGoalEntries(goals)) {
+                engine.postDelayed(this, tick);
+            }
+            else {
+                engine.removeCallbacks(this);
+                isEngineRunning = false;
+                currentRunnable = null;
             }
         }
-    }
+    };
 }

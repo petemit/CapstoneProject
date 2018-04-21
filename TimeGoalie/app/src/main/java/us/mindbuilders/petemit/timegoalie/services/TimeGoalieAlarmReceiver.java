@@ -205,10 +205,6 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
 
                 if (goal != null && goalEntry != null) {
                     switch (action) {
-                        //Goal Killed todo can be removed
-                        case GOAL_KILLED:
-                        //    goalEntry.setRunning(false);
-                            break;
                         case GOAL_FINISHED:
                                 if (goal.getGoalTypeId() == 0) { //goal to encourage
                                     TimeGoalieNotifications.createNotification(context, intent,

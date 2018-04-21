@@ -109,6 +109,7 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         });
 
         recyclerView = findViewById(R.id.goal_list);
+        recyclerView.setItemAnimator(new RvItemAnimator());
         if (recyclerView != null) {
             //Todo is this going to break animations?
             recyclerView.getItemAnimator().setChangeDuration(0);
@@ -158,8 +159,8 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     protected void onPause() {
-        super.onPause();
         BaseApplication.getGoalEntryController().setGoalListViewCallback(null);
+        super.onPause();
     }
 
     @Override
@@ -347,22 +348,22 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void update(final int position) {
-        //todo find out why position isn't working
-        if (!recyclerView.isComputingLayout()) {
-            recyclerView.getAdapter().notifyDataSetChanged();
-        }
-        else {
-            Handler handler = new Handler();
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    SystemClock.sleep(200);
-                    update(position);
-                }
-            };
-            handler.post(runnable);
-        }
-     //   recyclerView.getAdapter().notifyItemChanged(position);
+//        //todo find out why position isn't working
+//        if (!recyclerView.isComputingLayout()) {
+//            recyclerView.getAdapter().notifyDataSetChanged();
+//        }
+//        else {
+//            Handler handler = new Handler();
+//            Runnable runnable = new Runnable() {
+//                @Override
+//                public void run() {
+//                    SystemClock.sleep(200);
+//                    update(position);
+//                }
+//            };
+//            handler.post(runnable);
+//        }
+        recyclerView.getAdapter().notifyItemChanged(position);
     }
 
     public interface TimeGoalieReportUpdater {
