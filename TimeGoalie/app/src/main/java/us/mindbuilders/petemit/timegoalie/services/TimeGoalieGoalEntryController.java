@@ -80,18 +80,33 @@ public class TimeGoalieGoalEntryController {
 
             //First off.. is Goal Running?
             if (entry.isRunning()) {
-                Log.e("controller", String.valueOf(TimeGoalieDateUtils.getCurrentTimeInMillis()));
                 keepEngineRunning = true;
 
                 //Increment Goal
+
                 addSecondToGoal(entry, i);
+
+
             }
+
         }
+
         return keepEngineRunning;
     }
 
     public void setGoalListViewCallback(GoalListViewCallback callback) {
         this.viewCallback = callback;
+    }
+
+    public void startSecondlyAlarm() {
+
+        TimeGoalieAlarmManager.setTimeGoalAlarm(TimeGoalieDateUtils.createTargetSecondlyCalendarTime((int) (
+                        TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY) / 1000),
+                BaseApplication.getContext(), null,
+                TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(BaseApplication.getContext(),
+                        TimeGoalieAlarmReceiver.
+                                createEverySecondDbUpdateAlarmIntent(BaseApplication.getContext())));
+     //   Log.i("TimeGoalie", "secondlyAlarm Created");
     }
 
     public void addSecondToGoal(GoalEntry goalEntry, int position) {
@@ -120,7 +135,14 @@ public class TimeGoalieGoalEntryController {
 
     }
 
-    public void startGoal(GoalEntry goalEntry, long newtime, Goal goal) {
+    public void startGoal(GoalEntry goalEntry, Goal goal) {
+
+        long newtime = goal.getGoalSeconds();
+        if (goal.getGoalEntry() != null) {
+            newtime = goal.getGoalSeconds() - TimeGoalieDateUtils.calculateSecondsElapsed(goal.getGoalEntry()
+                    .getStartedTime(),goal.getGoalEntry().getSecondsElapsed());
+        }
+
         if (TimeGoalieDateUtils.calculateSecondsElapsed(goalEntry.getStartedTime(),goalEntry.getSecondsElapsed()) >= goal.getGoalSeconds()) {
             resumeGoalAfterFinished(goalEntry, goal);
             judgeOverTimeGoal(goalEntry, goal);
@@ -275,6 +297,19 @@ public class TimeGoalieGoalEntryController {
             }
         }
 
+    }
+
+    public void startGoalById(int goalId) {
+        Goal goal = findGoalInList(goalId);
+        GoalEntry goalEntry;
+        if (goal != null) {
+            goalEntry = goal.getGoalEntry();
+        }
+        else {
+            return;
+        }
+
+        startGoal(goalEntry, goal);
     }
 
     public void stopGoalById(int goalId) {

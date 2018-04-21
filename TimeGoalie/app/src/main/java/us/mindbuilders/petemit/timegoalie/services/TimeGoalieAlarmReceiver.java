@@ -105,7 +105,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.e("Mindbuilders", "Alarm Finished!");
+       // Log.e("Mindbuilders", "Alarm Finished!");
         new HandleAlarmFinished(context).execute(intent);
     }
 
@@ -273,13 +273,21 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                             ACTION_GET_GOALS_FOR_TODAY);
                     context.sendBroadcast(updateWidgetintent);
 
+                    if (!BaseApplication.checkGoalEntryController()) {
 
-                    TimeGoalieAlarmManager.setTimeGoalAlarm(TimeGoalieDateUtils.createTargetSecondlyCalendarTime((int) (
-                                    TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY) / 1000),
-                            context, null,
-                            TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(context,
-                                    TimeGoalieAlarmReceiver.
-                                            createEverySecondDbUpdateAlarmIntent(context)));
+                        BaseApplication.getGoalEntryController().startEngine(null);
+
+
+                        TimeGoalieAlarmManager.setTimeGoalAlarm(TimeGoalieDateUtils.createTargetSecondlyCalendarTime((int) (
+                                        TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY) / 1000),
+                                context, null,
+                                TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(context,
+                                        TimeGoalieAlarmReceiver.
+                                                createEverySecondDbUpdateAlarmIntent(context)));
+                      //  Log.i("TimeGoalie", "secondlyAlarm Created");
+
+
+                    }
 
                 }//else SECONDLY
 

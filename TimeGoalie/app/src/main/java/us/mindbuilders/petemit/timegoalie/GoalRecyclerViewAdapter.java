@@ -335,17 +335,14 @@ public class GoalRecyclerViewAdapter extends
     public void turnOnGoal(Goal goal, Context context,
                             ObjectAnimator spinningBallAnim) {
 
-        long newtime = goal.getGoalSeconds();
-        if (goal.getGoalEntry() != null) {
-            newtime = goal.getGoalSeconds() - TimeGoalieDateUtils.calculateSecondsElapsed(goal.getGoalEntry()
-                    .getStartedTime(),goal.getGoalEntry().getSecondsElapsed());
-        }
-        TimeGoalieAlarmManager.startTimer(newtime, goal,
-                context);
+
+        //todo is this needed?
+//        TimeGoalieAlarmManager.startTimer(newtime, goal,
+//                context);
         spinningBallAnim.start();
         //Start the Goal!!
         BaseApplication.getGoalEntryController().startEngine(goalArrayList);
-        BaseApplication.getGoalEntryController().startGoal(goal.getGoalEntry(), newtime, goal);
+        BaseApplication.getGoalEntryController().startGoal(goal.getGoalEntry(), goal);
 
     }
 

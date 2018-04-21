@@ -1,7 +1,6 @@
-
-//todo Make sure state can occur even if the app closes--close to done... need time and testing.
-//todo figure out how to get timers to start again if you start it from an intent.
-
+//todo Fix the dang widget
 //todo figure out why moving a stopped goal doesn't reset the progress bar.
+//todo Fix progressbar not updating for Done Time Limit goals when resuming app
+
 
 

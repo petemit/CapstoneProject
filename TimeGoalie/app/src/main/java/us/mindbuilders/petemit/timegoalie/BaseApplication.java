@@ -153,6 +153,13 @@ public class BaseApplication extends Application {
         return context;
     }
 
+    public static boolean checkGoalEntryController() {
+        if (goalEntryController != null) {
+            return true;
+        }
+        return false;
+    }
+
     public static TimeGoalieGoalEntryController getGoalEntryController() {
         if (goalEntryController == null) {
             goalEntryController = new TimeGoalieGoalEntryController();
@@ -179,6 +186,10 @@ public class BaseApplication extends Application {
 
 
         setContext(getBaseContext());
+        //This is for the widget... and only for the widget... dang widget.
+        goalEntryController.startSecondlyAlarm();
+
+
 
       //  Only do this if we are in the debug build
         if (BuildConfig.DEBUG) {

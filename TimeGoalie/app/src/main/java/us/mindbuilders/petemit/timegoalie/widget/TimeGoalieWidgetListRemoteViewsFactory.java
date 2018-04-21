@@ -38,7 +38,6 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
 
     @Override
     public void onDataSetChanged() {
-        Log.e("dang", counter + "");
         counter++;
         if (goalData != null) {
             goalData = null;
@@ -102,12 +101,9 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
                     views.setViewVisibility(R.id.widget_yes_no_checkbox_on, View.VISIBLE);
                 }
 
-                Log.e("myMindbuilders-before", goal.getName() + " " + goal.getGoalId()
-                        + " " + Boolean.toString(goal.getGoalEntry().getHasSucceeded()));
+
                 views.setOnClickFillInIntent(R.id.widget_yes_no_checkbox,
                         TimeGoalieWidgetProvider.getUpdateYesNoGoalFillInIntent(goal));
-                Log.e("myMindbuilders-after", goal.getName() + " " + goal.getGoalId()
-                        + " " + Boolean.toString(goal.getGoalEntry().getHasSucceeded()));
 
             } else { //Time limit Goal
                 views = new RemoteViews(context.getPackageName(),
@@ -119,16 +115,12 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
 
                 //Set up the time goal if goals are running
                 if (goal.getGoalEntry().isRunning()) {
-                    Log.e("myMindbuilders-after", goal.getName() + " " + goal.getGoalId()
-                            + " " + Boolean.toString(goal.getGoalEntry().isRunning()));
+
                     views.setTextViewText(R.id.start_stop, context.getString(R.string.stop));
 
                 } else {
                     views.setTextViewText(R.id.start_stop, context.getString(R.string.start));
                 }
-
-                Log.e("myMindbuilders-before", goal.getName() + " " + goal.getGoalId()
-                        + " " + Boolean.toString(goal.getGoalEntry().isRunning()));
                 views.setOnClickFillInIntent(R.id.start_stop, TimeGoalieWidgetProvider.
                         getUpdateTimeGoalFillInIntent(goal, context));
                 TimeGoalieUtils.setTimeTextLabel(goal, timeText, timeOutOfText);
