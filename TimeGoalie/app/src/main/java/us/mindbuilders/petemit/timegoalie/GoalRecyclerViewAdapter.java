@@ -200,6 +200,13 @@ public class GoalRecyclerViewAdapter extends
 
 
                 } else {
+
+                    if (holder.seekbar != null &&
+                            TimeGoalieDateUtils.calculateSecondsElapsed(goal.getGoalEntry().getStartedTime(),
+                                    goal.getGoalEntry().getSecondsElapsed()) >= goal.getGoalSeconds()) {
+                        holder.seekbar.setProgress(10000);
+                    }
+
                     if (remainingSeconds < 0) {
                     } else {
 
@@ -207,7 +214,6 @@ public class GoalRecyclerViewAdapter extends
                         if (holder.seekbar != null && !goal.isChangingSeekbar()) {
 //                            holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) /
 //                                    goal.getGoalSeconds())) * 100 * 100));
-
                             if (goal.getSeekbarAnimation() != null) {
                                 goal.getSeekbarAnimation().cancel();
                             }

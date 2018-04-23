@@ -83,6 +83,8 @@ public class TimeGoalieWidgetListRemoteViewsFactory implements RemoteViewsServic
 
     @Override
     public RemoteViews getViewAt(int i) {
+        context.getSharedPreferences("timeGoalieWidget",Context.MODE_PRIVATE).edit().putBoolean("hasWidget",true).apply();
+
         if (goalData != null && goalData.size() > 0) {
             final Goal goal = goalData.get(i);
 

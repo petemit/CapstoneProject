@@ -150,26 +150,22 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
                     int goalSeconds = bundle.getInt(context.getString(R.string.goal_seconds_key));
 
                     int goalType = bundle.getInt(context.getString(R.string.goal_type_key));
-                    if (goalType == 2) {
+                    if (goalType == 2 && goalEntry != null) {
                         goalEntry.setHasFinished(!goalEntry.isHasFinished());
                         goalEntry.setHasSucceeded(!goalEntry.getHasSucceeded());
+                        new InsertNewGoalEntry(context).execute(goalEntry);
+
                     } else {
 
-                        if (goalEntry.isRunning()) {
+                        if (goalEntry != null && goalEntry.isRunning()) {
                             BaseApplication.getGoalEntryController().stopGoalById((int)goalEntry.getGoal_id());
                         } else {
-                            BaseApplication.getGoalEntryController().startGoalById((int)goalEntry.getGoal_id());
+                            if (goalEntry!=null) {
+                                BaseApplication.getGoalEntryController().startGoalById((int) goalEntry.getGoal_id());
+                            }
                             BaseApplication.getGoalEntryController().startEngine(null);
+
                         }
-                        //culprit
-                        TimeGoalieAlarmManager.setTimeGoalAlarm(TimeGoalieDateUtils.createTargetSecondlyCalendarTime((int) (
-                                        TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY) / 1000),
-                                context, null,
-                                TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(context,
-                                        TimeGoalieAlarmReceiver.
-                                                createEverySecondDbUpdateAlarmIntent(context)));
-
-
 
                     }
                     handleActionUpdateGoalEntry(context, goalEntry);

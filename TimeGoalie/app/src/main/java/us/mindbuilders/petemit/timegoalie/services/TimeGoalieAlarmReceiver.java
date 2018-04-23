@@ -41,6 +41,7 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
     public static final int KILLGOAL = 1010101;
     private static final int DELAYINTENT_INTERVAL = 7;
     public static final String NOTIFICATION_ID = "NOTIFICATION_ID";
+    private static boolean keepWidgetingOn = true;
 
     public static void cancelSecondlyAlarm(Context context, Goal goal) {
         PendingIntent secondlyPi = TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(
@@ -267,15 +268,18 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
 
                 } else { //if a secondly goal
 
+                    if(context.getSharedPreferences("timeGoalieWidget",Context.MODE_PRIVATE).getBoolean("hasWidget",true)){
+                        context.getSharedPreferences("timeGoalieWidget",Context.MODE_PRIVATE).edit().putBoolean("hasWidget",true).apply();
+
                     Intent updateWidgetintent = new Intent(context,
                             TimeGoalieWidgetProvider.class);
                     updateWidgetintent.setAction(TimeGoalieWidgetProvider.
                             ACTION_GET_GOALS_FOR_TODAY);
                     context.sendBroadcast(updateWidgetintent);
 
-                    if (!BaseApplication.checkGoalEntryController()) {
-
-                        BaseApplication.getGoalEntryController().startEngine(null);
+//                    if (!BaseApplication.checkGoalEntryController()) {
+//
+//                        BaseApplication.getGoalEntryController().startEngine(null);
 
 
                         TimeGoalieAlarmManager.setTimeGoalAlarm(TimeGoalieDateUtils.createTargetSecondlyCalendarTime((int) (
@@ -285,9 +289,9 @@ public class TimeGoalieAlarmReceiver extends BroadcastReceiver {
                                         TimeGoalieAlarmReceiver.
                                                 createEverySecondDbUpdateAlarmIntent(context)));
                       //  Log.i("TimeGoalie", "secondlyAlarm Created");
-
-
                     }
+
+              //      }
 
                 }//else SECONDLY
 

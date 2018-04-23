@@ -41,19 +41,23 @@ public class TimeGoalieGoalEntryController {
         engine = new Handler();
     }
 
-    public void startEngine(ArrayList<Goal> goalList) {
-        goals = goalList;
-
+    public void initGoals() {
         if (goals == null) {
-            AsyncTask task = new GetRunningGoalEntriesThatHaveGoalEntryForToday(BaseApplication.getContext(), null);
+            AsyncTask task = new GetRunningGoalEntriesThatHaveGoalEntryForToday(BaseApplication.getContext(), null).execute();
             try {
-                goals = Goal.createGoalListFromCursor((Cursor)task.get());
+                goals = Goal.createGoalListWithGoalEntriesFromCursor((Cursor)task.get());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
         } //hopefully this is never run.
+    }
+
+    public void startEngine(ArrayList<Goal> goalList) {
+        goals = goalList;
+
+        initGoals();
 
         if (!isEngineRunning) {
             if (currentRunnable == null) {
@@ -257,6 +261,8 @@ public class TimeGoalieGoalEntryController {
     }
 
     public void succeedGoalById(int goalId) {
+        initGoals();
+
         Goal goal = findGoalInList(goalId);
         if (null != goal) {
             GoalEntry goalEntry;
@@ -278,6 +284,7 @@ public class TimeGoalieGoalEntryController {
     }
 
     public void finishGoalById(int goalId) {
+        initGoals();
 
         Goal goal = findGoalInList(goalId);
         if (null != goal) {
@@ -300,6 +307,8 @@ public class TimeGoalieGoalEntryController {
     }
 
     public void startGoalById(int goalId) {
+        initGoals();
+
         Goal goal = findGoalInList(goalId);
         GoalEntry goalEntry;
         if (goal != null) {
@@ -313,6 +322,7 @@ public class TimeGoalieGoalEntryController {
     }
 
     public void stopGoalById(int goalId) {
+        initGoals();
 
         Goal goal = findGoalInList(goalId);
         GoalEntry goalEntry;
