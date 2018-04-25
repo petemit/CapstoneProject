@@ -195,6 +195,9 @@ public class GoalRecyclerViewAdapter extends
                                 TimeGoalieDateUtils.calculateSecondsElapsed(goal.getGoalEntry().getStartedTime(),
                                         goal.getGoalEntry().getSecondsElapsed()) >= goal.getGoalSeconds()) {
                             holder.seekbar.setProgress(10000);
+                            if (!goal.getGoalEntry().isRunning()) {
+                                holder.spinningBallAnim.cancel();
+                            }
                         }
 
 
@@ -205,6 +208,9 @@ public class GoalRecyclerViewAdapter extends
                             TimeGoalieDateUtils.calculateSecondsElapsed(goal.getGoalEntry().getStartedTime(),
                                     goal.getGoalEntry().getSecondsElapsed()) >= goal.getGoalSeconds()) {
                         holder.seekbar.setProgress(10000);
+                        if (!goal.getGoalEntry().isRunning()) {
+                            holder.spinningBallAnim.cancel();
+                        }
                     }
 
                     if (remainingSeconds < 0) {
