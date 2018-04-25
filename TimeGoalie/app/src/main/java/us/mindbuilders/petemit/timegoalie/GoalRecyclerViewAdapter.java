@@ -15,7 +15,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -37,9 +36,8 @@ import android.widget.ToggleButton;
 import java.util.ArrayList;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntryGoalCounter;
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
+
 import us.mindbuilders.petemit.timegoalie.data.DeleteGoal;
 import us.mindbuilders.petemit.timegoalie.data.GetSuccessfulGoalCount;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
@@ -53,8 +51,7 @@ import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieUtils;
  */
 
 public class GoalRecyclerViewAdapter extends
-        RecyclerView.Adapter<GoalRecyclerViewAdapter.GoalViewHolder>
-        implements BaseApplication.GoalActivityListListener {
+        RecyclerView.Adapter<GoalRecyclerViewAdapter.GoalViewHolder> {
 
     // private final List<DummyContent.DummyItem> mValues;
 
@@ -66,6 +63,7 @@ public class GoalRecyclerViewAdapter extends
     private Context context;
     private GoalEntryGoalCounter goalEntryGoalCounter;
     private boolean justARefresh;
+    public static String checkBoxStateKey;
 
     //    public GoalRecyclerViewAdapter(List<DummyContent.DummyItem> items, View.OnClickListener onClickListener) {
 //        mValues = items;
@@ -76,20 +74,6 @@ public class GoalRecyclerViewAdapter extends
         this.onClickListener = onClickListener;
         this.goalCounter = goalCounter;
         this.context = context;
-        BaseApplication.setGoalActivityListListener(this);
-    }
-
-    @Override
-    public void notifyChanges(GoalEntry goalEntry) {
-        if (goalArrayList != null) {
-            for (int i = 0; i < goalArrayList.size(); i++) {
-                if (goalEntry != null) {
-                    if (goalEntry.getGoal_id() == goalArrayList.get(i).getGoalId()) {
-                        goalArrayList.get(i).setGoalEntry(goalEntry);
-                    }
-                }
-            }
-        }
     }
 
     @Override
@@ -113,20 +97,14 @@ public class GoalRecyclerViewAdapter extends
     }
 
     public void swapCursor(ArrayList<Goal> goalArrayList) {
-        for (TimeGoalieAlarmObject tgoal : BaseApplication.getTimeGoalieAlarmObjects()) {
-            if (tgoal.getCountDownTimer() != null)
-                tgoal.getCountDownTimer().cancel();
-        }
+
         this.goalArrayList = goalArrayList;
         justARefresh = false;
         notifyDataSetChanged();
     }
 
     public void swapCursor(ArrayList<Goal> goalArrayList, boolean isToday) {
-        for (TimeGoalieAlarmObject tgoal : BaseApplication.getTimeGoalieAlarmObjects()) {
-            if (tgoal.getCountDownTimer() != null)
-                tgoal.getCountDownTimer().cancel();
-        }
+
         this.goalArrayList = goalArrayList;
         this.isToday = isToday;
         justARefresh = false;
@@ -138,19 +116,17 @@ public class GoalRecyclerViewAdapter extends
         if (getItemCount() > 0) {
             final Goal goal = goalArrayList.get(position);
 
-            TimeGoalieAlarmObject tj = new TimeGoalieAlarmObject(goal.getGoalId(),
-                    TimeGoalieDateUtils.getSqlDateString());
-            BaseApplication.getTimeGoalieAlarmObjects().add(tj);
-
 
             goalEntryGoalCounter = new GoalEntryGoalCounter(goalCounter,
                     TimeGoalieDateUtils.getSqlDateString(BaseApplication.getActiveCalendarDate()));
 
             holder.tv_goaltitle.setText(goal.getName());
             holder.tv_goaltitle.setContentDescription(goal.getName());
-            if (holder.spinningBallAnim != null) {
-                holder.spinningBallAnim.cancel();
-            }
+
+            //not sure why I need to cancel this:
+//            if (holder.spinningBallAnim != null) {
+//                holder.spinningBallAnim.cancel();
+//            }
 
             if (goal.getGoalTypeId() == 1) { // if this is GoalType Limit goal
                 if (goal.getGoalEntry() != null) {
@@ -161,10 +137,12 @@ public class GoalRecyclerViewAdapter extends
                     holder.seekbar.setProgressDrawable(holder.seekbar.getResources().
                             getDrawable(R.drawable.seekbar_reverse, null));
                 }
-            } else if (goal.getGoalTypeId() == 2) { // yes no
+            } else if (goal.getGoalTypeId() == 2 && !goal.getGoalEntry().isHasMoved()) { // yes no
                 if (goal.getGoalEntry().getHasSucceeded()) {
+                    goal.getGoalEntry().setHasMoved(true);
                     holder.goalCheckBox.setChecked(true);
                 } else {
+                    goal.getGoalEntry().setHasMoved(true);
                     holder.goalCheckBox.setChecked(false);
                 }
             }
@@ -172,26 +150,93 @@ public class GoalRecyclerViewAdapter extends
             //if statement checks to see if this is a time goal by the existence of a start/stop button
             if (holder.startStopTimer != null) {
 
+
                 long remainingSeconds = TimeGoalieUtils.getRemainingSeconds(goal);
 
-                //Set initial Time Text labels:
+                // Reset start stop button to current state and stop the spinning ball
+                if (!goal.getGoalEntry().isRunning()) {
+                    holder.spinningBallAnim.cancel();
+                    Log.e("controller",goal.getName() + "check1");
+                    if (holder.startStopTimer.isChecked()) {
+                        holder.startStopTimer.setChecked(false);
+                    }
+                }
+
+                // Start the spinning ball and activate the start button if the goal is running
+                if (goal.getGoalEntry().isRunning() && !holder.startStopTimer.isChecked()) {
+                    holder.startStopTimer.setChecked(true);
+                    Log.e("controller",goal.getName() + "check2");
+                    holder.spinningBallAnim.start();
+                }
+
+                //Set Time Text labels:
                 TimeGoalieUtils.setTimeTextLabel(goal, holder.time_tv, holder.tv_timeOutOf);
                 // if this is a more goal
                 if (goal.getGoalTypeId() == 0) {
 
-                    if (holder.seekbar != null) {
-                        holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) /
-                                goal.getGoalSeconds())) * 100 * 100));
-                    }
+                        if (holder.seekbar != null && !goal.getGoalEntry().isHasFinished() && !goal.isChangingSeekbar()){
+                            if (goal.getSeekbarAnimation() != null) {
+                                goal.getSeekbarAnimation().cancel();
+                            }
+
+                            ObjectAnimator animation = ObjectAnimator.ofInt(holder.seekbar, "progress",
+                                    holder.seekbar.getProgress(), (int)
+                                            ((1 - ((double) (remainingSeconds) /  goal.getGoalSeconds()))
+                                                    * 100 * 100));
+                            animation.setDuration(1000);
+                            animation.setAutoCancel(true);
+                            animation.setInterpolator(new LinearInterpolator());
+
+                            goal.setSeekbarAnimation(animation);
+
+                            animation.start();
+                        }
+                        if (holder.seekbar != null &&
+                                TimeGoalieDateUtils.calculateSecondsElapsed(goal.getGoalEntry().getStartedTime(),
+                                        goal.getGoalEntry().getSecondsElapsed()) >= goal.getGoalSeconds()) {
+                            holder.seekbar.setProgress(10000);
+                            if (!goal.getGoalEntry().isRunning()) {
+                                holder.spinningBallAnim.cancel();
+                            }
+                        }
+
+
 
                 } else {
+
+                    if (holder.seekbar != null &&
+                            TimeGoalieDateUtils.calculateSecondsElapsed(goal.getGoalEntry().getStartedTime(),
+                                    goal.getGoalEntry().getSecondsElapsed()) >= goal.getGoalSeconds()) {
+                        holder.seekbar.setProgress(10000);
+                        if (!goal.getGoalEntry().isRunning()) {
+                            holder.spinningBallAnim.cancel();
+                        }
+                    }
+
                     if (remainingSeconds < 0) {
                     } else {
 
                         //set Progress bar Progress
-                        if (holder.seekbar != null) {
-                            holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) /
-                                    goal.getGoalSeconds())) * 100 * 100));
+                        if (holder.seekbar != null && !goal.isChangingSeekbar()) {
+//                            holder.seekbar.setProgress((int) ((1 - ((double) (remainingSeconds) /
+//                                    goal.getGoalSeconds())) * 100 * 100));
+                            if (goal.getSeekbarAnimation() != null) {
+                                goal.getSeekbarAnimation().cancel();
+                            }
+
+
+                                ObjectAnimator animation = ObjectAnimator.ofInt(holder.seekbar, "progress",
+                                        holder.seekbar.getProgress(), (int)
+                                                ((1 - ((double) (remainingSeconds) /  goal.getGoalSeconds()))
+                                                        * 100 * 100));
+                                animation.setDuration(1000);
+                                animation.setAutoCancel(true);
+                                animation.setInterpolator(new LinearInterpolator());
+
+                                goal.setSeekbarAnimation(animation);
+
+                                animation.start();
+
                         }
                     }
                 }
@@ -199,18 +244,6 @@ public class GoalRecyclerViewAdapter extends
                     // wow... trying to change the time with the seekbar?  That sounds dangerous
 
                     holder.startStopTimer.setVisibility(View.VISIBLE);
-                    holder.startStopTimer.setChecked(goal.getGoalEntry().isRunning());
-
-
-                    if (goal.getGoalEntry() != null) {
-                        if (goal.getGoalEntry().isRunning()
-                                && goal.getGoalEntry().getDate()
-                                .equals(TimeGoalieDateUtils.getSqlDateString())) {
-                            holder.startStopTimer.setChecked(false);
-                            holder.startStopTimer.setChecked(true);
-                        }
-                    }
-
 
                 }// end start/stop
                 else {
@@ -219,6 +252,7 @@ public class GoalRecyclerViewAdapter extends
             }//if istoday
             holder.mView.setOnClickListener(onClickListener);
 
+            // Hide the pencil if not today... for now
             if (isToday) {
                 if (holder.pencil != null) {
                     holder.pencil.setVisibility(View.VISIBLE);
@@ -239,6 +273,7 @@ public class GoalRecyclerViewAdapter extends
                 if (holder.goalCheckBox != null) {
                     holder.goalCheckBox.setEnabled(true);
                 }
+                //Goal Checkbox Logic
                 if (holder.goalCheckBox != null && !justARefresh) {
                     holder.goalCheckBox.setChecked(goal.getGoalEntry().getHasSucceeded());
                     if (goal.getGoalEntry().getHasSucceeded()) {
@@ -258,29 +293,7 @@ public class GoalRecyclerViewAdapter extends
                                         holder.soccerBallImage.animate().translationX(distance)
                                                 .setDuration(1000)
                                                 .setInterpolator(new AccelerateDecelerateInterpolator())
-                                                .setListener(new Animator.AnimatorListener() {
-                                                    @Override
-                                                    public void onAnimationStart(Animator animator) {
-                                                        holder.spinningBallAnim.start();
-
-                                                    }
-
-                                                    @Override
-                                                    public void onAnimationEnd(Animator animator) {
-                                                        holder.spinningBallAnim.cancel();
-
-                                                    }
-
-                                                    @Override
-                                                    public void onAnimationCancel(Animator animator) {
-                                                        holder.spinningBallAnim.cancel();
-                                                    }
-
-                                                    @Override
-                                                    public void onAnimationRepeat(Animator animator) {
-
-                                                    }
-                                                });
+                                                .setListener(new spinningBallAnimListener(holder.spinningBallAnim));
                                         holder.goalCheckBox.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
                                         goal.getGoalEntry().setHasMoved(true);
                                     }
@@ -310,7 +323,7 @@ public class GoalRecyclerViewAdapter extends
                         goal.getGoalEntry().setHasSucceeded(0);
                     }
                 }
-                new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
+
             }
 
             //Let's do the delete button
@@ -324,69 +337,44 @@ public class GoalRecyclerViewAdapter extends
                 }
 
             }
-            //get the initial goal count.
-            new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
+
         } //end if itemviewcount
+
+        new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
     }//end BindViewHolder
 
 
-    public void turnOnGoal(Goal goal, Context context, TextView time_tv, long newtime,
-                           SeekBar seekbar, ObjectAnimator spinningBallAnim) {
-        TimeGoalieAlarmManager.startTimer(goalCounter, time_tv, newtime, goal,
-                context, seekbar);
+    public void turnOnGoal(Goal goal, Context context,
+                            ObjectAnimator spinningBallAnim) {
+
+
+        //todo is this needed?
+//        TimeGoalieAlarmManager.startTimer(newtime, goal,
+//                context);
         spinningBallAnim.start();
         //Start the Goal!!
-        goal.getGoalEntry().setRunning(true);
-        Log.i("mindbuilders4", goal.getName() + " tick " +
-                goal.getGoalEntry().getSecondsElapsed());
-        new InsertNewGoalEntry(
-                context).execute(goal.getGoalEntry());
+        BaseApplication.getGoalEntryController().startEngine(goalArrayList);
+        BaseApplication.getGoalEntryController().startGoal(goal.getGoalEntry(), goal);
 
     }
 
     public void turnOffGoal(Goal goal, Context context, ObjectAnimator spinningBallAnim) {
-        TimeGoalieAlarmObject timeGoalieAlarmObject =
-                BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
-        if (timeGoalieAlarmObject != null) {
-            if (timeGoalieAlarmObject.getCountDownTimer() != null) {
-                timeGoalieAlarmObject.getCountDownTimer().cancel();
-                timeGoalieAlarmObject.setCountDownTimer(null);
-            }
-            if (timeGoalieAlarmObject.getAlarmDonePendingIntent() != null) {
-                TimeGoalieAlarmManager.cancelTimeGoalAlarm(
-                        context,
-                        timeGoalieAlarmObject.getAlarmDonePendingIntent());
-                timeGoalieAlarmObject.getAlarmDonePendingIntent().cancel();
-                timeGoalieAlarmObject.setAlarmDonePendingIntent(null);
-            }
-            if (timeGoalieAlarmObject.getOneMinuteWarningPendingIntent() != null) {
-                TimeGoalieAlarmManager.cancelTimeGoalAlarm(
-                        context,
-                        timeGoalieAlarmObject.getOneMinuteWarningPendingIntent());
-                timeGoalieAlarmObject.getOneMinuteWarningPendingIntent().cancel();
-                timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(null);
-            }
-            //cancel killgoal intent
 
-            Intent killGoalIntent = TimeGoalieAlarmReceiver
-                    .createKillGoalTimeGoalieAlarmIntent(context,
-                            "Stopping goal due to inactivity", (int) goal.getGoalId());
+        //cancel killgoal intent
 
-            PendingIntent killGoalPi = TimeGoalieAlarmReceiver
-                    .createKillGoalSafetyPendingIntent(context,
-                            killGoalIntent, (int) goal.getGoalId());
+        Intent killGoalIntent = TimeGoalieAlarmReceiver
+                .createKillGoalTimeGoalieAlarmIntent(context,
+                        "Stopping goal due to inactivity", (int) goal.getGoalId());
 
-            TimeGoalieAlarmManager.cancelTimeGoalAlarm(context, killGoalPi);
+        PendingIntent killGoalPi = TimeGoalieAlarmReceiver
+                .createKillGoalSafetyPendingIntent(context,
+                        killGoalIntent, (int) goal.getGoalId());
 
-            //                   TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context, goal);
-            //timeGoalieAlarmObject.setRunning(false);
-            goal.getGoalEntry().setRunning(false);
-            Log.i("mindbuilders5", goal.getName() + " tick " +
-                    goal.getGoalEntry().getSecondsElapsed());
-            new InsertNewGoalEntry(
-                    context).execute(goal.getGoalEntry());
-        }
+        TimeGoalieAlarmManager.cancelTimeGoalAlarm(context, killGoalPi);
 
+        //                   TimeGoalieAlarmReceiver.cancelSecondlyAlarm(context, goal);
+        //timeGoalieAlarmObject.setRunning(false);
+        BaseApplication.getGoalEntryController().stopGoal(goal.getGoalEntry(), goal);
 
         spinningBallAnim.cancel();
     }
@@ -430,11 +418,11 @@ public class GoalRecyclerViewAdapter extends
         private ObjectAnimator spinningBallAnim;
         private TextView tv_timeOutOf;
         private AppCompatCheckBox goalCheckBox;
-        private TranslateAnimation moveSoccerBallAnim;
         private ImageView soccerBallImage;
         private ToggleButton yes_no_pencil;
         private ImageButton deleteButton;
         private CardView cardView;
+
 
 
         public GoalViewHolder(View view) {
@@ -470,11 +458,12 @@ public class GoalRecyclerViewAdapter extends
                         fadeOut.setStartOffset(500);
                         fadeOut.setDuration(500);
                         cardView.setAnimation(fadeOut);
+                        Goal goal = goalArrayList.get(getLayoutPosition());
                         goalArrayList.remove(getLayoutPosition());
                         justARefresh = true;
                         notifyItemRangeChanged(getLayoutPosition(), getItemCount());
                         notifyItemRemoved(getLayoutPosition());
-                        Goal goal = goalArrayList.get(getLayoutPosition());
+
                         new DeleteGoal(context, goalEntryGoalCounter).execute(goal);
 
                     }
@@ -524,21 +513,19 @@ public class GoalRecyclerViewAdapter extends
 //                        }
 //                    });
 
-               // holder.seekbar.setOnTouchListener(null);
+                // holder.seekbar.setOnTouchListener(null);
 
                 seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    
 
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
-                        if (getLayoutPosition() > -1) {
+                        if (getLayoutPosition() > -1 && !(getLayoutPosition() > goalArrayList.size()-1)) {
                             Goal goal = goalArrayList.get(getLayoutPosition());
                             if (fromUser) {
                                 float percentage = (float) i / 10000;
                                 int secondsElapsed = (int) (goal.getGoalSeconds() * percentage);
                                 goal.getGoalEntry().setSecondsElapsed(secondsElapsed);
-                                Log.i("mindbuilders", secondsElapsed + " seconds elapsed " +
-                                        "calculation.  Out of " + goal.getGoalSeconds() + " perc " +
-                                        percentage + " progress int " + i);
                                 TimeGoalieUtils.setTimeTextLabel(goal, time_tv, tv_timeOutOf);
                             }
                         }
@@ -547,15 +534,16 @@ public class GoalRecyclerViewAdapter extends
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {
                         Goal goal = goalArrayList.get(getLayoutPosition());
+                        goal.setChangingSeekbar(true);
+                        if (goal.getSeekbarAnimation() != null) {
+                            goal.getSeekbarAnimation().cancel();
+
+                        }
                         //can't click seekbar when animation is going
                         if (goal.getGoalEntry().isRunning()) {
                             spinningBallAnim.cancel();
 
-                            if (goal.getSeekbarAnimation() != null) {
-                                goal.getSeekbarAnimation().setDuration(1);
-                                goal.getSeekbarAnimation().cancel();
-                            }
-                            goal.getGoalEntry().setRunning(false);
+
                             goal.getGoalEntry().setHasFinished(false);
                             if (goal.getGoalTypeId() == 1) { //if this is a time limit goal
                                 goal.getGoalEntry().setHasSucceeded(true);
@@ -573,19 +561,13 @@ public class GoalRecyclerViewAdapter extends
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
                         Goal goal = goalArrayList.get(getLayoutPosition());
+                        goal.setChangingSeekbar(false);
                         //can't click seekbar when animation is going
                         if (startStopTimer.isChecked()) {
-                            goal.getGoalEntry().setRunning(true);
-                            long newtime = goal.getGoalSeconds();
-                            if (goal.getGoalEntry() != null) {
-                                newtime = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
-                            }
-                            turnOnGoal(goal, context, time_tv, newtime, seekbar, spinningBallAnim);
+                            turnOnGoal(goal, context, spinningBallAnim);
+                        } else {
+                            BaseApplication.getGoalEntryController().updateGoal(context,goal.getGoalEntry());
                         }
-                        else {
-                            new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
-                        }
-                        new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
                     }
                 });
 
@@ -618,25 +600,8 @@ public class GoalRecyclerViewAdapter extends
                         @Override
                         public void onClick(View view) {
                             Goal goal = goalArrayList.get(getLayoutPosition());
-                            TimeGoalieAlarmObject timeGoalieAlarmObject =
-                                    BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
 
-                            if (timeGoalieAlarmObject != null) {
-                                if (timeGoalieAlarmObject.getCountDownTimer() != null) {
-                                    timeGoalieAlarmObject.getCountDownTimer().cancel();
-                                    timeGoalieAlarmObject.setCountDownTimer(null);
-                                }
-                                if (timeGoalieAlarmObject.getAlarmDonePendingIntent() != null) {
-                                    TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
-                                            timeGoalieAlarmObject.getAlarmDonePendingIntent());
-                                    timeGoalieAlarmObject.setAlarmDonePendingIntent(null);
-                                }
-                                if (timeGoalieAlarmObject.getOneMinuteWarningPendingIntent() != null) {
-                                    TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
-                                            timeGoalieAlarmObject.getOneMinuteWarningPendingIntent());
-                                    timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(null);
-                                }
-                            }
+
                             //old goal.setMinutes(goal.getMinutes() + value);
                             goal.getGoalEntry().setGoalAugment(
                                     goal.getGoalEntry().getGoalAugment() + value * 60);
@@ -657,27 +622,7 @@ public class GoalRecyclerViewAdapter extends
                         @Override
                         public void onClick(View view) {
                             Goal goal = goalArrayList.get(getLayoutPosition());
-                            final TimeGoalieAlarmObject timeGoalieAlarmObject =
-                                    BaseApplication.getTimeGoalieAlarmObjectById((goal.getGoalId()));
 
-                            if (timeGoalieAlarmObject != null) {
-
-                                if (timeGoalieAlarmObject.getCountDownTimer() != null) {
-                                    timeGoalieAlarmObject.getCountDownTimer().cancel();
-                                    timeGoalieAlarmObject.setCountDownTimer(null);
-                                }
-                                if (timeGoalieAlarmObject.getAlarmDonePendingIntent() != null) {
-                                    TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
-                                            timeGoalieAlarmObject.getAlarmDonePendingIntent());
-                                    timeGoalieAlarmObject.setAlarmDonePendingIntent(null);
-                                }
-                                if (timeGoalieAlarmObject.getOneMinuteWarningPendingIntent() != null) {
-                                    TimeGoalieAlarmManager.cancelTimeGoalAlarm(view.getContext(),
-                                            timeGoalieAlarmObject.getOneMinuteWarningPendingIntent());
-                                    timeGoalieAlarmObject.setOneMinuteWarningPendingIntent(null);
-                                }
-
-                            }
                             if (goal.getGoalSeconds() / 60 > value) {
                                 goal.getGoalEntry().setGoalAugment(
                                         goal.getGoalEntry().getGoalAugment() - value * 60);
@@ -702,14 +647,10 @@ public class GoalRecyclerViewAdapter extends
                         Log.i("mindbuilders3", goal.getName() + " tick " +
                                 goal.getGoalEntry().getSecondsElapsed());
 
-                        long newtime = goal.getGoalSeconds();
-                        if (goal.getGoalEntry() != null) {
-                            newtime = goal.getGoalSeconds() - goal.getGoalEntry().getSecondsElapsed();
-                        }
+
                         if (b && goal.getGoalEntry().getDate()
                                 .equals(TimeGoalieDateUtils.getSqlDateString())) {
-                            turnOnGoal(goal, context, time_tv, newtime, seekbar
-                                    , spinningBallAnim);
+                            turnOnGoal(goal, context, spinningBallAnim);
 
                         } else {
                             turnOffGoal(goal, context, spinningBallAnim);
@@ -735,7 +676,6 @@ public class GoalRecyclerViewAdapter extends
                                 new InsertNewGoalEntry(compoundButton.getContext())
                                         .execute(goal.getGoalEntry());
                                 new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
-                                new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
 
 
                                 //get the distance properly
@@ -749,29 +689,7 @@ public class GoalRecyclerViewAdapter extends
                                 soccerBallImage.animate().translationX(distance)
                                         .setDuration(1000)
                                         .setInterpolator(new AccelerateDecelerateInterpolator())
-                                        .setListener(new Animator.AnimatorListener() {
-                                            @Override
-                                            public void onAnimationStart(Animator animator) {
-                                                spinningBallAnim.start();
-
-                                            }
-
-                                            @Override
-                                            public void onAnimationEnd(Animator animator) {
-                                                spinningBallAnim.cancel();
-
-                                            }
-
-                                            @Override
-                                            public void onAnimationCancel(Animator animator) {
-                                                spinningBallAnim.cancel();
-                                            }
-
-                                            @Override
-                                            public void onAnimationRepeat(Animator animator) {
-
-                                            }
-                                        });
+                                        .setListener(new spinningBallAnimListener(spinningBallAnim));
                             }
                         } else {
 
@@ -781,41 +699,17 @@ public class GoalRecyclerViewAdapter extends
                                 new InsertNewGoalEntry(compoundButton.getContext())
                                         .execute(goal.getGoalEntry());
                                 new InsertNewGoalEntry(context).execute(goal.getGoalEntry());
-                                new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
+
                                 soccerBallImage.animate().translationX(0)
                                         .setDuration(1000)
                                         .setInterpolator(new AccelerateDecelerateInterpolator())
-                                        .setListener(new Animator.AnimatorListener() {
-                                            @Override
-                                            public void onAnimationStart(Animator animator) {
-                                                spinningBallAnim.start();
-                                            }
-
-                                            @Override
-                                            public void onAnimationEnd(Animator animator) {
-
-                                                spinningBallAnim.cancel();
-
-                                            }
-
-                                            @Override
-                                            public void onAnimationCancel(Animator animator) {
-                                                spinningBallAnim.cancel();
-                                            }
-
-                                            @Override
-                                            public void onAnimationRepeat(Animator animator) {
-
-                                            }
-                                        });
+                                        .setListener(new spinningBallAnimListener(spinningBallAnim));
                             }
 
                         }
+                        new GetSuccessfulGoalCount(context).execute(goalEntryGoalCounter);
                     }
                 });
-
-
-
 
 
             }
@@ -823,9 +717,42 @@ public class GoalRecyclerViewAdapter extends
 
         }
 
+
         @Override
         public String toString() {
             return super.toString() + " '" + tv_goaltitle.getText() + "'";
+        }
+    }
+
+    private class spinningBallAnimListener implements Animator.AnimatorListener {
+
+        ObjectAnimator spinningBallAnim;
+
+        spinningBallAnimListener(ObjectAnimator spinningBallAnim) {
+            this.spinningBallAnim = spinningBallAnim;
+
+        }
+
+        @Override
+        public void onAnimationStart(Animator animator) {
+            spinningBallAnim.start();
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animator) {
+
+            spinningBallAnim.cancel();
+
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animator) {
+            spinningBallAnim.cancel();
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animator) {
+
         }
     }
 }

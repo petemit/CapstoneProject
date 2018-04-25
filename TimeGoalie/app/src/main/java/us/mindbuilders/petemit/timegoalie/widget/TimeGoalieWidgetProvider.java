@@ -150,107 +150,29 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
                     int goalSeconds = bundle.getInt(context.getString(R.string.goal_seconds_key));
 
                     int goalType = bundle.getInt(context.getString(R.string.goal_type_key));
-                    if (goalType == 2) {
+                    if (goalType == 2 && goalEntry != null) {
                         goalEntry.setHasFinished(!goalEntry.isHasFinished());
                         goalEntry.setHasSucceeded(!goalEntry.getHasSucceeded());
+                        new InsertNewGoalEntry(context).execute(goalEntry);
+
                     } else {
-                        goalEntry.setRunning(!goalEntry.isRunning());
 
-                        BaseApplication.setLastTimeSecondUpdated(0);
-
-
-                        PendingIntent goalDonePi = TimeGoalieAlarmReceiver.createTimeGoaliePendingIntent(
-                                context, TimeGoalieAlarmReceiver.createAlarmDoneTimeGoalieAlarmIntent
-                                        (context,
-                                                goalname,
-                                                (int) goalEntry.getGoal_id()
-                                        ), (int) goalEntry.getGoal_id());
-
-                        PendingIntent oneMinutePi = TimeGoalieAlarmReceiver.
-                                createTimeGoaliePendingIntent(context,
-                                        TimeGoalieAlarmReceiver.
-                                                createOneMinuteWarningTimeGoalieAlarmIntent(
-                                                        context,
-                                                        goalname,
-                                                        (int) goalEntry.getGoal_id()
-                                                ),
-                                        (int) goalEntry.getGoal_id());
-
-
-                        if (goalEntry.isRunning()) {
-                            //culprit
-                            //start the secondly alarm
-                            TimeGoalieAlarmManager.setTimeGoalAlarm(
-                                    TimeGoalieDateUtils.createTargetSecondlyCalendarTime((int)
-                                            TimeGoalieAlarmReceiver.SECONDLY_FREQUENCY / 1000),
-                                    context, null,
-                                    TimeGoalieAlarmReceiver.createSecondlyTimeGoaliePendingIntent(
-                                            context,
-                                            TimeGoalieAlarmReceiver.
-                                                    createEverySecondDbUpdateAlarmIntent(context)));
-
-
-                            long newtime = goalSeconds - goalEntry.getSecondsElapsed();
-
-                            if (!goalEntry.isHasFinished()) {
-
-
-                                long hours = newtime / (60 * 60);
-                                long minutes = (newtime - (hours * 60 * 60)) / 60;
-                                long seconds = (newtime - (hours * 60 * 60) - (minutes * 60));
-
-                                Log.e("Mindbuilders", "hours: " + hours);
-                                Log.e("Mindbuilders", "minutes: " + minutes);
-                                Log.e("Mindbuilders", "seconds: " + seconds);
-                                long targetTime = TimeGoalieDateUtils.createTargetCalendarTime(
-                                        (int) hours,
-                                        (int) minutes,
-                                        (int) seconds);
-
-                                if (goalEntry.getTargetTime() == 0) {
-                                    goalEntry.setTargetTime(targetTime);
-                                }
-
-                                if (!goalEntry.isHasFinished()) {
-                                    TimeGoalieAlarmManager.setTimeGoalAlarm(
-                                            targetTime,
-                                            context, null,
-                                            goalDonePi);
-                                }
-
-                                //Sets up the running out of time alert
-                                //will not fire if it has been fired already for a goal.
-                                if (goalType == 1) { //Limit Goal Type
-
-
-                                    long targetTimeLimitGoal = TimeGoalieDateUtils.createTargetCalendarTime(
-                                            (int) hours,
-                                            (int) minutes,
-                                            (int) seconds - TimeGoalieAlarmManager.ONE_MINUTE_WARNING_TIME * 60);
-
-                                    if (oneMinutePi != null) {
-                                        TimeGoalieAlarmManager.setTimeGoalAlarm(
-                                                targetTimeLimitGoal,
-                                                context, null,
-                                                oneMinutePi);
-                                    }
-
-                                }
-
+                        if (goalEntry != null && goalEntry.isRunning()) {
+                            BaseApplication.getGoalEntryController().stopGoalById((int)goalEntry.getGoal_id());
+                        } else {
+                            if (goalEntry!=null) {
+                                BaseApplication.getGoalEntryController().startGoalById((int) goalEntry.getGoal_id());
                             }
-                        } else { //goal is not running
-                            // stopping alarm
-                            TimeGoalieAlarmManager.cancelTimeGoalAlarm(context, goalDonePi);
-                            TimeGoalieAlarmManager.cancelTimeGoalAlarm(context, oneMinutePi);
+                            BaseApplication.getGoalEntryController().startEngine(null);
+
                         }
+
                     }
                     handleActionUpdateGoalEntry(context, goalEntry);
                     break;
             }
         }
-        super.
-
-                onReceive(context, intent);
+        super.onReceive(context, intent);
 
     }
 
@@ -283,7 +205,7 @@ public class TimeGoalieWidgetProvider extends AppWidgetProvider {
 
 
     private void handleActionUpdateGoalEntry(Context context, GoalEntry goalEntry) {
-        new InsertNewGoalEntry(context).execute(goalEntry);
+      //  new InsertNewGoalEntry(context).execute(goalEntry);
 
         startActionGetGoalsForToday(context);
 

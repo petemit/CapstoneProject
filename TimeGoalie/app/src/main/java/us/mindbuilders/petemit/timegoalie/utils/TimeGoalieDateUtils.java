@@ -32,6 +32,18 @@ public class TimeGoalieDateUtils {
         return date;
     }
 
+    public static int calculateSecondsElapsed(long startTime, int secondsElapsed) {
+        long newSecondsElapsed;
+        long currentTime = getCurrentTimeInMillis();
+        if (startTime > 0) {
+            newSecondsElapsed = (currentTime - (startTime)) / 1000 + (secondsElapsed);
+        }
+        else {
+            newSecondsElapsed = secondsElapsed;
+        }
+        return (int) newSecondsElapsed;
+    }
+
     public static long createTargetCalendarTime(int hours, int minutes, int seconds) {
         //create calendar
         Calendar calendar = Calendar.getInstance();

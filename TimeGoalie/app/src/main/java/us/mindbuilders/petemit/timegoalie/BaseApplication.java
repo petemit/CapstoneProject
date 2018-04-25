@@ -14,10 +14,10 @@ import java.util.Calendar;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Day;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntry;
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoal;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
+import us.mindbuilders.petemit.timegoalie.services.TimeGoalieGoalEntryController;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 import us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider;
 
@@ -28,7 +28,6 @@ import us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider;
  */
 
 public class BaseApplication extends Application {
-    private static ArrayList<TimeGoalieAlarmObject> timeGoalieAlarmObjects;
     private static Calendar activeCalendarDate = Calendar.getInstance();
     private static Context context;
     private static GoalActivityListListener goalActivityListListener;
@@ -36,64 +35,65 @@ public class BaseApplication extends Application {
     private static Handler secondlyHandler;
     private static Runnable runnable;
     private static boolean handlerRunning;
+    private static TimeGoalieGoalEntryController goalEntryController;
 
     public static void createHandler(final long millis) {
-        secondlyHandler = new Handler();
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                handlerRunning = true;
-                Cursor cursor = context.getContentResolver().query
-                        (TimeGoalieContract.getRunningGoalEntriesThatHaveGoalEntryForToday(),
-                                null,
-                                null,
-                                new String[]{TimeGoalieDateUtils.
-                                        getSqlDateString(activeCalendarDate)},
-                                null);
-
-                if (cursor != null && cursor.getCount() > 0) {
-                    ArrayList<GoalEntry> goalEntries = GoalEntry.makeGoalEntryListFromCursor(cursor);
-                    for (GoalEntry goalEntry : goalEntries
-                            ) {
-
-                        if (goalEntry.isRunning()) {
-
-                            goalEntry.addSecondElapsed();
-
-                            if (BaseApplication.getGoalActivityListListener() != null) {
-                                BaseApplication.getGoalActivityListListener().notifyChanges(goalEntry);
-                            }
-
-                            new InsertNewGoalEntry(context).execute(goalEntry);
-
-                            Intent updateWidgetintent = new Intent(context,
-                                    TimeGoalieWidgetProvider.class);
-                            updateWidgetintent.setAction(
-                                    TimeGoalieWidgetProvider.ACTION_GET_GOALS_FOR_TODAY);
-                            context.sendBroadcast(updateWidgetintent);
-
-                            Log.e("alarm", goalEntry.getGoal_id() + " : "
-                                    + goalEntry.getSecondsElapsed() + "");
-
-                            BaseApplication.setLastTimeSecondUpdated(
-                                    TimeGoalieDateUtils.getCurrentTimeInMillis());
-
-                        }
-
-
-                    }//end for
-
-
-                }
-                ///end if second has elapsed.
-                else if (cursor == null || cursor.getCount() == 0) {
-                    secondlyHandler.removeCallbacks(this);
-                }
-                secondlyHandler.postDelayed(this, millis);
-                handlerRunning = false;
-            }
-        };
-        secondlyHandler.postDelayed(runnable, millis);
+//        secondlyHandler = new Handler();
+//        runnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                handlerRunning = true;
+//                Cursor cursor = context.getContentResolver().query
+//                        (TimeGoalieContract.getRunningGoalEntriesThatHaveGoalEntryForToday(),
+//                                null,
+//                                null,
+//                                new String[]{TimeGoalieDateUtils.
+//                                        getSqlDateString(activeCalendarDate)},
+//                                null);
+//
+//                if (cursor != null && cursor.getCount() > 0) {
+//                    ArrayList<GoalEntry> goalEntries = GoalEntry.makeGoalEntryListFromCursor(cursor);
+//                    for (GoalEntry goalEntry : goalEntries
+//                            ) {
+//
+//                        if (goalEntry.isRunning()) {
+//
+//                            goalEntry.addSecondElapsed();
+//
+//                            if (BaseApplication.getGoalActivityListListener() != null) {
+//                                BaseApplication.getGoalActivityListListener().notifyChanges(goalEntry);
+//                            }
+//
+//                            new InsertNewGoalEntry(context).execute(goalEntry);
+//
+//                            Intent updateWidgetintent = new Intent(context,
+//                                    TimeGoalieWidgetProvider.class);
+//                            updateWidgetintent.setAction(
+//                                    TimeGoalieWidgetProvider.ACTION_GET_GOALS_FOR_TODAY);
+//                            context.sendBroadcast(updateWidgetintent);
+//
+//                            Log.e("alarm", goalEntry.getGoal_id() + " : "
+//                                    + goalEntry.getSecondsElapsed() + "");
+//
+//                            BaseApplication.setLastTimeSecondUpdated(
+//                                    TimeGoalieDateUtils.getCurrentTimeInMillis());
+//
+//                        }
+//
+//
+//                    }//end for
+//
+//
+//                }
+//                ///end if second has elapsed.
+//                else if (cursor == null || cursor.getCount() == 0) {
+//                    secondlyHandler.removeCallbacks(this);
+//                }
+//                secondlyHandler.postDelayed(this, millis);
+//                handlerRunning = false;
+//            }
+//        };
+//        secondlyHandler.postDelayed(runnable, millis);
     }
 
     public static void destroyHandler() {
@@ -101,13 +101,6 @@ public class BaseApplication extends Application {
         secondlyHandler = null;
     }
 
-    public static ArrayList<TimeGoalieAlarmObject> getTimeGoalieAlarmObjects() {
-        return timeGoalieAlarmObjects;
-    }
-
-    public static void setTimeGoalieAlarmObjects(ArrayList<TimeGoalieAlarmObject> timeGoalieAlarmObjects) {
-        BaseApplication.timeGoalieAlarmObjects = timeGoalieAlarmObjects;
-    }
 
     public static GoalActivityListListener getGoalActivityListListener() {
         return goalActivityListListener;
@@ -154,31 +147,28 @@ public class BaseApplication extends Application {
 
     }
 
-    public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id) {
-        for (int i = 0; i < timeGoalieAlarmObjects.size(); i++) {
-            if (timeGoalieAlarmObjects.get(i).getGoal_id() == goal_id) {
-                Log.e("check", goal_id + "");
-                return timeGoalieAlarmObjects.get(i);
 
-            }
-        }
-        return null;
-    }
-
-    public static TimeGoalieAlarmObject getTimeGoalieAlarmObjectById(long goal_id, String date) {
-        for (int i = 0; i < timeGoalieAlarmObjects.size(); i++) {
-            if (timeGoalieAlarmObjects.get(i).getGoal_id() == goal_id &&
-                    timeGoalieAlarmObjects.get(i).getDate().equals(date)) {
-                Log.e("check", goal_id + "");
-                return timeGoalieAlarmObjects.get(i);
-
-            }
-        }
-        return null;
-    }
 
     public static Context getContext() {
         return context;
+    }
+
+    public static boolean checkGoalEntryController() {
+        if (goalEntryController != null) {
+            return true;
+        }
+        return false;
+    }
+
+    public static TimeGoalieGoalEntryController getGoalEntryController() {
+        if (goalEntryController == null) {
+            goalEntryController = new TimeGoalieGoalEntryController();
+        }
+        return goalEntryController;
+    }
+
+    public static void setGoalEntryController(TimeGoalieGoalEntryController goalEntryController) {
+        BaseApplication.goalEntryController = goalEntryController;
     }
 
     public void setContext(Context context) {
@@ -188,78 +178,96 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        //Get the logic engine ready
+        if (goalEntryController == null) {
+            goalEntryController = new TimeGoalieGoalEntryController();
+        }
+
+
         setContext(getBaseContext());
-        setTimeGoalieAlarmObjects(new ArrayList<TimeGoalieAlarmObject>());
+        //This is for the widget... and only for the widget... dang widget.
+        goalEntryController.startSecondlyAlarm();
 
 
-        //Only do this if we are in the debug build
+
+      //  Only do this if we are in the debug build
         if (BuildConfig.DEBUG) {
-            //StethoEnabler
-            getDatabasePath("timeGoalie.db").delete();
-            //dummy goal
-            Goal goal = new Goal();
-            goal.setName("Today Only Goal");
-            goal.setHours(1);
-            goal.setMinutes(30);
-            goal.setGoalTypeId(0);
-            goal.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
-            goal.setIsDaily(0);
-            goal.setIsWeekly(0);
-            Goal goal2 = new Goal();
-            goal2.setName("Thursday Only Goal");
-            goal2.setHours(2);
-            goal2.setMinutes(30);
-            goal2.setGoalTypeId(1);
-            goal2.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
-            goal2.setIsDaily(0);
-            goal2.setIsWeekly(1);
-            ArrayList<Day> dayArrayList = new ArrayList<Day>();
-            Day thu = new Day();
-            thu.setName("Thu");
-            thu.setSequence(4);
-            dayArrayList.add(thu);
-            goal2.setGoalDays(dayArrayList);
-            Goal goal7 = new Goal();
-            goal7.setName("Enough Teethos!");
-            goal7.setGoalTypeId(2);
-            goal7.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
-            goal7.setIsDaily(1);
-            goal7.setIsWeekly(0);
-            Goal goal4 = new Goal();
-            goal4.setName("Take Nap");
-            goal4.setGoalTypeId(1);
-            goal4.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
-            goal4.setIsDaily(1);
-            goal4.setIsWeekly(0);
-            goal4.setHours(0);
-            goal4.setMinutes(1);
-            Goal goal3 = new Goal();
-            goal3.setName("Brush Teeth");
-            goal3.setGoalTypeId(2);
-            goal3.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
-            goal3.setIsDaily(1);
-            goal3.setIsWeekly(0);
-            Goal goal5 = new Goal();
-            goal5.setName("Dust Teeth");
-            goal5.setGoalTypeId(2);
-            goal5.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
-            goal5.setIsDaily(1);
-            goal5.setIsWeekly(0);
-            Goal goal6 = new Goal();
-            goal6.setName("Enough Teeth!");
-            goal6.setGoalTypeId(2);
-            goal6.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
-            goal6.setIsDaily(1);
-            goal6.setIsWeekly(0);
-
-
-            new InsertNewGoal(getBaseContext()).execute(goal);
-            new InsertNewGoal(getBaseContext()).execute(goal2);
-            new InsertNewGoal(getBaseContext()).execute(goal4);
-            new InsertNewGoal(getBaseContext()).execute(goal3);
-            new InsertNewGoal(getBaseContext()).execute(goal5);
-            new InsertNewGoal(getBaseContext()).execute(goal6);
-            new InsertNewGoal(getBaseContext()).execute(goal7);
+//            //StethoEnabler
+//            getDatabasePath("timeGoalie.db").delete();
+//            //dummy goal
+//            Goal goal = new Goal();
+//            goal.setName("Today Only Goal");
+//            goal.setHours(1);
+//            goal.setMinutes(30);
+//            goal.setGoalTypeId(0);
+//            goal.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
+//            goal.setIsDaily(0);
+//            goal.setIsWeekly(0);
+//            Goal goal1 = new Goal();
+//            goal1.setName("Today Only Goal2");
+//            goal1.setHours(0);
+//            goal1.setMinutes(1);
+//            goal1.setGoalTypeId(0);
+//            goal1.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
+//            goal1.setIsDaily(0);
+//            goal1.setIsWeekly(0);
+//            Goal goal2 = new Goal();
+//            goal2.setName("Thursday Only Goal");
+//            goal2.setHours(2);
+//            goal2.setMinutes(30);
+//            goal2.setGoalTypeId(1);
+//            goal2.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
+//            goal2.setIsDaily(0);
+//            goal2.setIsWeekly(1);
+//            ArrayList<Day> dayArrayList = new ArrayList<Day>();
+//            Day thu = new Day();
+//            thu.setName("Thu");
+//            thu.setSequence(4);
+//            dayArrayList.add(thu);
+//            goal2.setGoalDays(dayArrayList);
+//            Goal goal7 = new Goal();
+//            goal7.setName("Enough Teethos!");
+//            goal7.setGoalTypeId(2);
+//            goal7.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
+//            goal7.setIsDaily(1);
+//            goal7.setIsWeekly(0);
+//            Goal goal4 = new Goal();
+//            goal4.setName("Take Nap");
+//            goal4.setGoalTypeId(1);
+//            goal4.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
+//            goal4.setIsDaily(1);
+//            goal4.setIsWeekly(0);
+//            goal4.setHours(0);
+//            goal4.setMinutes(1);
+//            Goal goal3 = new Goal();
+//            goal3.setName("Brush Teeth");
+//            goal3.setGoalTypeId(2);
+//            goal3.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
+//            goal3.setIsDaily(1);
+//            goal3.setIsWeekly(0);
+//            Goal goal5 = new Goal();
+//            goal5.setName("Dust Teeth");
+//            goal5.setGoalTypeId(2);
+//            goal5.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
+//            goal5.setIsDaily(1);
+//            goal5.setIsWeekly(0);
+//            Goal goal6 = new Goal();
+//            goal6.setName("Enough Teeth!");
+//            goal6.setGoalTypeId(2);
+//            goal6.setCreationDate(TimeGoalieDateUtils.getSqlDateString());
+//            goal6.setIsDaily(1);
+//            goal6.setIsWeekly(0);
+//
+//
+//            new InsertNewGoal(getBaseContext()).execute(goal);
+//            new InsertNewGoal(getBaseContext()).execute(goal1);
+//            new InsertNewGoal(getBaseContext()).execute(goal2);
+//            new InsertNewGoal(getBaseContext()).execute(goal4);
+//            new InsertNewGoal(getBaseContext()).execute(goal3);
+//            new InsertNewGoal(getBaseContext()).execute(goal5);
+//            new InsertNewGoal(getBaseContext()).execute(goal6);
+//            new InsertNewGoal(getBaseContext()).execute(goal7);
         }
 
         StethoEnabler.enable(this);

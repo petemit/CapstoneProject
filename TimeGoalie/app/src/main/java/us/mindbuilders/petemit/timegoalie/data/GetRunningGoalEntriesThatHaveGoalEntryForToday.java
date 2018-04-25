@@ -31,7 +31,8 @@ public class GetRunningGoalEntriesThatHaveGoalEntryForToday extends AsyncTask<
     protected Cursor doInBackground(TimeGoalieJobCallback... timeGoalieJobCallbacks) {
 
         Cursor cursor = context.getContentResolver().query
-                (TimeGoalieContract.getRunningGoalEntriesThatHaveGoalEntryForToday(),
+
+                (TimeGoalieContract.getGoalsThatHaveGoalEntryForToday(),
                         null,
                         null,
                         new String[]{TimeGoalieDateUtils.

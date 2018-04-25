@@ -132,6 +132,7 @@ public class TimeGoalieContract {
         public static final String GOALENTRIES_COLUMN_SUCCEEDED = "succeeded";
         public static final String GOALENTRIES_COLUMN_ISRUNNING = "isRunning";
         public static final String GOALENTRIES_COLUMN_TARGETTIME = "targetTime";
+        public static final String GOALENTRIES_COLUMN_STARTEDTIME = "startedTime";
         public static final String GOALENTRIES_COLUMN_ISFINISHED = "isFinished";
         public static final String GOALENTRIES_COLUMN_DATETIME = "timestamp";
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()

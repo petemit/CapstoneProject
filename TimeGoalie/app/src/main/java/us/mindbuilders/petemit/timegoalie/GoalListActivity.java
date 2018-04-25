@@ -4,6 +4,8 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -27,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
-import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.TimeGoalieAlarmObject;
 import us.mindbuilders.petemit.timegoalie.data.TimeGoalieContract;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
 import us.mindbuilders.petemit.timegoalie.widget.TimeGoalieWidgetProvider;
@@ -42,7 +43,7 @@ adb shell setprop debug.firebase.analytics.app .none.
  */
 public class GoalListActivity extends AppCompatActivity implements View.OnClickListener,
         LoaderManager.LoaderCallbacks<Cursor>, DatePickerDialog.OnDateSetListener,
-        GoalRecyclerViewAdapter.GoalCounter {
+        GoalRecyclerViewAdapter.GoalCounter, GoalListViewCallback {
     private static final int GOAL_LOADER_ID = 4;
     private static final String noDateString = "NODATE";
     Spinner datespinner;
@@ -76,6 +77,8 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,7 +109,10 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         });
 
         recyclerView = findViewById(R.id.goal_list);
+        recyclerView.setItemAnimator(new RvItemAnimator());
         if (recyclerView != null) {
+            //Todo is this going to break animations?
+            recyclerView.getItemAnimator().setChangeDuration(0);
             recyclerView.setAdapter(rvAdapter);
         //    recyclerView.getRecycledViewPool().setMaxRecycledViews(2,0);
         }
@@ -146,17 +152,15 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onResume() {
         super.onResume();
+        BaseApplication.getGoalEntryController().setGoalListViewCallback(this);
         getSupportLoaderManager().restartLoader(GOAL_LOADER_ID, null, this);
         rvAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onPause() {
+        BaseApplication.getGoalEntryController().setGoalListViewCallback(null);
         super.onPause();
-        for (TimeGoalieAlarmObject tgoal : BaseApplication.getTimeGoalieAlarmObjects()) {
-            if (tgoal.getCountDownTimer() != null)
-                tgoal.getCountDownTimer().cancel();
-        }
     }
 
     @Override
@@ -279,6 +283,19 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         tv_successfulGoalCount.setText(String.valueOf(successfulGoalCount));
         //creates arraylist of goals
         goalArrayList = (Goal.createGoalListWithGoalEntriesFromCursor(data));
+        boolean startEngine = false;
+        for (int i = 0; i < goalArrayList.size(); i++) {
+            if (goalArrayList.get(i).getGoalEntry() != null) {
+                if (goalArrayList.get(i).getGoalEntry().isRunning()){
+                    startEngine = true;
+                    break;
+                }
+            }
+        }
+        if (startEngine) {
+            BaseApplication.getGoalEntryController().setGoalListViewCallback(this);
+            BaseApplication.getGoalEntryController().startEngine(goalArrayList);
+        }
         rvAdapter.swapCursor(goalArrayList, isToday);
         rvAdapter.notifyDataSetChanged();
         if (goalArrayList.size() > 0) {
@@ -295,10 +312,6 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        for (TimeGoalieAlarmObject tgoal : BaseApplication.getTimeGoalieAlarmObjects()) {
-            if (tgoal.getCountDownTimer() != null)
-                tgoal.getCountDownTimer().cancel();
-        }
         rvAdapter.swapCursor(null);
     }
 
@@ -331,6 +344,26 @@ public class GoalListActivity extends AppCompatActivity implements View.OnClickL
         if (timeGoalieReportUpdater != null) {
             timeGoalieReportUpdater.updateReport();
         }
+    }
+
+    @Override
+    public void update(final int position) {
+//        //todo find out why position isn't working
+//        if (!recyclerView.isComputingLayout()) {
+//            recyclerView.getAdapter().notifyDataSetChanged();
+//        }
+//        else {
+//            Handler handler = new Handler();
+//            Runnable runnable = new Runnable() {
+//                @Override
+//                public void run() {
+//                    SystemClock.sleep(200);
+//                    update(position);
+//                }
+//            };
+//            handler.post(runnable);
+//        }
+        recyclerView.getAdapter().notifyItemChanged(position);
     }
 
     public interface TimeGoalieReportUpdater {
