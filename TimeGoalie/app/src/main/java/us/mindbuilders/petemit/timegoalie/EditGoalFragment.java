@@ -1,8 +1,11 @@
 package us.mindbuilders.petemit.timegoalie;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +28,7 @@ import java.util.ArrayList;
 
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Day;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
+import us.mindbuilders.petemit.timegoalie.data.DeleteGoal;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoal;
 import us.mindbuilders.petemit.timegoalie.data.UpdateGoal;
 import us.mindbuilders.petemit.timegoalie.utils.TimeGoalieDateUtils;
@@ -156,6 +160,11 @@ public class EditGoalFragment extends Fragment {
             }
         });
 
+        dailyCb.setChecked(goal.getIsDaily()==1);
+        weeklyCb.setChecked(goal.getIsWeekly()==1);
+        if (weeklyCb.isChecked()) {
+            showWeeklyCheckboxes();
+        }
 
         //set up checkbox logic
         dailyCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -304,11 +313,47 @@ public class EditGoalFragment extends Fragment {
             }
         });
 
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getContext().startActivity(new Intent(getContext(), GoalListActivity.class));
+            }
+        });
+
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which){
+                        case DialogInterface.BUTTON_POSITIVE:
+                            new DeleteGoal(getContext(),null).execute(goal);
+                            getContext().startActivity(new Intent(getContext(), GoalListActivity.class));
+                            //Yes button clicked
+                            break;
+
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            //No button clicked
+                            break;
+                    }
+                }
+            };
+
+            @Override
+            public void onClick(View view) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setMessage("Are you sure you want to Delete this goal?")
+                .setNegativeButton("Cancel", dialogClickListener)
+                .setPositiveButton("Yes, I am sure", dialogClickListener).show();
+            }
+
+        });
+
         //Finally, populate the views
         newGoalEditText.setText(goal.getName());
         goalTypeSpinner.setSelection((int)goal.getGoalTypeId());
-        dailyCb.setEnabled(goal.getIsDaily()==1);
-        weeklyCb.setEnabled(goal.getIsWeekly()==1);
+        dailyCb.setChecked(goal.getIsDaily()==1);
+        weeklyCb.setChecked(goal.getIsWeekly()==1);
         npHour.setValue(goal.getHours());
         npMinute.setValue(goal.getMinutes());
 

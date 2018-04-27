@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/left_margin"
             android:layout_marginTop="@dimen/top_margin"
-            android:text="@string/add_a_new_goal"
+            android:text="@string/update_goal"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <EditText
@@ -344,40 +344,45 @@
                     android:contentDescription="@string/select_minutes_description" />
             </LinearLayout>
         </LinearLayout>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <Button
+        android:id="@+id/button_update_goal"
+        style="@style/TimeGoalTheme.ButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/top_margin"
+        android:layout_marginEnd="@dimen/right_margin"
+        android:layout_marginStart="@dimen/left_margin"
+        android:layout_marginTop="@dimen/top_margin"
+        android:contentDescription="@string/update_goal_description"
+        android:text="@string/update_goal_description" />
+    <Button
+        android:id="@+id/button_delete_goal"
+        style="@style/TimeGoalTheme.ButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/top_margin"
+        android:layout_marginEnd="@dimen/right_margin"
+        android:layout_marginStart="@dimen/left_margin"
+        android:layout_marginTop="@dimen/top_margin"
+        android:contentDescription="@string/settings_button_content_description"
+        android:text="@string/delete" />
+    <Button
+        android:id="@+id/button_cancel_goal"
+        style="@style/TimeGoalTheme.ButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/top_margin"
+        android:layout_marginEnd="@dimen/right_margin"
+        android:layout_marginStart="@dimen/left_margin"
+        android:layout_marginTop="@dimen/top_margin"
+        android:contentDescription="@string/cancel_goal_description"
+        android:text="@string/cancel_goal_description" />
+</LinearLayout>
 
-        <Button
-            android:id="@+id/button_update_goal"
-            style="@style/TimeGoalTheme.ButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/top_margin"
-            android:layout_marginEnd="@dimen/right_margin"
-            android:layout_marginStart="@dimen/left_margin"
-            android:layout_marginTop="@dimen/top_margin"
-            android:contentDescription="@string/update_goal_description"
-            android:text="@string/update_goal_description" />
-        <Button
-            android:id="@+id/button_delete_goal"
-            style="@style/TimeGoalTheme.ButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/top_margin"
-            android:layout_marginEnd="@dimen/right_margin"
-            android:layout_marginStart="@dimen/left_margin"
-            android:layout_marginTop="@dimen/top_margin"
-            android:contentDescription="@string/settings_button_content_description"
-            android:text="@string/delete" />
-        <Button
-            android:id="@+id/button_cancel_goal"
-            style="@style/TimeGoalTheme.ButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/top_margin"
-            android:layout_marginEnd="@dimen/right_margin"
-            android:layout_marginStart="@dimen/left_margin"
-            android:layout_marginTop="@dimen/top_margin"
-            android:contentDescription="@string/cancel_goal_description"
-            android:text="@string/cancel_goal_description" />
     </LinearLayout>
 
 

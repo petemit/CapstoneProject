@@ -108,6 +108,7 @@
     <string name="update_goal_description">UPDATE</string>
     <string name="cancel_goal_description">CANCEL</string>
     <string name="delete">delete</string>
+    <string name="update_goal">Update Goal</string>
 
 
 </resources>

@@ -3,8 +3,11 @@ package us.mindbuilders.petemit.timegoalie.utils;
 import android.view.View;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import us.mindbuilders.petemit.timegoalie.BaseApplication;
 import us.mindbuilders.petemit.timegoalie.R;
+import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Day;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 
 
@@ -112,5 +115,29 @@ public class TimeGoalieUtils {
             }
         }
         return goaldaysCommaSeparated;
+    }
+
+    String[] dayNames;
+
+
+    public static ArrayList<Day> parseCommaSeparated(String[] dayNames, String list) {
+        ArrayList<Day> days = new ArrayList<>();
+        String[] strings = list.split(",");
+        for (int i = 0; i < strings.length; i++) {
+            Day day = new Day();
+            day.setSequence(getDaySeq(dayNames, strings[i]));
+            day.setName(strings[i]);
+            days.add(day);
+        }
+        return days;
+    }
+
+    public static int getDaySeq(String[] dayNames, String day) {
+        for (int i = 0; i < dayNames.length; i++) {
+            if (day.equals(dayNames[i])){
+                return i+1;
+            }
+        }
+        return 0;
     }
 }

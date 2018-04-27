@@ -43,6 +43,12 @@ public class Goal {
                             TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS))));
                     goal.setMinutes((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
                             TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES))));
+                    goal.setIsDaily(Integer.parseInt(cursor.getString(cursor.getColumnIndex(
+                            TimeGoalieContract.Goals.GOALS_COLUMN_ISDAILY
+                    ))));
+                    goal.setIsWeekly(Integer.parseInt(cursor.getString(cursor.getColumnIndex(
+                            TimeGoalieContract.Goals.GOALS_COLUMN_ISWEEKLY
+                    ))));
                     goal.setGoalTypeId(
                             cursor.getInt(
                                     cursor.getColumnIndex(
@@ -96,6 +102,12 @@ public class Goal {
                         TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALHOURS))));
                 goal.setMinutes((int) Long.parseLong(cursor.getString(cursor.getColumnIndex(
                         TimeGoalieContract.Goals.GOALS_COLUMN_TIMEGOALMINUTES))));
+                goal.setIsDaily(Integer.parseInt(cursor.getString(cursor.getColumnIndex(
+                        TimeGoalieContract.Goals.GOALS_COLUMN_ISDAILY
+                ))));
+                goal.setIsWeekly(Integer.parseInt(cursor.getString(cursor.getColumnIndex(
+                        TimeGoalieContract.Goals.GOALS_COLUMN_ISWEEKLY
+                ))));
                 goal.setGoalTypeId(
                         cursor.getInt(
                                 cursor.getColumnIndex(

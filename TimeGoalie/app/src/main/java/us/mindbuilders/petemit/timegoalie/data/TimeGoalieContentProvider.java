@@ -31,6 +31,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
     private static final int GOALS_ACCOMPLISHED_BY_GOAL_ID_BY_DATE = 405;
     private static final int GOALS_DAYS = 500;
     private static final int GOAL_DAYS_BY_GOAL_ID = 505;
+    private static final int GOALS_DAYS_BY_GOAL_ID_QUERY =508 ;
     private static final int GOALS_BY_DAY_ID = 501;
     private static final int GOAL_ENTRIES = 600;
     private static final int GOAL_ENTRIES_BY_GOAL_ID = 601;
@@ -45,6 +46,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
     private static final int GOAL_ENTRIES_ALL_BY_GOAL_ID = 610;
     private static final UriMatcher uriMatcher = makeUriMatcher();
     private static final String PARAMETER = "=? ";
+
     private TimeGoalieDbHelper dbHelper;
 
     private static UriMatcher makeUriMatcher() {
@@ -79,7 +81,9 @@ public class TimeGoalieContentProvider extends ContentProvider {
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME, GOALS_DAYS);
         matcher.addURI(TimeGoalieContract.AUTHORITY,
-                TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME + "/#", GOAL_DAYS_BY_GOAL_ID);
+                TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME + "/goal/#", GOAL_DAYS_BY_GOAL_ID);
+        matcher.addURI(TimeGoalieContract.AUTHORITY,
+                TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME + "/getGoalDays/#", GOALS_DAYS_BY_GOAL_ID_QUERY);
 
 
         //goalentries
@@ -174,6 +178,18 @@ public class TimeGoalieContentProvider extends ContentProvider {
                         null);
                 break;
 
+                //goaldays
+            case GOALS_DAYS_BY_GOAL_ID_QUERY:
+                selection = TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_GOAL_ID.concat(PARAMETER);
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                cursor = db.query(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME,
+                        null,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        null);
+                break;
             //days
             case DAYS:
                 cursor = db.query(TimeGoalieContract.Days.DAYS_TABLE_NAME,
@@ -611,7 +627,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
 
                 String goalDaySelection = TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_GOAL_ID + "=?";
 
-                int goalDayRowsdeleted = db.delete(TimeGoalieContract.Goals.GOALS_TABLE_NAME,
+                int goalDayRowsdeleted = db.delete(TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME,
                         goalDaySelection,
                         anotherGoal_id);
                 if (anotherGoal_id.length > 0) {
