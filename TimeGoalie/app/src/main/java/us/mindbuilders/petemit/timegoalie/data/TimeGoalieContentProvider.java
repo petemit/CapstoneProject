@@ -30,6 +30,7 @@ public class TimeGoalieContentProvider extends ContentProvider {
     private static final int DAY_BY_DATE_SEQUENCE = 302;
     private static final int GOALS_ACCOMPLISHED_BY_GOAL_ID_BY_DATE = 405;
     private static final int GOALS_DAYS = 500;
+    private static final int GOAL_DAYS_BY_GOAL_ID = 505;
     private static final int GOALS_BY_DAY_ID = 501;
     private static final int GOAL_ENTRIES = 600;
     private static final int GOAL_ENTRIES_BY_GOAL_ID = 601;
@@ -77,6 +78,8 @@ public class TimeGoalieContentProvider extends ContentProvider {
                 TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME + "/#", GOALS_BY_DAY_ID);
         matcher.addURI(TimeGoalieContract.AUTHORITY,
                 TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME, GOALS_DAYS);
+        matcher.addURI(TimeGoalieContract.AUTHORITY,
+                TimeGoalieContract.GoalsDays.GOALS_DAYS_TABLE_NAME + "/#", GOAL_DAYS_BY_GOAL_ID);
 
 
         //goalentries
@@ -599,6 +602,27 @@ public class TimeGoalieContentProvider extends ContentProvider {
                 } else {
                     throw new SQLException("Delete failed!");
                 }
+
+            case GOAL_DAYS_BY_GOAL_ID:
+                String[] anotherGoal_id = {String.valueOf(ContentUris.parseId(uri))};
+                if (anotherGoal_id.length == 0) {
+                    return 0;
+                }
+
+                String goalDaySelection = TimeGoalieContract.GoalsDays.GOALS_DAYS_COLUMN_GOAL_ID + "=?";
+
+                int goalDayRowsdeleted = db.delete(TimeGoalieContract.Goals.GOALS_TABLE_NAME,
+                        goalDaySelection,
+                        anotherGoal_id);
+                if (anotherGoal_id.length > 0) {
+
+                    return goalDayRowsdeleted;
+
+                } else {
+                    throw new SQLException("Delete failed!");
+                }
+
+
             default:
                 throw new UnsupportedOperationException("that delete query is not supported, man.");
         }
@@ -607,8 +631,28 @@ public class TimeGoalieContentProvider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues,
-                      @Nullable String s, @Nullable String[] strings) {
-        return 0;
-    }
+                      @Nullable String whereClause, @Nullable String[] strings) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
 
+        switch (uriMatcher.match(uri)) {
+            case GOAL_BY_ID:
+                String[] _id = {String.valueOf(ContentUris.parseId(uri))};
+                if (_id.length == 0) {
+                    return 0;
+                }
+
+                int rowsUpdated = db.update(TimeGoalieContract.Goals.GOALS_TABLE_NAME,
+                        contentValues, whereClause, strings);
+                if (_id.length > 0) {
+
+                    return rowsUpdated;
+
+                } else {
+                    throw new SQLException("Update failed!");
+                }
+            default:
+                throw new UnsupportedOperationException("that Update query is not supported, man.");
+        }
+
+    }
 }

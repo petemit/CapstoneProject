@@ -50,7 +50,7 @@
     <string name="report_goal_selection_key">report_goal_selection_key</string>
     <string name="all_goals">All Goals</string>
     <string name="selected_scope_key">selected_scope</string>
-    <string name="delete_button_content_description">Delete Goal</string>
+    <string name="settings_button_content_description">Goal Settings</string>
     <string name="goal_length">goal_length</string>
     <string name="add_time_to_goal_msg">Please add some time to your Time Goal</string>
     <string name="goal_days_string">goal_days</string>
@@ -105,6 +105,9 @@
     <string name="stopping_inactive_goal">Stopping goal due to inactivity</string>
     <string name="ran_out_of_time">Oops! Ran out of time.  Maybe next time.</string>
     <string name="created">created</string>
+    <string name="update_goal_description">UPDATE</string>
+    <string name="cancel_goal_description">CANCEL</string>
+    <string name="delete">delete</string>
 
 
 </resources>

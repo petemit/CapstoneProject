@@ -98,4 +98,19 @@ public class TimeGoalieUtils {
             }
         }
     }
+
+    public static String getCommaSeparatedList(Goal goal, String goaldaysCommaSeparated) {
+        if (goal.getGoalDays() != null && goal.getGoalDays().size() > 0) {
+
+            for (int i = 0; i < goal.getGoalDays().size(); i++) {
+                if (i == 0) {
+                    goaldaysCommaSeparated.concat(goal.getGoalDays().get(i).getName());
+                } else {
+                    goaldaysCommaSeparated.concat(",");
+                    goaldaysCommaSeparated.concat(goal.getGoalDays().get(i).getName());
+                }
+            }
+        }
+        return goaldaysCommaSeparated;
+    }
 }
