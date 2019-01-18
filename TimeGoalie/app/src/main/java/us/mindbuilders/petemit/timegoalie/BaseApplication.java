@@ -1,9 +1,12 @@
 package us.mindbuilders.petemit.timegoalie;
 
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Handler;
 
 import android.util.Log;
@@ -36,6 +39,7 @@ public class BaseApplication extends Application {
     private static Runnable runnable;
     private static boolean handlerRunning;
     private static TimeGoalieGoalEntryController goalEntryController;
+    public static final String CHANNEL_ID = "time_goalie_alarms";
 
     public static void createHandler(final long millis) {
 //        secondlyHandler = new Handler();
@@ -94,6 +98,24 @@ public class BaseApplication extends Application {
 //            }
 //        };
 //        secondlyHandler.postDelayed(runnable, millis);
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
     }
 
     public static void destroyHandler() {
@@ -178,6 +200,7 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        createNotificationChannel();
 
         //Get the logic engine ready
         if (goalEntryController == null) {

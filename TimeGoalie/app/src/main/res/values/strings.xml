@@ -15,6 +15,8 @@
     <string name="daily_reminder">Daily Reminder</string>
 
 
+    <string name="channel_name">Time Goalie</string>
+    <string name="channel_description">Time Goalie Alarms and Reminders</string>
     <string name="daily">Daily</string>
     <string name="weekly">Weekly</string>
     <string name="hours">Hours</string>

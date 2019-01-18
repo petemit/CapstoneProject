@@ -15,6 +15,8 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import us.mindbuilders.petemit.timegoalie.GoalListActivity;
 import us.mindbuilders.petemit.timegoalie.R;
 
+import static us.mindbuilders.petemit.timegoalie.BaseApplication.CHANNEL_ID;
+
 /**
  * Created by Peter on 10/2/2017.
  */
@@ -59,7 +61,7 @@ public class TimeGoalieNotifications {
             int resume_id = Integer.valueOf("" + RESUME_ID + NOTIFICATIONID);
 
             NotificationCompat.Builder builder =
-                    new NotificationCompat.Builder(context, null)
+                    new NotificationCompat.Builder(context, CHANNEL_ID)
                             .setSmallIcon(R.drawable.ic_goalie_with_ball_grey)
                             .setContentTitle(message)
                             .setTimeoutAfter(CANCELLATION_TIMEOUT)

@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "us.mindbuilders.petemit.timegoalie"
         minSdkVersion 21
-        targetSdkVersion 26
-        versionCode 11
-        versionName "1.2.1"
+        targetSdkVersion 28
+        versionCode 12
+        versionName "1.2.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -21,7 +21,7 @@ android {
     }
 }
 
-ext.supportLibraryVersion = '26.1.0'
+ext.supportLibraryVersion = '28.0.0'
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
