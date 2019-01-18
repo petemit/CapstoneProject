@@ -16,7 +16,6 @@ public class NotificationActivity extends Activity {
     public static final String RESUME_ACTION = "RESUME";
     public static final String STOP_ACTION = "STOP";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,8 +42,6 @@ public class NotificationActivity extends Activity {
         }
 
     }
-
-
 
     public void cancelNotification() {
         NotificationManager manager = (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE);

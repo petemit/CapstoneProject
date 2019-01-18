@@ -17,7 +17,7 @@
         android:paddingBottom="@dimen/top_margin">
 
         <include
-            layout="@layout/delete_button"
+            layout="@layout/settings_button"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:visibility="invisible" />

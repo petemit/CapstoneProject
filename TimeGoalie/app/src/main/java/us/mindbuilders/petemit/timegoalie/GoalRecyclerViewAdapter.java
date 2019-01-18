@@ -19,11 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
@@ -38,7 +34,6 @@ import java.util.ArrayList;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.Goal;
 import us.mindbuilders.petemit.timegoalie.TimeGoalieDO.GoalEntryGoalCounter;
 
-import us.mindbuilders.petemit.timegoalie.data.DeleteGoal;
 import us.mindbuilders.petemit.timegoalie.data.GetSuccessfulGoalCount;
 import us.mindbuilders.petemit.timegoalie.data.InsertNewGoalEntry;
 import us.mindbuilders.petemit.timegoalie.services.TimeGoalieAlarmReceiver;
@@ -328,10 +323,10 @@ public class GoalRecyclerViewAdapter extends
 
             //Let's do the delete button
 
-            if (holder.deleteButton != null) {
+            if (holder.settingsButton != null) {
                 if (goal != null) {
-                    holder.deleteButton.setContentDescription(context.getString(
-                            R.string.delete_button_content_description).concat(" ").concat(
+                    holder.settingsButton.setContentDescription(context.getString(
+                            R.string.settings).concat(" ").concat(
                             goal.getName())
                     );
                 }
@@ -420,7 +415,7 @@ public class GoalRecyclerViewAdapter extends
         private AppCompatCheckBox goalCheckBox;
         private ImageView soccerBallImage;
         private ToggleButton yes_no_pencil;
-        private ImageButton deleteButton;
+        private ImageButton settingsButton;
         private CardView cardView;
 
 
@@ -434,7 +429,7 @@ public class GoalRecyclerViewAdapter extends
             editButtons = view.findViewById(R.id.edit_button_ll);
             startStopTimer = view.findViewById(R.id.start_stop);
             time_tv = view.findViewById(R.id.timeTextView);
-            deleteButton = view.findViewById(R.id.delete_button);
+            settingsButton = view.findViewById(R.id.settings_gear_button);
 
             smallAdd = view.findViewById(R.id.plus_small);
             mediumAdd = view.findViewById(R.id.plus_medium);
@@ -449,22 +444,36 @@ public class GoalRecyclerViewAdapter extends
             cardView = view.findViewById(R.id.card_layout);
             RotateDrawable rt;
 
-            if (deleteButton != null) {
-                deleteButton.setOnClickListener(new View.OnClickListener() {
+            if (settingsButton != null) {
+                settingsButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Animation fadeOut = new AlphaAnimation(1, 0);
-                        fadeOut.setInterpolator(new AccelerateInterpolator());
-                        fadeOut.setStartOffset(500);
-                        fadeOut.setDuration(500);
-                        cardView.setAnimation(fadeOut);
+                        //not deleting anymore
+//                        Animation fadeOut = new AlphaAnimation(1, 0);
+//                        fadeOut.setInterpolator(new AccelerateInterpolator());
+//                        fadeOut.setStartOffset(500);
+//                        fadeOut.setDuration(500);
+//                        cardView.setAnimation(fadeOut);
+//                        Goal goal = goalArrayList.get(getLayoutPosition());
+//                        goalArrayList.remove(getLayoutPosition());
+//                        justARefresh = true;
+//                        notifyItemRangeChanged(getLayoutPosition(), getItemCount());
+//                        notifyItemRemoved(getLayoutPosition());
                         Goal goal = goalArrayList.get(getLayoutPosition());
-                        goalArrayList.remove(getLayoutPosition());
-                        justARefresh = true;
-                        notifyItemRangeChanged(getLayoutPosition(), getItemCount());
-                        notifyItemRemoved(getLayoutPosition());
-
-                        new DeleteGoal(context, goalEntryGoalCounter).execute(goal);
+                        if (goal != null) {
+                            Intent intent = new Intent(context, EditGoalActivity.class);
+                            intent.putExtra("goal-name", goal.getName());
+                            intent.putExtra("goal-type", goal.getGoalTypeId());
+                            intent.putExtra("goal-days", TimeGoalieUtils.getCommaSeparatedList(goal, ""));
+                            intent.putExtra("goal-id", goal.getGoalId());
+                            intent.putExtra("goal-minutes", goal.getMinutes());
+                            intent.putExtra("goal-seconds", goal.getGoalSeconds());
+                            intent.putExtra("goal-hours", goal.getHours());
+                            intent.putExtra("goal-isDaily", goal.getIsDaily());
+                            intent.putExtra("goal-isDisabled", goal.getIsDisabled());
+                            intent.putExtra("goal-isWeekly", goal.getIsWeekly());
+                            context.startActivity(intent);
+                        }
 
                     }
                 });
@@ -481,10 +490,10 @@ public class GoalRecyclerViewAdapter extends
                             editButtons.setVisibility(View.GONE);
                         }
 
-                        if (deleteButton.getVisibility() != View.VISIBLE) {
-                            deleteButton.setVisibility(View.VISIBLE);
+                        if (settingsButton.getVisibility() != View.VISIBLE) {
+                            settingsButton.setVisibility(View.VISIBLE);
                         } else {
-                            deleteButton.setVisibility(View.INVISIBLE);
+                            settingsButton.setVisibility(View.INVISIBLE);
                         }
                     }
                 });
@@ -494,10 +503,10 @@ public class GoalRecyclerViewAdapter extends
                 yes_no_pencil.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (deleteButton.getVisibility() != View.VISIBLE) {
-                            deleteButton.setVisibility(View.VISIBLE);
+                        if (settingsButton.getVisibility() != View.VISIBLE) {
+                            settingsButton.setVisibility(View.VISIBLE);
                         } else {
-                            deleteButton.setVisibility(View.INVISIBLE);
+                            settingsButton.setVisibility(View.INVISIBLE);
                         }
                     }
                 });
